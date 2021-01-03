@@ -1,0 +1,2962 @@
+﻿@model Acc.ViewModels.St_ItemCardHVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #RelatedItemGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #RelatedItemGrid_col0 {
+        width: 55px;
+    }
+
+    #SimilarItemGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #SimilarItemGrid_col0 {
+        width: 55px;
+    }
+
+    #ManufacturingStageGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #RawMaterialGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #RawMaterialGrid_col0 {
+        width: 55px;
+    }
+
+    .dxgvBatchEditNewItem_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+     var ImgPath;
+    function GetSupplierAccountNo(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SupplierAccountNumber").value = data.AccountNumber;
+            document.getElementById("SupplierAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SupplierAccountNumber").value = '';
+            document.getElementById("SupplierAccountName").value = '';
+        }
+    }
+    //Start Related Item Card------------------------------------------
+    var currentEditedValueRelatedItemCode;
+    var lastVisibleIndexRelatedItemCode;
+    var FocusedCellColumnIndexRelatedItemCode = 0;
+    var FocusedCellRowIndexRelatedItemCode = 0;
+    function GetSelectedRelatedItemCard(data) {
+        RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemCode", data.SearchItemCode);
+        RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", data.SearchItemName);
+        RelatedItemGrid.batchEditApi.StartEdit(lastVisibleIndexRelatedItemCode, 1);
+    }
+    var RelatedItem = [];
+     $.getJSON('@Url.Action("GetAllSt_ItemCardH", "MultiUse")', { id: 0 }, function (Data) {
+         RelatedItem = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = { label: Data[i].SearchItemName, value: Data[i].SearchItemCode, stop: Data[i].SearchStopItem };
+             RelatedItem.push(r);
+         }
+     });
+    function AutoCompleteRelatedItem(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: RelatedItem,
+             select: function (event, ui) {
+                 if (ui.item.stop == '0') {
+                     s.SetValue(ui.item.value);
+                     RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", ui.item.label);
+                     RelatedItemGrid.batchEditApi.GetCellValue()
+                 }
+                 else {
+                     bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                     FocusedCellColumnIndexRelatedItemCode = 0;//n3n3
+                     s.SetValue('');
+                     RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", "");
+                 }
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function ClearGridRelatedItem(s, e) {
+        RelatedItemGrid.PerformCallback('clear');
+    }
+    function OnInitRelatedItem(s, e) {
+            ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+                "keydown",
+                function (evt) {
+                    if (evt.ctrlKey && FocusedCellColumnIndexRelatedItemCode == 1) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        var url = '/MultiUse/SearchSt_ItemCardH/RelatedItemCard';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+                    }
+                });
+    };
+    function Grid_BatchEditEndEditingRelatedItem(s, e) {
+        var productNameColumn = s.GetColumnByField("RelatedItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndexRelatedItemCode == 1) {
+            var ItemCodeIndex = s.GetColumnByField("RelatedItemCode").index;
+            var ItemCode = e.rowValues[ItemCodeIndex].value;
+            if (!ItemCode) {
+                RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", "");
+            }
+            else {
+                if (ItemCode != null && ItemCode != '') {
+                    $.getJSON('@Url.Action("CheckItemCodeH", "St_ItemCardH")', { id: ItemCode }, function (Data) {
+                        if (Data == "") {
+                            RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemCode", "");
+                            RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", "");
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            FocusedCellColumnIndexRelatedItemCode = 1;
+                        }
+                        else {
+                            if (Data.StopItem) {
+                                RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemCode", "");
+                                RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndexRelatedItemCode = 1;
+                            }
+                            else {
+
+                                RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemCode", Data.ItemCode);
+                                RelatedItemGrid.batchEditApi.SetCellValue(lastVisibleIndexRelatedItemCode, "RelatedItemName", Data.ItemName);
+                                RelatedItemGrid.AddNewRow();
+                            }
+
+
+                        }
+                    });
+                }
+            }
+        }
+        FocusedCellColumnIndexRelatedItemCode = 0;
+        FocusedCellRowIndexRelatedItemCode = 0;
+    }
+    function Grid_BatchEditStartEditingRelatedItem(s, e) {
+        FocusedCellColumnIndexRelatedItemCode = e.focusedColumn.index;
+        FocusedCellRowIndexRelatedItemCode = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("RelatedItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndexRelatedItemCode = e.visibleIndex;
+        currentEditedValueRelatedItemCode = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+    }
+    function OnBeginCallbackRelatedItem(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallbackRelatedItem(s, e) {
+            if (s.cpSuccessFlag)
+            {
+                alert("All changes were saved");
+                window.location = "@Url.Action("Success","Test1")";
+            }
+    }
+    function Grid_DeleteRowEventRelatedItem(s, e) {
+    }
+    //End Related Item Card-------------------------------------------
+    //Start Similar Item Card-------------------------------------------
+    var currentEditedValueSimilarItemCode;
+    var lastVisibleIndexSimilarItemCode;
+    var FocusedCellColumnIndexSimilarItemCode = 0;
+    var FocusedCellRowIndexSimilarItemCode = 0;
+    function GetSelectedSimilarItemCard(data) {
+        SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemCode", data.SearchItemCode);
+        SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", data.SearchItemName);
+        SimilarItemGrid.batchEditApi.StartEdit(lastVisibleIndexSimilarItemCode, 1);
+    }
+    var SimilarItem = [];
+     $.getJSON('@Url.Action("GetAllSt_ItemCardH", "MultiUse")', { id: 0 }, function (Data) {
+         SimilarItem = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = { label: Data[i].SearchItemName, value: Data[i].SearchItemCode, stop: Data[i].SearchStopItem };
+             SimilarItem.push(r);
+         }
+     });
+    function AutoCompleteSimilarItem(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: SimilarItem,
+             select: function (event, ui) {
+                 if (ui.item.stop == '0') {
+                     s.SetValue(ui.item.value);
+                     SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", ui.item.label);
+                     SimilarItemGrid.batchEditApi.GetCellValue()
+                 }
+                 else {
+                     bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                     FocusedCellColumnIndexSimilarItemCode = 1;
+                     s.SetValue('');
+                     SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", "");
+                 }
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function ClearGridSimilarItem(s, e) {
+        SimilarItemGrid.PerformCallback('clear');
+    }
+    function OnInitSimilarItem(s, e) {
+            ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+                "keydown",
+                function (evt) {
+                    if (evt.ctrlKey && FocusedCellColumnIndexSimilarItemCode == 1) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        var url = '/MultiUse/SearchSt_ItemCardH/SimilarItemCard';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+                    }
+                });
+    };
+    function Grid_BatchEditEndEditingSimilarItem(s, e) {
+        var productNameColumn = s.GetColumnByField("SimilarItemCode");
+            if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndexSimilarItemCode == 1) {
+
+                 var ItemCodeIndex = s.GetColumnByField("SimilarItemCode").index;
+                 var ItemCode = e.rowValues[ItemCodeIndex].value;
+                 if (!ItemCode) {
+                     SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", "");
+                 }
+                 else {
+                     if (ItemCode != null && ItemCode != '') {
+                         $.getJSON('@Url.Action("CheckItemCodeH", "St_ItemCardH")', { id: ItemCode }, function (Data) {
+                             if (Data == "") {
+                                SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemCode", "");
+                                SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardDoesNotExist</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndexSimilarItemCode = 1;
+                            }
+                            else {
+                                 if (Data.StopItem) {
+                                    SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemCode", "");
+                                    SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                    FocusedCellColumnIndexSimilarItemCode = 1;
+                                }
+                                else {
+
+                                    SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemCode", Data.ItemCode);
+                                    SimilarItemGrid.batchEditApi.SetCellValue(lastVisibleIndexSimilarItemCode, "SimilarItemName", Data.ItemName);
+                                    SimilarItemGrid.AddNewRow();
+                                }
+
+
+                            }
+                        });
+                    }
+                }
+            }
+        FocusedCellColumnIndexSimilarItemCode = 0;
+        FocusedCellRowIndexSimilarItemCode = 0;
+    }
+    function Grid_BatchEditStartEditingSimilarItem(s, e) {
+        FocusedCellColumnIndexSimilarItemCode = e.focusedColumn.index;
+        FocusedCellRowIndexSimilarItemCode = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("SimilarItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndexSimilarItemCode = e.visibleIndex;
+        currentEditedValueSimilarItemCode = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+    }
+    function OnBeginCallbackSimilarItem(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallbackSimilarItem(s, e) {
+            if (s.cpSuccessFlag)
+            {
+                alert("All changes were saved");
+                window.location = "@Url.Action("Success","Test1")";
+            }
+    }
+    function Grid_DeleteRowEventSimilarItem(s, e) {
+    }
+    // End Similar Item Card--------------------------------------------
+    //Start Manufacturing Stage-------------------------------------------
+    var currentEditedValueManufacturingStage;
+    var lastVisibleIndexManufacturingStage;
+    var FocusedCellColumnIndexManufacturingStage = 0;
+    var FocusedCellRowIndexManufacturingStage = 0;
+    function GetSelectedFactory(data) {
+        ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryNo", data.FactoryID);
+        ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryName", data.FactoryName);
+        ManufacturingStageGrid.batchEditApi.StartEdit(lastVisibleIndexManufacturingStage, 1);
+    }
+    var Factory = [];
+     $.getJSON('@Url.Action("GetSt_FactoryH", "MultiUse")', { id: 0 }, function (Data) {
+         Factory = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = { label: Data[i].FactoryName, value: Data[i].FactoryID };
+             Factory.push(r);
+         }
+     });
+    function AutoCompleteManufacturingStage(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: Factory,
+             select: function (event, ui) {
+                 s.SetValue(ui.item.value);
+                 ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryName", ui.item.label);
+                 ManufacturingStageGrid.batchEditApi.GetCellValue()
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+        });
+    }
+    function ClearGridManufacturingStage(s, e) {
+        ManufacturingStageGrid.PerformCallback('clear');
+    }
+    function OnInitManufacturingStage(s, e) {
+            ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+                "keydown",
+                function (evt) {
+                    if (evt.ctrlKey && FocusedCellColumnIndexManufacturingStage == 0) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        var url = '/MultiUse/SearchSt_FactoryH/FactoryID';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+                    }
+                });
+    };
+    function Grid_BatchEditEndEditingManufacturingStage(s, e) {
+        var productNameColumn = s.GetColumnByField("ManufacturingStageFactoryNo");
+            if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndexManufacturingStage == 0) {
+
+            var FactoryNoIndex = s.GetColumnByField("ManufacturingStageFactoryNo").index;
+            var FactoryNo = e.rowValues[FactoryNoIndex].value;
+            if (!FactoryNo) {
+                ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryName", "");
+                }
+                else {
+                if (FactoryNo != null && FactoryNo != '') {
+                    $.getJSON('@Url.Action("CheckSt_FactoryH", "St_FactoryH")', { id: FactoryNo }, function (Data) {
+                            if (Data == "") {
+                                ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryNo", "");
+                                ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryName", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheFactoryDoesNotExist</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndexManufacturingStage = 0;
+                            }
+                            else {
+                                ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryNo", Data.FactoryID);
+                                ManufacturingStageGrid.batchEditApi.SetCellValue(lastVisibleIndexManufacturingStage, "ManufacturingStageFactoryName", Data.FactoryName);
+                            }
+                        });
+                    }
+                }
+            }
+        FocusedCellColumnIndexManufacturingStage = 0;
+        FocusedCellRowIndexManufacturingStage = 0;
+    }
+    function Grid_BatchEditStartEditingManufacturingStage(s, e) {
+        FocusedCellColumnIndexManufacturingStage = e.focusedColumn.index;
+        FocusedCellRowIndexManufacturingStage = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("ManufacturingStageFactoryNo");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndexManufacturingStage = e.visibleIndex;
+        currentEditedValueManufacturingStage = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+    }
+    function OnBeginCallbackManufacturingStage(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallbackManufacturingStage(s, e) {
+            if (s.cpSuccessFlag)
+            {
+                alert("All changes were saved");
+                window.location = "@Url.Action("Success","Test1")";
+            }
+    }
+    function Grid_DeleteRowEventManufacturingStage(s, e) {
+    }
+    function AddRows() {
+        var visibleRowIndices = ManufacturingStageGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (visibleRowIndices.length > 0) {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        ManufacturingStageGrid.PerformCallback('clear');
+                        var NumberOfStages = $("#NumberOfStages").val();
+                        for (var i = 1; i <= NumberOfStages; i++) {
+                            ManufacturingStageGrid.AddNewRow();
+                        }
+                    }
+                    else {
+                        document.getElementById("NumberOfStages").value = visibleRowIndices.length;
+                    }
+                }
+            });
+        }
+        else {
+            ManufacturingStageGrid.PerformCallback('clear');
+            var NumberOfStages = $("#NumberOfStages").val();
+            for (var i = 1; i <= NumberOfStages; i++) {
+                ManufacturingStageGrid.AddNewRow();
+            }
+        }
+    }
+    //End Manufacturing Stage-------------------------------------------
+    //Start Raw Material-------------------------------------------
+    var currentEditedValueRawMaterial;
+    var lastVisibleIndexRawMaterial;
+    var FocusedCellColumnIndexRawMaterial = 0;
+    var FocusedCellRowIndexRawMaterial = 0;
+    var TotalQuantity = 0;
+    var TotalCost = 0;
+    var NetTotal = 0;
+    function GetSelectedRawMaterial(data) {
+        RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialCode", data.SearchItemCode);
+        RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", data.SearchItemName);
+        RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", data.SearchCostRate);
+        RawMaterialGrid.batchEditApi.StartEdit(lastVisibleIndexRawMaterial, 1);
+    }
+    var RawMaterial = [];
+     $.getJSON('@Url.Action("GetAllSt_ItemCardH", "MultiUse")', { id: 0 }, function (Data) {
+         RawMaterial = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = { label: Data[i].SearchItemName, value: Data[i].SearchItemCode, stop: Data[i].SearchStopItem, cost: Data[i].SearchCostRate };
+             RawMaterial.push(r);
+         }
+     });
+    function AutoCompleteRawMaterial(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: RawMaterial,
+             select: function (event, ui) {
+                 if (ui.item.stop == '0') {
+                     s.SetValue(ui.item.value);
+                     RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", ui.item.label);
+                     RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", ui.item.cost);
+                     RawMaterialGrid.batchEditApi.GetCellValue()
+                 }
+                 else {
+                     bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                     FocusedCellColumnIndexRawMaterial = 1;
+                     s.SetValue('');
+                     RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", "");
+                     RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", "0");
+                 }
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function ClearGridRawMaterial(s, e) {
+        RawMaterialGrid.PerformCallback('clear');
+        setTimeout(function () {
+            CalcSum(s, e);
+        }, 1000);
+    }
+    function OnInitRawMaterial(s, e) {
+            ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+                "keydown",
+                function (evt) {
+                    if (evt.ctrlKey && FocusedCellColumnIndexRawMaterial == 1) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        var url = '/MultiUse/SearchSt_ItemCardH/RawMateriaItemCard';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+                    }
+                    switch (evt.keyCode) {
+                        case 13:
+                            if (FocusedCellColumnIndexRawMaterial == 3) {
+                                s.AddNewRow();
+                            }
+                            break;
+                    }
+                });
+    };
+    function Grid_BatchEditEndEditingRawMaterial(s, e) {
+        var productNameColumn = s.GetColumnByField("RawMaterialCode");
+            if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndexRawMaterial == 1) {
+
+            var ItemCodeIndex = s.GetColumnByField("RawMaterialCode").index;
+                 var ItemCode = e.rowValues[ItemCodeIndex].value;
+                 if (!ItemCode) {
+                     RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", "");
+                     RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", "0");
+                 }
+                 else {
+                     if (ItemCode != null && ItemCode != '') {
+                         $.getJSON('@Url.Action("CheckItemCodeH", "St_ItemCardH")', { id: ItemCode }, function (Data) {
+                            if (Data == "") {
+                                RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialCode", "");
+                                RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", "");
+                                RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", "0");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardDoesNotExist</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndexRawMaterial= 1;
+                            }
+                            else {
+                                if (Data.StopItem) {
+                                    RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialCode", "");
+                                    RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", "");
+                                    RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", "0");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                    FocusedCellColumnIndexRawMaterial = 1;
+                                }
+                                else {
+
+                                    RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialCode", Data.ItemCode);
+                                    RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "RawMaterialName", Data.ItemName);
+                                    RawMaterialGrid.batchEditApi.SetCellValue(lastVisibleIndexRawMaterial, "Cost", Data.CostRate);
+                                }
+
+
+                            }
+                        });
+                    }
+                }
+            }
+        FocusedCellColumnIndexRawMaterial = 1;
+        FocusedCellRowIndexRawMaterial = 1;
+    }
+    function Grid_BatchEditStartEditingRawMaterial(s, e) {
+        FocusedCellColumnIndexRawMaterial = e.focusedColumn.index;
+        FocusedCellRowIndexRawMaterial = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("RawMaterialCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndexRawMaterial = e.visibleIndex;
+        currentEditedValueRawMaterial = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+        CalcSum(s, e);
+
+    }
+    function OnBeginCallbackRawMaterial(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallbackRawMaterial(s, e) {
+            if (s.cpSuccessFlag)
+            {
+                alert("All changes were saved");
+                window.location = "@Url.Action("Success","Test1")";
+            }
+    }
+    function Grid_DeleteRowEventRawMaterial(s, e) {
+        setTimeout(function () {
+            CalcSum(s, e);
+        }, 1000);
+    }
+    var TheDecimalPointForTheLocalCurrency = $("#TheDecimalPointForTheLocalCurrency").val();
+    if (TheDecimalPointForTheLocalCurrency == '' || TheDecimalPointForTheLocalCurrency == null) {
+        TheDecimalPointForTheLocalCurrency = 3;
+    }
+    function formatMoneyLocalCurrencyFraction(number, decPlaces, decSep, thouSep) {
+        decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? TheDecimalPointForTheLocalCurrency : decPlaces,
+            decSep = typeof decSep === "undefined" ? "." : decSep;
+        thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+        var sign = number < 0 ? "-" : "";
+        var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+        var j = (j = i.length) > 3 ? j % 3 : 0;
+
+        return sign +
+            (j ? i.substr(0, j) + thouSep : "") +
+            i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+            (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+    }
+    function CalcSum(s, e) {
+        var Quantity = 0;
+        var Cost = 0;
+        var Total = 0;
+        TotalQuantity = 0;
+        TotalCost = 0;
+        NetTotal=0;
+        var visibleRowIndices = RawMaterialGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            Quantity = RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity");
+            Cost = RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Cost");
+            Quantity = Number(Quantity);
+            Cost = Number(Cost);
+            Total = Number(Total);
+            if (Quantity == "NaN") {
+                Quantity = 0;
+            }
+            if (Cost == "NaN") {
+                Cost = 0;
+            }
+            Total = Quantity * Cost;
+            if (Total == "NaN") {
+                Total = 0;
+            }
+            RawMaterialGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Total", Total);
+            TotalQuantity = TotalQuantity + parseFloat(Quantity);
+            TotalCost = TotalCost + parseFloat(Cost);
+            NetTotal = NetTotal + parseFloat(Total);
+        }
+        document.getElementById("TotalQuantity").value = TotalQuantity;
+        if (document.getElementById("TotalQuantity").value == '') {
+            document.getElementById("TotalQuantity").value = 0;
+            document.getElementById("sTotalQuantity").value = formatMoneyLocalCurrencyFraction(0, TheDecimalPointForTheLocalCurrency);
+        }
+        else {
+            $("#sTotalQuantity").val(formatMoneyLocalCurrencyFraction(parseFloat($("#TotalQuantity").val()), TheDecimalPointForTheLocalCurrency));
+        }
+        document.getElementById("TotalCost").value = TotalCost;
+        if (document.getElementById("TotalCost").value == '') {
+            document.getElementById("TotalCost").value = 0;
+            document.getElementById("sTotalCost").value = formatMoneyLocalCurrencyFraction(0, TheDecimalPointForTheLocalCurrency);
+        }
+        else {
+            $("#sTotalCost").val(formatMoneyLocalCurrencyFraction(parseFloat($("#TotalCost").val()), TheDecimalPointForTheLocalCurrency));
+        }
+        document.getElementById("NetTotal").value = NetTotal;
+        if (document.getElementById("NetTotal").value == '') {
+            document.getElementById("NetTotal").value = 0;
+            document.getElementById("sNetTotal").value = formatMoneyLocalCurrencyFraction(0, TheDecimalPointForTheLocalCurrency);
+        }
+        else {
+            $("#sNetTotal").val(formatMoneyLocalCurrencyFraction(parseFloat($("#NetTotal").val()), TheDecimalPointForTheLocalCurrency));
+        }
+    }
+    //End Raw Material-------------------------------------------
+    // Start For All Grid--------------------------------------------
+    function ClearGrid(s, e) {
+        RelatedItemGrid.PerformCallback('clear');
+        SimilarItemGrid.PerformCallback('clear');
+        ManufacturingStageGrid.PerformCallback('clear');
+        RawMaterialGrid.PerformCallback('clear');
+    }
+    function LoopGrid(s, e) {
+        var ItemTypeNo = $("#ItemTypeNo").val();
+        var NumberOfWorkingDays = $("#NumberOfWorkingDays").val();
+        var NumberOfStages = $("#NumberOfStages").val();
+        var ComboFactoryNo = $("#ComboFactoryNo").val();
+        var iError = 0;
+        var visibleRowIndicesRelatedItem = RelatedItemGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndicesRelatedItem.length; i++) {
+            if (RelatedItemGrid.batchEditApi.GetCellValue(visibleRowIndicesRelatedItem[i], "RelatedItemCode") == "" || RelatedItemGrid.batchEditApi.GetCellValue(visibleRowIndicesRelatedItem[i], "RelatedItemCode") == null) {
+                iError = 1;
+                break;
+            }
+            else if (RelatedItemGrid.batchEditApi.GetCellValue(visibleRowIndicesRelatedItem[i], "RelatedItemName") == "" || RelatedItemGrid.batchEditApi.GetCellValue(visibleRowIndicesRelatedItem[i], "RelatedItemName") == null) {
+                iError = 1;
+                break;
+            }
+        }
+        var visibleRowIndicesSimilarItem = SimilarItemGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndicesSimilarItem.length; i++) {
+            if (SimilarItemGrid.batchEditApi.GetCellValue(visibleRowIndicesSimilarItem[i], "SimilarItemCode") == "" || SimilarItemGrid.batchEditApi.GetCellValue(visibleRowIndicesSimilarItem[i], "SimilarItemCode") == null) {
+                iError = 2;
+                break;
+            }
+            else if (SimilarItemGrid.batchEditApi.GetCellValue(visibleRowIndicesSimilarItem[i], "SimilarItemName") == "" || SimilarItemGrid.batchEditApi.GetCellValue(visibleRowIndicesSimilarItem[i], "SimilarItemName") == null) {
+                iError = 2;
+                break;
+            }
+        }
+        if (ItemTypeNo == 3) {
+            var visibleRowIndicesRawMaterial = RawMaterialGrid.batchEditApi.GetRowVisibleIndices();
+            for (var i = 0; i < visibleRowIndicesRawMaterial.length; i++) {
+                if (RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "RawMaterialCode") == "" || RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "RawMaterialCode") == null) {
+                    iError = 3;
+                    break;
+                }
+                else if (RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "RawMaterialName") == "" || RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "RawMaterialName") == null) {
+                    iError = 3;
+                    break;
+                }
+                else if (RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "Quantity") == "" || RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "Quantity") == null
+                    || RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "Quantity") == 0) {
+                    iError = 4;
+                    break;
+                }
+            }
+            var NumberOfWorkingDaysCount = 0;
+            var visibleRowIndicesManufacturingStage = ManufacturingStageGrid.batchEditApi.GetRowVisibleIndices();
+            for (var i = 0; i < visibleRowIndicesManufacturingStage.length; i++) {
+                if (ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "ManufacturingStageFactoryNo") == "" || ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "ManufacturingStageFactoryNo") == null) {
+                    iError = 5;
+                    break;
+                }
+                else if (ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "ManufacturingStageFactoryName") == "" || ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "ManufacturingStageFactoryName") == null) {
+                    iError = 5;
+                    break;
+                }
+                else if (ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "NumberOfDays") == "" || ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "NumberOfDays") == null
+                    || ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "NumberOfDays") == 0) {
+                    iError = 6;
+                    break;
+                }
+            }
+            for (var i = 0; i < visibleRowIndicesManufacturingStage.length; i++) {
+                var NumberOfWorkingDaysGrid = ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "NumberOfDays");
+                NumberOfWorkingDaysGrid = Number(NumberOfWorkingDaysGrid);
+                if (NumberOfWorkingDaysGrid == "NaN") {
+                    NumberOfWorkingDaysGrid = 0;
+                }
+                NumberOfWorkingDaysCount = NumberOfWorkingDaysCount + parseInt(NumberOfWorkingDaysGrid);
+            }
+        }
+        if (iError == 1) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillRelatedItem</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (iError == 2) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillSimilarItem</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (iError == 3 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillRawMaterial</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (iError == 4 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillQuantityRawMaterial</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (iError == 5 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillManufacturingStageFactory</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (iError == 6 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillNumberOfDays</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (NumberOfWorkingDays != NumberOfWorkingDaysCount && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillNumberOfDaysCount</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if ($("#ItemSerial").val() == '' || $("#ItemSerial").val() <= 0 || $("#ItemSerial").val() > 99999) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillItemSerial</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if ($("#ItemNameArabic").val() == '') {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillItemName</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (NumberOfWorkingDays == 0 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillNumberOfWorking</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (NumberOfStages == 0 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillNumberOfStages</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        else if (ComboFactoryNo == 0 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillFactoryNo</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }
+        @*else if ($("#NetTotal").val() == '' || $("#NetTotal").val() == 0 && ItemTypeNo == 3) {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillRawMaterial</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        }*@
+        else {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+                        var visibleRowIndicesRelatedItem = RelatedItemGrid.batchEditApi.GetRowVisibleIndices();
+                        var RelatedItemList = [];
+                        for (var i = 0; i < visibleRowIndicesRelatedItem.length; i++) {
+                            var St_RelatedItemH = {
+                                RelatedItemCode: RelatedItemGrid.batchEditApi.GetCellValue(visibleRowIndicesRelatedItem[i], "RelatedItemCode"),
+                                RowNumber: i + 1
+                            };
+                            RelatedItemList.push(St_RelatedItemH);
+
+                        }
+                        var visibleRowIndicesSimilarItem = SimilarItemGrid.batchEditApi.GetRowVisibleIndices();
+                        var SimilarItemList = [];
+                        for (var i = 0; i < visibleRowIndicesSimilarItem.length; i++) {
+                            var St_SimilarItemH = {
+                                SimilarItemCode: SimilarItemGrid.batchEditApi.GetCellValue(visibleRowIndicesSimilarItem[i], "SimilarItemCode"),
+                                RowNumber: i + 1
+                            };
+                            SimilarItemList.push(St_SimilarItemH);
+
+                        }
+                        if (ItemTypeNo == 3) {
+                            var visibleRowIndicesRawMaterial = RawMaterialGrid.batchEditApi.GetRowVisibleIndices();
+                            var RawMaterialList = [];
+                            for (var i = 0; i < visibleRowIndicesRawMaterial.length; i++) {
+                                var St_RawMaterialH = {
+                                    RawMaterialCode: RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "RawMaterialCode"),
+                                    Quantity: RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "Quantity"),
+                                    Cost: RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "Cost"),
+                                    Total: RawMaterialGrid.batchEditApi.GetCellValue(visibleRowIndicesRawMaterial[i], "Total"),
+                                    RowNumber: i + 1
+                                };
+                                RawMaterialList.push(St_RawMaterialH);
+
+                            }
+                            var visibleRowIndicesManufacturingStage = ManufacturingStageGrid.batchEditApi.GetRowVisibleIndices();
+                            var ManufacturingStageList = [];
+                            for (var i = 0; i < visibleRowIndicesManufacturingStage.length; i++) {
+                                var St_ManufacturingStageH = {
+                                    FactoryNo: ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "ManufacturingStageFactoryNo"),
+                                    NumberOfDays: ManufacturingStageGrid.batchEditApi.GetCellValue(visibleRowIndicesManufacturingStage[i], "NumberOfDays"),
+                                    RowNumber: i + 1
+                                };
+                                ManufacturingStageList.push(St_ManufacturingStageH);
+
+                            }
+                        }
+                        if (ItemTypeNo == 1) {
+                            var dtdataTableSubItemColor = $("#tdataTableSubItemColor").DataTable();
+                            var selectedIdsSubItemColor = dtdataTableSubItemColor.columns().checkboxes.selected()[0];
+                            var rows_selectedSubItemColor = [];
+
+                            $.each(selectedIdsSubItemColor, function (index, rowId) {
+                                var data = dtdataTableSubItemColor.row(rowId).data();
+                                rows_selectedSubItemColor.push(data);
+                            });
+                        }
+                        var dtabelMemRefWarehouse = $("#tdataTableWarehouse").DataTable();
+                        var selectedIdsWarehouse =dtabelMemRefWarehouse.columns().checkboxes.selected()[0];
+                        var rows_selectedWarehouse = [];
+                        $.each(selectedIdsWarehouse, function (index, rowId) {
+                            var data = dtabelMemRefWarehouse.row(rowId).data();
+                            rows_selectedWarehouse.push(data);
+                        });
+                        var ComboItemUnitNo = "";
+                        if ($("#ComboItemUnitNo").val() == "" || $("#ComboItemUnitNo").val() == "0" || $("#ComboItemUnitNo").val() == null) {
+                            ComboItemUnitNo = 0;
+                        }
+                        else {
+                            ComboItemUnitNo = $("#ComboItemUnitNo").val();
+                        }
+                        var ComboFactoryNo = "";
+                        if ($("#ComboFactoryNo").val() == "" || $("#ComboFactoryNo").val() == "0" || $("#ComboFactoryNo").val() == null) {
+                            ComboFactoryNo = 0;
+                        }
+                        else {
+                            ComboFactoryNo = $("#ComboFactoryNo").val();
+                        }
+                        var StopItem = document.getElementById('StopItem').checked;
+                        var SaleOfOfferedArticleIsPermitted = document.getElementById('SaleOfOfferedArticleIsPermitted').checked;
+                        var ApprovingTheWarehouseQuantityLessThan = document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked;
+                        var FabricChangeIsAllowed = document.getElementById('FabricChangeIsAllowed').checked;
+                        var AllowWoodToChangeColor = document.getElementById('AllowWoodToChangeColor').checked;
+                        var dataToSave = {
+                            St_RelatedItemH: RelatedItemList,
+                            St_SimilarItemH: SimilarItemList,
+                            St_RawMaterialH: RawMaterialList,
+                            St_ManufacturingStageH: ManufacturingStageList,
+                            St_SubColorsItemH: rows_selectedSubItemColor,
+                            St_ItemWarehouseH: rows_selectedWarehouse,
+                            GroupCode: $("#ComboGroupCode").val(),
+                            ArabicName: $("#ItemNameArabic").val(),
+                            EnglishName: $("#ItemNameEnglish").val(),
+                            NumberOfPieces: $("#NumberOfPieces").val(),
+                            ReOrderLimit: $("#ReOrderLimit").val(),
+                            OrderQuantity: $("#OrderQuantity").val(),
+                            CBM: $("#CBM").val(),
+                            ItemUnitNo: ComboItemUnitNo,
+                            SupplierAccountNumber: $("#SupplierAccountNumber").val(),
+                            StyleNo: $("#StyleNo").val(),
+                            ItemLevelNo: $("#ItemLevelNo").val(),
+                            StopItem: StopItem,
+                            ShowOnline: $('input[name=ShowOnline]:checked').val(),
+                            QuantityOnline: $("#QuantityOnline").val(),
+                            SaleOfOfferedArticleIsPermitted: SaleOfOfferedArticleIsPermitted,
+                            ItemTypeNo: $("#ItemTypeNo").val(),
+                            FactoryNo: ComboFactoryNo,
+                            NumberOfWorkingDays: $("#NumberOfWorkingDays").val(),
+                            NumberOfStages: $("#NumberOfStages").val(),
+                            WageRate: $("#WageRate").val(),
+                            ApprovingTheWarehouseQuantityLessThan: ApprovingTheWarehouseQuantityLessThan,
+                            QuantityManufacturing: $("#QuantityManufacturing").val(),
+                            FabricChangeIsAllowed: FabricChangeIsAllowed,
+                            AllowWoodToChangeColor: AllowWoodToChangeColor,
+                            FactoryNotes: $("#FactoryNotes").val(),
+                            SalePrice: $("#SalePrice").val(),
+                            TaxRate: $("#TaxRate").val(),
+                            TaxTypeNo: $("#TaxTypeNo").val(),
+                            LocalCost: $("#LocalCost").val(),
+                            ForeignCost: $("#ForeignCost").val(),
+                            TheTargetMonthlyAmount: $("#TheTargetMonthlyAmount").val(),
+                            TotalQuantity: $("#TotalQuantity").val(),
+                            TotalCost: $("#TotalCost").val(),
+                            NetTotal: $("#NetTotal").val(),
+                            ItemLogo: ImgPath
+                        }
+                        $.ajax({
+                            type: "POST",
+                            url: "/St_ItemCardH/SaveSt_ItemCardH",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    $('#modal-container').modal('hide');
+                                    toastr.success(data.Msg);
+                                    bootbox.confirm({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                                className: 'rubberBand animated',
+                                                buttons: {
+                                                    confirm: {
+                                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                        className: 'btn-success'
+                                                    },
+                                                    cancel: {
+                                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                        className: 'btn-danger'
+                                                    }
+                                                },
+                                              callback: function (result)
+				                              {
+					                              if(result)
+                                                  {
+                                                       window.open('/Attach/AddItemGallary/'+data.LastID, '_blank');
+
+
+                                                  }
+                                                     document.getElementById("Clear").click();
+
+				                          }
+                                       });
+
+                                }
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+    function OnClickPostData(s, e) {
+        if (RelatedItemGrid.batchEditApi.HasChanges())
+            RelatedItemGrid.UpdateEdit();
+        else
+            RelatedItemGrid.PerformCallback();
+        if (SimilarItemGrid.batchEditApi.HasChanges())
+            SimilarItemGrid.UpdateEdit();
+        else
+            SimilarItemGrid.PerformCallback();
+        if (ManufacturingStageGrid.batchEditApi.HasChanges())
+            ManufacturingStageGrid.UpdateEdit();
+        else
+            ManufacturingStageGrid.PerformCallback();
+        if (RawMaterialGrid.batchEditApi.HasChanges())
+            RawMaterialGrid.UpdateEdit();
+        else
+            RawMaterialGrid.PerformCallback()
+    }
+     // End For All Grid-------------------------------------------
+</script>
+@using (Html.BeginForm("Add", "St_ItemCardH", FormMethod.Post, new { id = "myForm" }))
+{
+    <div style="padding-top: 20px;">
+        <div class="panel card-view">
+            <div class="panel-heading" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.ItemCard</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="pills-struct mt-40">
+                    <ul role="tablist" class="nav nav-pills" id="myTabs_6">
+                        <li class="active" id="sCardInformation" role="presentation"><a data-toggle="tab" role="tab" style="background: #34495E" href="#CardInformation" aria-expanded="true">@Resources.Resource.CardInformation</a></li>
+                        <li role="presentation" id="sFinancial" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#Financial" aria-expanded="false">@Resources.Resource.Financial</a></li>
+                        <li role="presentation" id="sRelatedItem" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#RelatedItem" aria-expanded="false">@Resources.Resource.RelatedItem</a></li>
+                        <li role="presentation" id="sSimilarItem" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E"  href="#SimilarItem" aria-expanded="false">@Resources.Resource.SimilarItem</a></li>
+                        <li role="presentation" id="sManufacturing" class="" style="display:none;"><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#Manufacturing" aria-expanded="false">@Resources.Resource.Manufacturing</a></li>
+                        <li role="presentation" id="sSubColors" class="" style="display:none;"><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#SubColors" aria-expanded="false">@Resources.Resource.SubColors</a></li>
+                        <li role="presentation" id="sItemPicture" class=""><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#ItemPicture" aria-expanded="false">@Resources.Resource.ItemPicture</a></li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent_6">
+                        <div id="CardInformation" class="tab-pane fade active in" role="tabpanel">
+                            <div class="col-lg-12">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.ItemGroups)
+                                        <div class="form-group  input-group">
+                                            @if (Resources.Resource.CurLang == "Arb")
+                                            {
+                                                @Html.DropDownListFor(m => m.GroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "ArabicName"), new { @id = "ComboGroupCode", @class = "form-control input-sml" })
+
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(m => m.GroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "EnglishName"), new { @id = "ComboGroupCode", @class = "form-control input-sml" })
+                                            }
+                                            <span class="input-group-btn">
+                                                <a class="btn btn-primary btn-icon-anim btn-square js-Pop" id="Add" href="/St_ItemGroupH/Add">
+                                                    <i class="fa fa-plus" style="margin-top : 12px"></i>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.ItemCode)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.ItemCode, new { @id = "ItemCode", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-6">
+                                    @Html.Label(Resources.Resource.ArabicName)  <span style="color:red">*</span>
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ItemNameArabic", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-6">
+                                    @Html.Label(Resources.Resource.EnglishName)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "ItemNameEnglish", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.NumberOfPieces)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.NumberOfPieces, new { @id = "NumberOfPieces", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.CBM)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.CBM, new { @id = "CBM", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.Unit)
+                                        <div class="form-group  input-group">
+                                            @if (Resources.Resource.CurLang == "Arb")
+                                            {
+                                                @Html.DropDownListFor(m => m.ItemUnitNo, new SelectList(Model.St_ItemUnitH, "ItemUnitCode", "ArabicName"), Resources.Resource.Units, new { @id = "ComboItemUnitNo", @class = "form-control input-sml" })
+
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(m => m.ItemUnitNo, new SelectList(Model.St_ItemUnitH, "ItemUnitCode", "EnglishName"), Resources.Resource.Units, new { @id = "ComboItemUnitNo", @class = "form-control input-sml" })
+                                            }
+                                            <span class="input-group-btn">
+                                                <a class="btn btn-primary btn-icon-anim btn-square js-Pop" id="Add" href="/St_ItemUnitH/Add">
+                                                    <i class="fa fa-plus" style="margin-top : 12px"></i>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.Style)
+                                        @Html.DropDownListFor(m => m.StyleNo, new List<SelectListItem>
+                                            {
+                                            new SelectListItem{ Text=Resources.Resource.Style, Value = "0",Selected=true },
+                                            new SelectListItem{ Text=Resources.Resource.Modern, Value = "1",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. Classic, Value = "2",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. NewClassic, Value = "3",Selected=false }
+                                        }, new { @id = "StyleNo", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.ItemLevel)
+                                        @Html.DropDownListFor(m => m.ItemLevelNo, new List<SelectListItem>
+                                            {
+                                            new SelectListItem{ Text=Resources.Resource.ItemLevel, Value = "0",Selected=true },
+                                            new SelectListItem{ Text=Resources.Resource.Light, Value = "1",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. Middle, Value = "2",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. Heavy, Value = "3",Selected=false }
+                                        }, new { @id = "ItemLevelNo", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.ItemType)
+                                        @Html.DropDownListFor(m => m.ItemTypeNo, new List<SelectListItem>
+                                            {
+                                            new SelectListItem{ Text=Resources.Resource.ForeignImport, Value = "1",Selected=true },
+                                            new SelectListItem{ Text=Resources.Resource. LocalImport, Value = "2",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. Manufacturing, Value = "3",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. Investment, Value = "4",Selected=false }
+                                        }, new { @id = "ItemTypeNo", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.ReOrderLimit)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.ReOrderLimit, new { @id = "ReOrderLimit", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.OrderQuantity)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.OrderQuantity, new { @id = "OrderQuantity", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.SupplierAccountNo)
+                                        <div class="form-group input-group">
+                                            @Html.TextBoxFor(m => m.SupplierAccountNumber, new { @id = "SupplierAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSupplier">
+                                                    <i class="fa fa-search"></i>
+                                                </button>
+                                            </span>
+                                            @Html.ValidationMessageFor(m => m.SupplierAccountNumber)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.SupplierAccountName)
+                                        <div class="form-group input-group">
+                                            @Html.TextBoxFor(m => m.SupplierAccountName, new { @id = "SupplierAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSupplier">
+                                                    <i class="fa fa-minus-square"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-2 panel panel-default card-view">
+                                    <div class="form-group mb-30">
+                                        <div class="panel-heading" style="background-color: #34495E">
+                                            <div class="pull-left">
+                                                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ShowOnline</h6>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+
+                                        <div class="radio radio-primary">
+                                            <input type="radio" name="ShowOnline" id="AccordingToQuantityOnline" value="1">
+                                            <label for="AccordingToQuantityOnline">
+                                                @Resources.Resource.AccordingToQuantity
+                                            </label>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.TextBoxFor(m => m.QuantityOnline, new { @id = "QuantityOnline", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                        </div>
+                                        <div class="radio radio-primary">
+                                            <input type="radio" name="ShowOnline" id="AsRequested" value="2">
+                                            <label for="AsRequested">
+                                                @Resources.Resource.AsRequested
+                                            </label>
+                                        </div>
+
+                                        <div class="radio radio-primary">
+                                            <input type="radio" name="ShowOnline" id="StopOnline" value="3" checked="">
+                                            <label for="StopOnline">
+                                                @Resources.Resource.StopOnline
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-1" style="width: 10px;">
+                                </div>
+                                <div class="col-lg-3 panel panel-default card-view">
+                                    <div class="form-group mb-30">
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="StopItem" type="checkbox">
+                                            <label for="StopItem">
+                                                @Resources.Resource.StopItem
+                                            </label>
+                                        </div>
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="SaleOfOfferedArticleIsPermitted" type="checkbox">
+                                            <label for="SaleOfOfferedArticleIsPermitted">
+                                                @Resources.Resource.SaleOfOfferedArticleIsPermitted
+                                            </label>
+                                        </div>
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="FabricChangeIsAllowed" type="checkbox">
+                                            <label for="FabricChangeIsAllowed">
+                                                @Resources.Resource.FabricChangeIsAllowed
+                                            </label>
+                                        </div>
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="AllowWoodToChangeColor" type="checkbox">
+                                            <label for="AllowWoodToChangeColor">
+                                                @Resources.Resource.AllowWoodToChangeColor
+                                            </label>
+                                        </div>
+                                        <div class="checkbox checkbox-primary">
+                                            <input id="ApprovingTheWarehouseQuantityLessThan" type="checkbox">
+                                            <label for="ApprovingTheWarehouseQuantityLessThan">
+                                                @Resources.Resource.ApprovingTheWarehouseQuantityLessThan
+                                            </label>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.TextBoxFor(m => m.QuantityManufacturing, new { @id = "QuantityManufacturing", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-1" style="width: 10px;">
+                                </div>
+                                <div class="col-lg-5">
+                                    <table id="tdataTableWarehouse" class="table table-hover table-bordered mb-0" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>@Resources.Resource.StockName</th>
+                                                <th>@Resources.Resource.StockCode</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="Financial" class="tab-pane fade" role="tabpanel">
+                            <div class="col-lg-12">
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.SalePrice)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.SalePrice, new { @id = "SalePrice", @class = "form-control input-sml", @type = "Number", @min = "0", })
+                                    </div>
+                                </div>
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.TaxType)
+                                        @Html.DropDownListFor(m => m.TaxTypeNo, new List<SelectListItem>
+                                            {
+                                            new SelectListItem{ Text=Resources.Resource.Taxable, Value = "1",Selected=true },
+                                            new SelectListItem{ Text=Resources.Resource. TaxableByZero, Value = "2",Selected=false },
+                                            new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "3",Selected=false }
+                                        }, new { @id = "TaxTypeNo", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.TaxRate)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.TaxRate, new { @id = "TaxRate", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.LocalCost)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.LocalCost, new { @id = "LocalCost", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.LastLocalPurchasePrice)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.LastLocalPurchasePrice, new { @id = "LastLocalPurchasePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.ForeignCost)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.ForeignCost, new { @id = "ForeignCost", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.LastForeignPurchasePrice)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.LastForeignPurchasePrice, new { @id = "LastForeignPurchasePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.CostRate)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.CostRate, new { @id = "CostRate", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.TotalQuantitySold)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.TotalQuantitySold, new { @id = "TotalQuantitySold", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.TotalValueSold)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.TotalValueSold, new { @id = "TotalValueSold", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.TheNumberOfDaysTheCardIsOpened)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.TheNumberOfDaysTheCardIsOpened, new { @id = "TheNumberOfDaysTheCardIsOpened", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.TheTargetMonthlyAmount)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.TheTargetMonthlyAmount, new { @id = "TheTargetMonthlyAmount", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="RelatedItem" class="tab-pane fade" role="tabpanel">
+                            <div class="col-lg-12">
+                                @Html.Action("GridViewRelatedItem", new { id = "" })
+                            </div>
+                        </div>
+                        <div id="SimilarItem" class="tab-pane fade" role="tabpanel">
+                            <div class="col-lg-12">
+                                @Html.Action("GridViewSimilarItem", new { id = "" })
+                            </div>
+                        </div>
+                        <div id="Manufacturing" class="tab-pane fade" role="tabpanel">
+                            <div class="col-lg-12">
+                                <div class="col-lg-3">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.FactoryName) <span style="color:red">*</span>
+                                        <div class="form-group  input-group">
+                                            @if (Resources.Resource.CurLang == "Arb")
+                                            {
+                                                @Html.DropDownListFor(m => m.FactoryNo, new SelectList(Model.St_FactoryH, "FactoryID", "ArabicName"), Resources.Resource.Factories, new { @id = "ComboFactoryNo", @class = "form-control input-sml" })
+
+                                            }
+                                            else
+                                            {
+                                                @Html.DropDownListFor(m => m.FactoryNo, new SelectList(Model.St_FactoryH, "FactoryID", "EnglishName"), Resources.Resource.Factories, new { @id = "ComboFactoryNo", @class = "form-control input-sml" })
+                                            }
+                                            <span class="input-group-btn">
+                                                <a class="btn btn-primary btn-icon-anim btn-square js-Pop" id="Add" href="/St_FactoryH/Add">
+                                                    <i class="fa fa-plus" style="margin-top : 12px"></i>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    @Html.Label(Resources.Resource.WageRate)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.WageRate, new { @id = "WageRate", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.NumberOfWorkingDays) <span style="color:red">*</span>
+                                        @Html.DropDownListFor(m => m.NumberOfWorkingDays, new List<SelectListItem>
+                                            {
+                                            new SelectListItem{ Text=Resources.Resource.NumberOfWorkingDays, Value = "0",Selected=true },
+                                            new SelectListItem{ Text="1", Value = "1",Selected=false },
+                                            new SelectListItem{ Text="2", Value = "2",Selected=false },
+                                            new SelectListItem{ Text="3", Value = "3",Selected=false },
+                                            new SelectListItem{ Text="4", Value = "4",Selected=false },
+                                            new SelectListItem{ Text="5", Value = "5",Selected=false },
+                                            new SelectListItem{ Text="6", Value = "6",Selected=false },
+                                            new SelectListItem{ Text="7", Value = "7",Selected=false },
+                                            new SelectListItem{ Text="8", Value = "8",Selected=false },
+                                            new SelectListItem{ Text="9", Value = "9",Selected=false },
+                                            new SelectListItem{ Text="10", Value = "10",Selected=false },
+                                            new SelectListItem{ Text="11", Value = "11",Selected=false },
+                                            new SelectListItem{ Text="12", Value = "12",Selected=false },
+                                            new SelectListItem{ Text="13", Value = "13",Selected=false },
+                                            new SelectListItem{ Text="14", Value = "14",Selected=false },
+                                            new SelectListItem{ Text="15", Value = "15",Selected=false },
+                                            new SelectListItem{ Text="16", Value = "16",Selected=false },
+                                            new SelectListItem{ Text="17", Value = "17",Selected=false },
+                                            new SelectListItem{ Text="18", Value = "18",Selected=false },
+                                            new SelectListItem{ Text="19", Value = "19",Selected=false },
+                                            new SelectListItem{ Text="20", Value = "20",Selected=false },
+                                            new SelectListItem{ Text="21", Value = "21",Selected=false },
+                                            new SelectListItem{ Text="22", Value = "22",Selected=false },
+                                            new SelectListItem{ Text="23", Value = "23",Selected=false },
+                                            new SelectListItem{ Text="24", Value = "24",Selected=false },
+                                            new SelectListItem{ Text="25", Value = "25",Selected=false },
+                                            new SelectListItem{ Text="26", Value = "26",Selected=false },
+                                            new SelectListItem{ Text="27", Value = "27",Selected=false },
+                                            new SelectListItem{ Text="28", Value = "28",Selected=false },
+                                            new SelectListItem{ Text="29", Value = "29",Selected=false },
+                                            new SelectListItem{ Text="30", Value = "30",Selected=false },
+                                    new SelectListItem{ Text="31", Value = "31",Selected=false },
+                                    new SelectListItem{ Text="32", Value = "32",Selected=false },
+                                    new SelectListItem{ Text="33", Value = "33",Selected=false },
+                                    new SelectListItem{ Text="34", Value = "34",Selected=false },
+                                    new SelectListItem{ Text="35", Value = "35",Selected=false },
+                                    new SelectListItem{ Text="36", Value = "36",Selected=false },
+                                    new SelectListItem{ Text="37", Value = "37",Selected=false },
+                                    new SelectListItem{ Text="38", Value = "38",Selected=false },
+                                    new SelectListItem{ Text="39", Value = "39",Selected=false },
+                                    new SelectListItem{ Text="40", Value = "40",Selected=false },
+                                    new SelectListItem{ Text="41", Value = "41",Selected=false },
+                                    new SelectListItem{ Text="42", Value = "42",Selected=false },
+                                    new SelectListItem{ Text="43", Value = "43",Selected=false },
+                                    new SelectListItem{ Text="44", Value = "44",Selected=false },
+                                    new SelectListItem{ Text="45", Value = "45",Selected=false },
+                                    new SelectListItem{ Text="46", Value = "46",Selected=false },
+                                    new SelectListItem{ Text="47", Value = "47",Selected=false },
+                                    new SelectListItem{ Text="48", Value = "48",Selected=false },
+                                    new SelectListItem{ Text="49", Value = "49",Selected=false },
+                                    new SelectListItem{ Text="50", Value = "50",Selected=false },
+                                    new SelectListItem{ Text="51", Value = "51",Selected=false },
+                                    new SelectListItem{ Text="52", Value = "52",Selected=false },
+                                    new SelectListItem{ Text="53", Value = "53",Selected=false },
+                                    new SelectListItem{ Text="54", Value = "54",Selected=false },
+                                    new SelectListItem{ Text="55", Value = "55",Selected=false },
+                                    new SelectListItem{ Text="56", Value = "56",Selected=false },
+                                    new SelectListItem{ Text="57", Value = "57",Selected=false },
+                                    new SelectListItem{ Text="58", Value = "58",Selected=false },
+                                    new SelectListItem{ Text="59", Value = "59",Selected=false },
+                                    new SelectListItem{ Text="60", Value = "60",Selected=false },
+                                    new SelectListItem{ Text="61", Value = "61",Selected=false },
+                                    new SelectListItem{ Text="62", Value = "62",Selected=false },
+                                    new SelectListItem{ Text="63", Value = "63",Selected=false },
+                                    new SelectListItem{ Text="64", Value = "64",Selected=false },
+                                    new SelectListItem{ Text="65", Value = "65",Selected=false },
+                                    new SelectListItem{ Text="66", Value = "66",Selected=false },
+                                    new SelectListItem{ Text="67", Value = "67",Selected=false },
+                                    new SelectListItem{ Text="68", Value = "68",Selected=false },
+                                    new SelectListItem{ Text="69", Value = "69",Selected=false },
+                                    new SelectListItem{ Text="70", Value = "70",Selected=false },
+                                    new SelectListItem{ Text="71", Value = "71",Selected=false },
+                                    new SelectListItem{ Text="72", Value = "72",Selected=false },
+                                    new SelectListItem{ Text="73", Value = "73",Selected=false },
+                                    new SelectListItem{ Text="74", Value = "74",Selected=false },
+                                    new SelectListItem{ Text="75", Value = "75",Selected=false },
+                                    new SelectListItem{ Text="76", Value = "76",Selected=false },
+                                    new SelectListItem{ Text="77", Value = "77",Selected=false },
+                                    new SelectListItem{ Text="78", Value = "78",Selected=false },
+                                    new SelectListItem{ Text="79", Value = "79",Selected=false },
+                                    new SelectListItem{ Text="80", Value = "80",Selected=false },
+                                    new SelectListItem{ Text="81", Value = "81",Selected=false },
+                                    new SelectListItem{ Text="82", Value = "82",Selected=false },
+                                    new SelectListItem{ Text="83", Value = "83",Selected=false },
+                                    new SelectListItem{ Text="84", Value = "84",Selected=false },
+                                    new SelectListItem{ Text="85", Value = "85",Selected=false },
+                                    new SelectListItem{ Text="86", Value = "86",Selected=false },
+                                    new SelectListItem{ Text="87", Value = "87",Selected=false },
+                                    new SelectListItem{ Text="88", Value = "88",Selected=false },
+                                    new SelectListItem{ Text="89", Value = "89",Selected=false },
+                                    new SelectListItem{ Text="90", Value = "90",Selected=false },
+                                    new SelectListItem{ Text="91", Value = "91",Selected=false },
+                                    new SelectListItem{ Text="92", Value = "92",Selected=false },
+                                    new SelectListItem{ Text="93", Value = "93",Selected=false },
+                                    new SelectListItem{ Text="94", Value = "94",Selected=false },
+                                    new SelectListItem{ Text="95", Value = "95",Selected=false },
+                                    new SelectListItem{ Text="96", Value = "96",Selected=false },
+                                    new SelectListItem{ Text="97", Value = "97",Selected=false },
+                                    new SelectListItem{ Text="98", Value = "98",Selected=false },
+                                    new SelectListItem{ Text="99", Value = "99",Selected=false },
+                                    new SelectListItem{ Text="100", Value = "100",Selected=false },
+                                    new SelectListItem{ Text="101", Value = "101",Selected=false },
+                                    new SelectListItem{ Text="102", Value = "102",Selected=false },
+                                    new SelectListItem{ Text="103", Value = "103",Selected=false },
+                                    new SelectListItem{ Text="104", Value = "104",Selected=false },
+                                    new SelectListItem{ Text="105", Value = "105",Selected=false },
+                                    new SelectListItem{ Text="106", Value = "106",Selected=false },
+                                    new SelectListItem{ Text="107", Value = "107",Selected=false },
+                                    new SelectListItem{ Text="108", Value = "108",Selected=false },
+                                    new SelectListItem{ Text="109", Value = "109",Selected=false },
+                                    new SelectListItem{ Text="110", Value = "110",Selected=false },
+                                    new SelectListItem{ Text="111", Value = "111",Selected=false },
+                                    new SelectListItem{ Text="112", Value = "112",Selected=false },
+                                    new SelectListItem{ Text="113", Value = "113",Selected=false },
+                                    new SelectListItem{ Text="114", Value = "114",Selected=false },
+                                    new SelectListItem{ Text="115", Value = "115",Selected=false },
+                                    new SelectListItem{ Text="116", Value = "116",Selected=false },
+                                    new SelectListItem{ Text="117", Value = "117",Selected=false },
+                                    new SelectListItem{ Text="118", Value = "118",Selected=false },
+                                    new SelectListItem{ Text="119", Value = "119",Selected=false },
+                                    new SelectListItem{ Text="120", Value = "120",Selected=false }
+                                        }, new { @id = "NumberOfWorkingDays", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.NumberOfStages) <span style="color:red">*</span>
+                                        @Html.DropDownListFor(m => m.NumberOfStages, new List<SelectListItem>
+                                            {
+                                            new SelectListItem{ Text=Resources.Resource.NumberOfStages, Value = "0",Selected=true },
+                                            new SelectListItem{ Text="1", Value = "1",Selected=false },
+                                            new SelectListItem{ Text="2", Value = "2",Selected=false },
+                                            new SelectListItem{ Text="3", Value = "3",Selected=false },
+                                            new SelectListItem{ Text="4", Value = "4",Selected=false },
+                                            new SelectListItem{ Text="5", Value = "5",Selected=false },
+                                            new SelectListItem{ Text="6", Value = "6",Selected=false },
+                                            new SelectListItem{ Text="7", Value = "7",Selected=false },
+                                            new SelectListItem{ Text="8", Value = "8",Selected=false },
+                                            new SelectListItem{ Text="9", Value = "9",Selected=false },
+                                            new SelectListItem{ Text="10", Value = "10",Selected=false }
+                                        }, new { @id = "NumberOfStages", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-12">
+                                    @Html.Label(Resources.Resource.Note)
+                                    <div class="form-group">
+                                        @Html.TextBoxFor(m => m.FactoryNotes, new { @id = "FactoryNotes", @class = "form-control input-sml" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-12" style="margin-top :10px">
+                                @Html.Action("GridViewManufacturingStage", new { id = "" })
+                            </div>
+                            <div class="col-lg-12" style="margin-top :10px">
+                                @Html.Action("GridViewRawMaterial", new { id = "" })
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="col-lg-4">
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.TotalQuantity)
+                                        @Html.TextBoxFor(m => m.sTotalQuantity, new { @id = "sTotalQuantity", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-2">
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.Total)
+                                        @Html.TextBoxFor(m => m.sNetTotal, new { @id = "sNetTotal", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="col-lg-4">
+                                </div>
+                            </div>
+                        </div>
+                        <div id="SubColors" class="tab-pane fade" role="tabpanel">
+                            <div class="col-lg-12">
+                                <table id="tdataTableSubItemColor" class="table table-hover table-bordered mb-0" width="100%">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>@Resources.Resource.ColorName</th>
+                                            <th>@Resources.Resource.ColorNumber</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div id="ItemPicture" class="tab-pane fade" role="tabpanel">
+                            <div class="col-lg-3">
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <a href="~/ItemLogo/@Model.ItemLogo" target="_blank">
+                                        <img style="width:500px;height:350px;object-fit:contain;" src="~/ItemLogo/@Model.ItemLogo" id="ItemLogo" class="img-responsive img-rounded" />
+                                    </a>
+                                    <input type="file" id="LogoImageUpload" style="visibility:hidden;" accept="image/*" />
+                                </div>
+                                <button type="button" class="btn btn-primary btn-anim" id="OpenDialog"><i class="fa  fa-file-image-o"></i><span class="btn-text">@Resources.Resource.ChoosePicture</span> </button>
+                                <button type="button" class="btn btn-warning btn-anim" id="ClearPicture"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.ClearPicture</span> </button>
+                            </div>
+                            <div class="col-lg-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "buttonSave";
+               settings.Text = Resources.Resource.Save;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "LoopGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnClear";
+               settings.Text = Resources.Resource.CreateNew;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "ClearGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+          {
+              settings.Name = "btnClearGridManufacturingStage";
+              settings.Text = Resources.Resource.CreateNew;
+              settings.UseSubmitBehavior = false;
+              settings.ClientVisible = false;
+              settings.ClientSideEvents.Click = "ClearGridManufacturingStage";
+          }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+          {
+              settings.Name = "btnClearGridRawMaterial";
+              settings.Text = Resources.Resource.CreateNew;
+              settings.UseSubmitBehavior = false;
+              settings.ClientVisible = false;
+              settings.ClientSideEvents.Click = "ClearGridRawMaterial";
+          }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+       {
+           settings.Name = "btnAddRows";
+           settings.UseSubmitBehavior = false;
+           settings.ClientVisible = false;
+           settings.ClientSideEvents.Click = "AddRows";
+       }).GetHtml()
+                <button type="button" class="btn btn-primary btn-anim" id="Save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-warning btn-anim" id="Clear"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Clear</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+}
+@Html.TextBoxFor(m => m.TotalQuantity, new { @id = "TotalQuantity", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TotalCost, new { @id = "TotalCost", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.NetTotal, new { @id = "NetTotal", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ItemSerial, new { @id = "ItemSerial", @class = "form-control input-sml", @type = "Number", @min = "1", @max = "99999", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.sTotalCost, new { @id = "sTotalCost", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+        $("#LogoImageUpload").change(function () {
+            if (window.FormData !== undefined) {
+                var fileUpload = $("#LogoImageUpload").get(0);
+                var files = fileUpload.files;
+                var fileData = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    fileData.append(files[i].name, files[i]);
+                }
+                $.ajax({
+                    url: '/Attach/UploadNewItemLogo',
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: fileData,
+                    success: function (result) {
+                        if (result == "0") {
+                            toastr.warning('@Resources.Resource.PleasFillItemCodeFirst');
+                        }
+                        else {
+
+                            $("#ItemLogo").attr("src", "../ItemLogo/" + result);
+
+                            ImgPath = result;
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+            } else {
+
+                toastr.warning("Error!");
+            }
+        });
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $($.fn.dataTable.tables(true)).DataTable()
+                .columns.adjust();
+        });
+        $('input[name=ShowOnline]').click(function () {
+            if ($('input[name=ShowOnline]:checked').val() == 1) {
+                document.getElementById("QuantityOnline").readOnly = false;
+                $("#QuantityOnline").focus().select();
+            }
+            else {
+                document.getElementById("QuantityOnline").readOnly = true;
+                document.getElementById("QuantityOnline").value = '0';
+            }
+        });
+        $('#ApprovingTheWarehouseQuantityLessThan').click(function () {
+            if (document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked) {
+                document.getElementById("QuantityManufacturing").readOnly = false;
+                $("#QuantityManufacturing").focus().select();
+            }
+            else {
+                document.getElementById("QuantityManufacturing").readOnly = true;
+                document.getElementById("QuantityManufacturing").value = '0';
+            }
+        });
+        $(document).on('click', '#Clear', function () {
+            document.getElementById("btnClear").click();
+            $('#tdataTableWarehouse').DataTable().ajax.reload();
+            $('#tdataTableSubItemColor').DataTable().ajax.reload();
+            document.getElementById("ComboGroupCode").selectedIndex = "0";
+            var SelectedValue = $("#ComboGroupCode").val();
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxItemCard", "St_ItemCardH")', { id: SelectedValue }, function (Data) {
+                    if (Data != null) {
+                        document.getElementById("ItemSerial").value = Data;
+                        var DataLength = 5 - Data.length;
+                        var SerialNumber = "";
+                        for (i = 0; i <= DataLength; i++) {
+                            if (i < DataLength) {
+                                SerialNumber = SerialNumber + "0";
+                            }
+                            else if (i == DataLength) {
+                                SerialNumber = SelectedValue + SerialNumber + Data;
+                            }
+                        }
+                        document.getElementById("ItemCode").value = SerialNumber;
+                    } else {
+
+
+                    };
+                });
+            }
+            else {
+            }
+            document.getElementById("ItemNameArabic").value = "";
+            document.getElementById("ItemNameEnglish").value = "";
+            document.getElementById("NumberOfPieces").value = "0";
+            document.getElementById("ReOrderLimit").value = "0";
+            document.getElementById("OrderQuantity").value = "0";
+            document.getElementById("CBM").value = "0";
+            document.getElementById("ComboItemUnitNo").selectedIndex = "0";
+            document.getElementById("StyleNo").selectedIndex = "0";
+            document.getElementById("ItemLevelNo").selectedIndex = "0";
+            document.getElementById("SupplierAccountNumber").value = "";
+            document.getElementById("SupplierAccountName").value = "";
+            document.getElementById("ItemTypeNo").selectedIndex = "0";
+            $('#ItemTypeNo').trigger('change');
+            document.getElementById("ItemTypeNo").selectedIndex = "0";
+            document.getElementById("QuantityOnline").readOnly = true;
+            document.getElementById("QuantityOnline").value = '0';
+            document.getElementById('StopOnline').checked = true;
+            document.getElementById('StopItem').checked = false;
+            document.getElementById('SaleOfOfferedArticleIsPermitted').checked = false;
+            document.getElementById("SalePrice").value = '0';
+            document.getElementById("TaxTypeNo").selectedIndex = "0";
+            $('#TaxTypeNo').trigger('change');
+            document.getElementById("TaxRate").value = '16';
+            document.getElementById("LocalCost").value = '0';
+            document.getElementById("LastLocalPurchasePrice").value = '0';
+            document.getElementById("ForeignCost").value = '0';
+            document.getElementById("LastForeignPurchasePrice").value = '0';
+            document.getElementById("TotalQuantitySold").value = '0';
+            document.getElementById("TotalValueSold").value = '0';
+            document.getElementById("TheTargetMonthlyAmount").value = '0';
+            document.getElementById("TheNumberOfDaysTheCardIsOpened").value = '0';
+            document.getElementById("ComboFactoryNo").selectedIndex = "0";
+            document.getElementById("FactoryNotes").value = '';
+            document.getElementById("NumberOfWorkingDays").selectedIndex = "0";
+            document.getElementById("NumberOfStages").selectedIndex = "0";
+            document.getElementById("WageRate").value = '0';
+            document.getElementById("NetTotal").value = '0';
+            document.getElementById("TotalQuantity").value = '0';
+            document.getElementById("TotalCost").value = '0';
+            document.getElementById("sNetTotal").value = '0';
+            document.getElementById("sTotalQuantity").value = '0';
+            document.getElementById("sTotalCost").value = '0';
+            $('#ItemLogo').attr('src', '~/ItemLogo/@Model.ItemLogo');
+            $("#LogoImageUpload").replaceWith($("#LogoImageUpload").val('').clone(true));
+            $('a[href="#CardInformation"]').addClass('active');
+            $('a[href="#CardInformation"]').tab('show');
+            $("#ItemNameArabic").focus().select();
+
+        });
+        $(document).on('click', '#Save', function () {
+            document.getElementById("buttonSave").click();
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/St_ItemCardH/Index";
+        });
+        $(document).on('click', '#ClearPicture', function () {
+            $('#ItemLogo').attr('src', '~/ItemLogo/@Model.ItemLogo');
+            $("#LogoImageUpload").replaceWith($("#LogoImageUpload").val('').clone(true));
+        });
+        $(document).on('click', '#OpenDialog', function () {
+            document.getElementById('LogoImageUpload').click();
+        });
+        var SelectedValue = $("#ComboGroupCode").val();
+        if (SelectedValue != null && SelectedValue != '') {
+            $.getJSON('@Url.Action("GetMaxItemCard", "St_ItemCardH")', { id: SelectedValue }, function (Data) {
+                if (Data != null) {
+                    document.getElementById("ItemSerial").value = Data;
+                    var DataLength = 5 - Data.length;
+                    var SerialNumber = "";
+                    for (i = 0; i <= DataLength; i++) {
+                        if (i < DataLength) {
+                            SerialNumber = SerialNumber + "0";
+                        }
+                        else if (i == DataLength) {
+                            SerialNumber = SelectedValue + SerialNumber + Data;
+                        }
+                    }
+                    document.getElementById("ItemCode").value = SerialNumber;
+                } else {
+
+
+                };
+            });
+        }
+        else {
+        }
+        var tabelMemRefWarehouse = $("#tdataTableWarehouse").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "orderable": false,
+                    "checkboxes": {
+                        "selectRow": true
+                    },
+                    'createdCell': function (td, cellData, rowData, row, col) {
+                        this.api().cell(td).checkboxes.select();
+
+                    }
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "select": {
+                "style": "multi"
+            },
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                url: "/St_WarehouseH/GetAllSt_WarehouseH",
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "iRowTable"
+                },
+                {
+
+                    data: "StockName"
+                },
+
+                {
+                    data: "StockCode"
+
+                }
+            ]
+        });
+        var tabelMemRefSubItemColor = $("#tdataTableSubItemColor").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "300px",
+            "fixedHeader": true,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "orderable": false,
+                    "checkboxes": {
+                        "selectRow": true
+                    }
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "select": {
+                "style": "multi"
+            },
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                url: "/St_SubItemColorH/GetAllSt_SubItemColorH",
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "iRowTable"
+                },
+                {
+
+                    data: "SubItemColorName"
+                },
+
+                {
+                    data: "SubItemColorCode"
+
+                }
+            ]
+        });
+        $('#ItemTypeNo').change(function () {
+            var SelectedValue = $("#ItemTypeNo").val();
+            if (SelectedValue == 1) {
+                document.getElementById("sManufacturing").style.display = 'none';
+                document.getElementById("sSubColors").style.display = 'block';
+                document.getElementById("QuantityManufacturing").readOnly = true;
+                document.getElementById("QuantityManufacturing").value = '0';
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').disabled = true;
+                document.getElementById('FabricChangeIsAllowed').disabled = true;
+                document.getElementById('AllowWoodToChangeColor').disabled = true;
+                document.getElementById('SaleOfOfferedArticleIsPermitted').disabled = false;
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked = false;
+                document.getElementById('FabricChangeIsAllowed').checked = false;
+                document.getElementById('AllowWoodToChangeColor').checked = false;
+                document.getElementById("btnClearGridManufacturingStage").click();
+                //  document.getElementById("btnClearGridRawMaterial").click();
+                document.getElementById("ComboFactoryNo").selectedIndex = "0";
+                document.getElementById("NumberOfWorkingDays").selectedIndex = "0";
+                document.getElementById("NumberOfStages").selectedIndex = "0";
+                document.getElementById("WageRate").value = '0';
+                document.getElementById("FactoryNotes").value = '';
+                document.getElementById("TotalQuantity").value = '0';
+                document.getElementById("TotalCost").value = '0';
+                document.getElementById("NetTotal").value = '0';
+                document.getElementById("sTotalQuantity").value = '0';
+                document.getElementById("sTotalCost").value = '0';
+                document.getElementById("sNetTotal").value = '0';
+            }
+            else if (SelectedValue == 2) {
+                document.getElementById("sSubColors").style.display = 'none';
+                document.getElementById("sManufacturing").style.display = 'none';
+                document.getElementById("QuantityManufacturing").readOnly = true;
+                document.getElementById("QuantityManufacturing").value = '0';
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').disabled = false;
+                document.getElementById('FabricChangeIsAllowed').disabled = false;
+                document.getElementById('AllowWoodToChangeColor').disabled = false;
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked = false;
+                document.getElementById('SaleOfOfferedArticleIsPermitted').disabled = false;
+                document.getElementById('FabricChangeIsAllowed').checked = false;
+                document.getElementById('AllowWoodToChangeColor').checked = false;
+                document.getElementById("btnClearGridManufacturingStage").click();
+                document.getElementById("btnClearGridRawMaterial").click();
+                document.getElementById("ComboFactoryNo").selectedIndex = "0";
+                document.getElementById("NumberOfWorkingDays").selectedIndex = "0";
+                document.getElementById("NumberOfStages").selectedIndex = "0";
+                document.getElementById("WageRate").value = '0';
+                document.getElementById("FactoryNotes").value = '';
+                document.getElementById("TotalQuantity").value = '0';
+                document.getElementById("TotalCost").value = '0';
+                document.getElementById("NetTotal").value = '0';
+                document.getElementById("sTotalQuantity").value = '0';
+                document.getElementById("sTotalCost").value = '0';
+                document.getElementById("sNetTotal").value = '0';
+                $('#tdataTableSubItemColor').DataTable().ajax.reload();
+            }
+            else if (SelectedValue == 3) {
+                document.getElementById("sSubColors").style.display = 'none';
+                document.getElementById("sManufacturing").style.display = 'block';
+                document.getElementById("QuantityManufacturing").readOnly = true;
+                document.getElementById("QuantityManufacturing").value = '0';
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').disabled = false;
+                document.getElementById('FabricChangeIsAllowed').disabled = false;
+                document.getElementById('AllowWoodToChangeColor').disabled = false;
+                document.getElementById('SaleOfOfferedArticleIsPermitted').disabled = false;
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked = false;
+                document.getElementById('FabricChangeIsAllowed').checked = false;
+                document.getElementById('AllowWoodToChangeColor').checked = false;
+                $('#tdataTableSubItemColor').DataTable().ajax.reload();
+            }
+            else if (SelectedValue == 4) {
+                document.getElementById("sSubColors").style.display = 'none';
+                document.getElementById("sManufacturing").style.display = 'none';
+                document.getElementById("QuantityManufacturing").readOnly = true;
+                document.getElementById("QuantityManufacturing").value = '0';
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').disabled = true;
+                document.getElementById('FabricChangeIsAllowed').disabled = true;
+                document.getElementById('AllowWoodToChangeColor').disabled = true;
+                document.getElementById('SaleOfOfferedArticleIsPermitted').disabled = true;
+                document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked = false;
+                document.getElementById('FabricChangeIsAllowed').checked = false;
+                document.getElementById('AllowWoodToChangeColor').checked = false;
+                document.getElementById('SaleOfOfferedArticleIsPermitted').checked = false;
+                document.getElementById("btnClearGridManufacturingStage").click();
+                document.getElementById("btnClearGridRawMaterial").click();
+                document.getElementById("ComboFactoryNo").selectedIndex = "0";
+                document.getElementById("NumberOfWorkingDays").selectedIndex = "0";
+                document.getElementById("NumberOfStages").selectedIndex = "0";
+                document.getElementById("WageRate").value = '0';
+                document.getElementById("FactoryNotes").value = '';
+                document.getElementById("TotalQuantity").value = '0';
+                document.getElementById("TotalCost").value = '0';
+                document.getElementById("NetTotal").value = '0';
+                document.getElementById("sTotalQuantity").value = '0';
+                document.getElementById("sTotalCost").value = '0';
+                document.getElementById("sNetTotal").value = '0';
+                $('#tdataTableSubItemColor').DataTable().ajax.reload();
+            }
+        });
+        $('#ItemTypeNo').trigger('change');
+        $("#ItemNameArabic").focus().select();
+        $("#ItemNameArabic").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ItemNameEnglish").focus().select();
+
+        });
+        $("#ItemNameEnglish").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#NumberOfPieces").focus().select();
+
+        });
+        $("#NumberOfPieces").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#CBM").focus().select();
+
+        });
+        $("#CBM").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ReOrderLimit").focus().select();
+
+        });
+        $("#ReOrderLimit").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#OrderQuantity").focus().select();
+
+        });
+        $("#OrderQuantity").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ItemNameArabic").focus().select();
+
+        });
+        $('#BtnSupplier').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchClientAccount/SupplierAccountNo';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearSupplier').on('click', function () {
+            document.getElementById("SupplierAccountNumber").value = '';
+            document.getElementById("SupplierAccountName").value = '';
+        });
+        $("li#sCardInformation").on("click", function () {
+            $("#ItemCode").focus().select();
+        });
+        $("li#sFinancial").on("click", function () {
+            $("#SalePrice").focus().select();
+        });
+        $("#SalePrice").keyup(function (event) {
+            if (event.keyCode == 13) {
+                if (document.getElementById("TaxRate").readOnly == false) {
+                    $("#TaxRate").focus().select();
+                }
+                else if (document.getElementById("LocalCost").readOnly == false) {
+                    $("#LocalCost").focus().select();
+                }
+                else {
+                    $("#TheTargetMonthlyAmount").focus().select();
+                }
+            }
+
+        });
+        $("#TaxRate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                if (document.getElementById("LocalCost").readOnly == false) {
+                    $("#LocalCost").focus().select();
+                }
+                else {
+                    $("#TheTargetMonthlyAmount").focus().select();
+                }
+            }
+
+        });
+        $("#LocalCost").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ForeignCost").focus().select();
+        });
+        $("#ForeignCost").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TheTargetMonthlyAmount").focus().select();
+        });
+        $("#TheTargetMonthlyAmount").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#SalePrice").focus().select();
+        });
+        $('#TaxTypeNo').change(function () {
+            var SelectedValue = $("#TaxTypeNo").val();
+            if (SelectedValue == 1) {
+                document.getElementById("TaxRate").readOnly = false;
+                document.getElementById("TaxRate").value = '16';
+                $("#TaxRate").focus().select();
+            }
+            else if (SelectedValue == 2) {
+                document.getElementById("TaxRate").readOnly = true;
+                document.getElementById("TaxRate").value = '0';
+
+            }
+            else if (SelectedValue == 3) {
+                document.getElementById("TaxRate").readOnly = true;
+                document.getElementById("TaxRate").value = '0';
+            }
+        });
+        $('#TaxTypeNo').trigger('change');
+        $("li#Manufacturing").on("click", function () {
+            $("#WageRate").focus().select();
+        });
+        $("#WageRate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FactoryNotes").focus().select();
+            }
+        });
+        $("#FactoryNotes").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#WageRate").focus().select();
+            }
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        $('#NumberOfStages').change(function () {
+            document.getElementById("btnAddRows").click();
+        });
+        $('#ComboGroupCode').change(function () {
+            var SelectedValue = $("#ComboGroupCode").val();
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxItemCard", "St_ItemCardH")', { id: SelectedValue }, function (Data) {
+                    if (Data != null) {
+                        document.getElementById("ItemSerial").value = Data;
+                        var DataLength = 5 - Data.length;
+                        var SerialNumber = "";
+                        for (i = 0; i <= DataLength; i++) {
+                            if (i < DataLength) {
+                                SerialNumber = SerialNumber + "0";
+                            }
+                            else if (i == DataLength) {
+                                SerialNumber = SelectedValue + SerialNumber + Data;
+                            }
+                        }
+                        document.getElementById("ItemCode").value = SerialNumber;
+                        $("#ItemSerial").focus().select();
+                    } else {
+
+
+                    };
+                });
+            }
+            else {
+            }
+        });
+        $(document).on('click', '#SaveItemGroup', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var GroupCode = $("#GroupCode").val();
+                        if (GroupCode != null && GroupCode != '') {
+                            $.getJSON('@Url.Action("CheckIfGroupCodeExisting", "St_ItemGroupH")', { id: GroupCode }, function (Data) {
+                                if (Data == '' || Data == null) {
+                                    if ($("#GroupCode").val() == '') {
+                                        bootbox.alert({
+                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                            className: 'rubberBand animated',
+                                            buttons: {
+                                                ok: {
+                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                    className: 'btn-primary'
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else if ($("#ArabicName").val() == '') {
+                                        bootbox.alert({
+                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                            className: 'rubberBand animated',
+                                            buttons: {
+                                                ok: {
+                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                    className: 'btn-primary'
+                                                }
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                            closeButton: false
+                                        });
+                                        var dataToSave = {
+                                            GroupCode: $("#GroupCode").val(),
+                                            ArabicName: $("#ArabicName").val(),
+                                            EnglishName: $("#EnglishName").val()
+                                        };
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/St_ItemGroupH/Save",
+                                            data: JSON.stringify(dataToSave),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    toastr.success(data.Msg);
+                                                    document.getElementById("GroupCode").value = '';
+                                                    document.getElementById("ArabicName").value = '';
+                                                    document.getElementById("EnglishName").value = '';
+                                                    $("#GroupCode").focus().select();
+
+                                                    var ComboGroupCode = $('#ComboGroupCode');
+                                                    ComboGroupCode.empty();
+                                                    if ('@Resources.Resource.CurLang' == 'Arb') {
+                                                        $.ajax({
+                                                            method: "GET",
+                                                            url: "/St_ItemGroupH/GetAllSt_ItemGroupH",
+
+
+                                                            success: function (data) {
+                                                                $.each(data, function (id, region) {
+                                                                    ComboGroupCode.append($('<option/>', {
+                                                                        value: region.GroupCode,
+                                                                        text: region.ArabicName
+                                                                    }));
+                                                                });
+
+                                                                dialog.modal('hide');
+
+                                                            },
+                                                            error: function (xhr, AJAXOptions, thrownError) {
+                                                                dialog.modal('hide');
+                                                                alert('Failed to retrieve .');
+                                                            }
+                                                        });
+                                                    }
+                                                    else {
+                                                        $.ajax({
+                                                            method: "GET",
+                                                            url: "/St_ItemGroupH/GetAllSt_ItemGroupH",
+
+
+                                                            success: function (data) {
+                                                                $.each(data, function (id, region) {
+                                                                    ComboGroupCode.append($('<option/>', {
+                                                                        value: region.GroupCode,
+                                                                        text: region.EnglishName
+                                                                    }));
+                                                                });
+
+                                                                dialog.modal('hide');
+
+                                                            },
+                                                            error: function (xhr, AJAXOptions, thrownError) {
+                                                                dialog.modal('hide');
+                                                                alert('Failed to retrieve .');
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+                                        });
+                                    }
+                                }
+                                else {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisGroupIsAlreadyEntered</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                    $("#GroupCode").focus().select();
+                                    document.getElementById("GroupCode").value = '';
+                                }
+                            });
+                        }
+                        else {
+                        }
+                    }
+                }
+            });
+        });
+        $(document).on('click', '#SaveItemUnit', function () {
+            if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+
+                            var dataToSave = {
+
+                                ItemUnitCode: $("#ItemUnitCode").val(),
+                                ArabicName: $("#ArabicName").val(),
+                                EnglishName: $("#EnglishName").val()
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/St_ItemUnitH/Save",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+
+                                        toastr.success(data.Msg);
+                                        document.getElementById("ItemUnitCode").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+
+                                        $("#ArabicName").focus().select();
+
+                                        var ComboItemUnitNo = $('#ComboItemUnitNo');
+                                        ComboItemUnitNo.empty();
+                                        if ('@Resources.Resource.CurLang' == 'Arb') {
+                                            $.ajax({
+                                                method: "GET",
+                                                url: "/St_ItemUnitH/GetAllSt_ItemUnitH",
+
+
+                                                success: function (data) {
+                                                    ComboItemUnitNo.append($('<option/>', {
+                                                        value: 0,
+                                                        text: '@Resources.Resource.Units'
+                                                    }));
+
+
+                                                    $.each(data, function (id, region) {
+                                                        ComboItemUnitNo.append($('<option/>', {
+                                                            value: region.ItemUnitCode,
+                                                            text: region.ArabicName
+                                                        }));
+                                                    });
+
+                                                    dialog.modal('hide');
+
+                                                },
+                                                error: function (xhr, AJAXOptions, thrownError) {
+                                                    dialog.modal('hide');
+                                                    alert('Failed to retrieve .');
+                                                }
+                                            });
+                                        }
+                                        else {
+                                             $.ajax({
+                                                method: "GET",
+                                                 url: "/St_ItemUnitH/GetAllSt_ItemUnitH",
+
+
+                                                success: function (data) {
+                                                    ComboItemUnitNo.append($('<option/>', {
+                                                        value: 0,
+                                                        text: '@Resources.Resource.Units'
+                                                    }));
+
+
+                                                    $.each(data, function (id, region) {
+                                                        ComboItemUnitNo.append($('<option/>', {
+                                                            value: region.ItemUnitCode,
+                                                            text: region.EnglishName
+                                                        }));
+                                                    });
+
+                                                    dialog.modal('hide');
+
+                                                },
+                                                error: function (xhr, AJAXOptions, thrownError) {
+                                                    dialog.modal('hide');
+                                                    alert('Failed to retrieve .');
+                                                }
+                                            });
+                                        }
+
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveFactory', function () {
+            if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+
+                            var dataToSave = {
+
+                                FactoryID: $("#FactoryID").val(),
+                                ArabicName: $("#ArabicName").val(),
+                                EnglishName: $("#EnglishName").val()
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/St_FactoryH/Save",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+
+                                        toastr.success(data.Msg);
+
+                                        document.getElementById("FactoryID").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+
+                                        $("#ArabicName").focus().select();
+                                        var ComboFactoryNo = $('#ComboFactoryNo');
+                                        ComboFactoryNo.empty();
+                                        if ('@Resources.Resource.CurLang' == 'Arb') {
+                                            $.ajax({
+                                                method: "GET",
+                                                url: "/St_FactoryH/GetAllSt_FactoryH",
+
+
+                                                success: function (data) {
+                                                    ComboFactoryNo.append($('<option/>', {
+                                                        value: 0,
+                                                        text: '@Resources.Resource.Factories'
+                                                    }));
+
+
+                                                    $.each(data, function (id, region) {
+                                                        ComboFactoryNo.append($('<option/>', {
+                                                            value: region.FactoryID,
+                                                            text: region.ArabicName
+                                                        }));
+                                                    });
+
+                                                    dialog.modal('hide');
+
+                                                },
+                                                error: function (xhr, AJAXOptions, thrownError) {
+                                                    dialog.modal('hide');
+                                                    alert('Failed to retrieve .');
+                                                }
+                                            });
+                                        }
+                                        else {
+                                             $.ajax({
+                                                method: "GET",
+                                                url: "/St_FactoryH/GetAllSt_Factory",
+
+
+                                                success: function (data) {
+                                                    ComboFactoryNo.append($('<option/>', {
+                                                        value: 0,
+                                                        text: '@Resources.Resource.Factories'
+                                                    }));
+
+
+                                                    $.each(data, function (id, region) {
+                                                        ComboFactoryNo.append($('<option/>', {
+                                                            value: region.FactoryID,
+                                                            text: region.EnglishName
+                                                        }));
+                                                    });
+
+                                                    dialog.modal('hide');
+
+                                                },
+                                                error: function (xhr, AJAXOptions, thrownError) {
+                                                    dialog.modal('hide');
+                                                    alert('Failed to retrieve .');
+                                                }
+                                            });
+                                        }
+
+
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    </script>
+}

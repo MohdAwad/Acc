@@ -1,0 +1,570 @@
+﻿@model Acc.ViewModels.ChartDashVM
+@{
+    ViewBag.Title = @Resources.Resource.Reports;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Reports</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("RepAccountStatement") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/AccountStatement" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AccountStatement </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepTrialBalance") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/TrialBalance" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.TrialBalance</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepAccountingDetailsReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/AccountingDetailsReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AccountingDetailsReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepChequesReport") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/ReceiptVoucherBank/ChequesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ReceiptChequesReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepCustSuppBalances") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/CustSuppBalances" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.BalancesCustSup </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepTrialBalanceYearly") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/TrialBalanceYearly" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.DetailedYearlyTrial</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepTransActionDetails") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/TransActionDetails" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AllTransInDetail</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepTrankingChequesReport") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/ReceiptVoucherBank/TrankingChequesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.TrankingChequesReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepSalesReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/SalesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.SalesReport </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+                @if (User.IsInRole("RepExpenseAnalysisDetailReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/ExpenseAnalysisDetailReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.Accountsanalysisreportaccordingtoaccounttype</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepSearchForTrans") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/SearchForTrans" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.SearchForTrans</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepPaymentChequesReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/PaymentVoucherBank/ChequesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.PaymentChequesReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepServiceReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/ServiceReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ServiceReport </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepCustomerBalancesReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/CustomerBalancesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.DetailedCustomerBalancesReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+
+                @if (User.IsInRole("RepPaymTrankingChequesReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/PaymentVoucherBank/TrankingChequesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.TrankingPaymentChequesReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepServiceTaxReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/ServiceTaxReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ServiceTaxReport </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepSupplierBalancesReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/SupplierBalancesReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.DetailedSupplierBalancesReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="#" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C" id="ComingSoon"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AccountStatementWithCostCenter </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                    </div>
+                }
+                @if (User.IsInRole("RepExpenseAnalysisReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/ExpenseAnalysisReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ExpenseAnalysisReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="#" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C" id="ComingSoon"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.MultiAccountStatementWithCostCenter </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+
+                    </div>
+                }
+                @if (User.IsInRole("RepProfitlossreport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/Profitlossreport" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.Profitlossreport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-3 col-xs-12 mt-15">
+                    <a href="#" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9" id="ComingSoon"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.Aging</span></a>
+                </div>
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("RepTempPrepaidReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/TempPrepaid/TempPrepaidReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.TempPrepaidReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepPivotReportAccounts") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/PivotReportAccounts" class="btn btn-rounded btn-block btn-anim" style="background-color:#5D6D7E;font-size: 12px;"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.Report3D</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("RepAssetsReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Asset/AssetsReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AssetsReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepTempRevenueReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/TempRevenueReceived/TempRevenueReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.TempRevenueReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+                    <a href="#" class="btn btn-rounded btn-block btn-anim" style="background-color:#5D6D7E" id="ComingSoon"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.DesignedFinancialReports</span></a>
+                </div>
+                @if (User.IsInRole("RepAssetDepreciationReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Asset/AssetDepreciationReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AssetDepreciationReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+
+
+
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepEstimatedBudgetForAccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/EstimatedBudgetForAccount" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.CompareAccountMonths</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("RepConsumptionByTypeReport") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Asset/ConsumptionByTypeReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ConsumptionByTypeReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+
+
+
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepEstimatedBudgetForAccountAll") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/EstimatedBudgetForAccountAll" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.CompareAccountAllMonths</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("RepDefinitionAssetSiteReport") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/DefinitionAsset/DefinitionAssetSiteReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AssetSiteReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+            </div>
+            <div class="row">
+                @if (User.IsInRole("RepEstimatedBudgetForAccountYear") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Report/EstimatedBudgetForAccountYear" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.CompareAccountYearly</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("RepSoldAsset") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Asset/SoldAsset" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.SoldAssetReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+
+
+
+
+
+
+
+            </div>
+            <div class="row">
+                @if (Model.WorkWithCostCenter)
+                {
+                    if (User.IsInRole("RepEstimatedBudgetForCostCenters") || User.IsInRole("CoOwner"))
+                    {
+                        <div class="col-sm-3 col-xs-12 mt-15">
+                            <a href="/Report/EstimatedBudgetForCostCenters" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400;font-size: 12px;"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.CompareCostMonths</span></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-3 col-xs-12 mt-15"></div>
+                    }
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+
+                    </div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("RepConsumAssetReport") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Asset/ConsumAssetReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ConsumAssetReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (Model.WorkWithCostCenter)
+                {
+                    if (User.IsInRole("RepEstimatedBudgetCostAllMonth") || User.IsInRole("CoOwner"))
+                    {
+                        <div class="col-sm-3 col-xs-12 mt-15">
+                            <a href="/Report/EstimatedBudgetCostAllMonth" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400;font-size: 12px;"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.CompareCostMonthsAll</span></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-3 col-xs-12 mt-15"></div>
+                    }
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+
+                    </div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("RepMaintenanceAssetReport") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Asset/MaintenanceAssetReport" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AssetMaintenanceReport</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (Model.WorkWithCostCenter)
+                {
+                    if (User.IsInRole("RepEstimatedBudgetForCostCenterYear") || User.IsInRole("CoOwner"))
+                    {
+                        <div class="col-sm-3 col-xs-12 mt-15">
+                            <a href="/Report/EstimatedBudgetForCostCenterYear" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400;font-size: 12px;"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.CompareCostYearly</span></a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="col-sm-3 col-xs-12 mt-15"></div>
+                    }
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+
+                    </div>
+                }
+                <div class="col-sm-3 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("RepAssetsTransferMovements") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/DefinitionAsset/AssetsTransferMovements" class="btn btn-rounded btn-block btn-anim" style="background-color:#34495E"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.AssetsTransferMovementsReport </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15"></div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).on("click","#ComingSoon",function(){
+            swal({
+              title: '@Resources.Resource.UnderConstruction' ,
+                text: '@Resources.Resource.ComingSoon',
+              icon: "warning",
+                 buttons: {
+                     label: '@Resources.Resource.Ok'
+                 }
+                ,
+            });
+        });
+    </script>
+}

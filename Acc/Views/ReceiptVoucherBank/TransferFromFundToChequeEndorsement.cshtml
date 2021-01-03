@@ -1,0 +1,2056 @@
+﻿@model Acc.ViewModels.PaperFilterVM
+@{
+    ViewBag.Title = @Resources.Resource.ChequeEndorsement;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    function GetSelectedChequeFund(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("AccountNumberFirst").value = data.AccountNumber;
+            document.getElementById("ChequeBoxName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("AccountNumberFirst").value = '';
+            document.getElementById("ChequeBoxName").value = '';
+        }
+    }
+    function GetTransferChequeToChequeEndorsement(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("AccountNumberSecond").value = data.AccountNumber;
+            document.getElementById("CustomerName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("AccountNumberSecond").value = '';
+            document.getElementById("CustomerName").value = '';
+        }
+    }
+    function GetSelectedChequeEndorsement(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ChequeEndorsementAccountNumber").value = data.AccountNumber;
+            document.getElementById("ChequeEndorsementAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ChequeEndorsementAccountNumber").value = '';
+            document.getElementById("ChequeEndorsementAccountName").value = '';
+        }
+    }
+    function GetSelectedDataFromCostCenter(data) {
+
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("FromCostCenter").value = data.CostNumber;
+            document.getElementById("FromCostCenterName").value = data.CostName;
+
+        }
+        else {
+            document.getElementById("FromCostCenter").value = '';
+            document.getElementById("FromCostCenterName").value = '';
+        }
+    }
+    function GetSelectedDataToCostCenter(data) {
+
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("ToCostCenter").value = data.CostNumber;
+            document.getElementById("ToCostCenterName").value = data.CostName;
+
+        }
+        else {
+            document.getElementById("ToCostCenter").value = '';
+            document.getElementById("ToCostCenterName").value = '';
+        }
+    }
+    var AccPaidNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccPaidNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber };
+                AccPaidNumber.push(r);
+            }
+    });
+    var AccEndorsementNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccEndorsementNumber = [];
+        for (var i = 0, len = Data.length; i < len; i++) {
+            var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccEndorsementNumber.push(r);
+            }
+    });
+    var AccFundNumber = [];
+    $.getJSON('@Url.Action("GetDefinitionChequeFund", "MultiUse")', { id: 0 }, function (Data) {
+        AccFundNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber };
+                AccFundNumber.push(r);
+            }
+    });
+     var CostCenter = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostCenter = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedCost };
+                CostCenter.push(r);
+            }
+    });
+    $(function () {
+        $("#AccountNumberFirst").autocomplete({
+            source: AccFundNumber,
+            select: function (event, ui) {
+                document.getElementById("AccountNumberFirst").value = ui.item.value;
+                document.getElementById("ChequeBoxName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#ChequeEndorsementAccountNumber").autocomplete({
+            source: AccEndorsementNumber,
+            select: function (event, ui) {
+                document.getElementById("ChequeEndorsementAccountNumber").value = ui.item.value;
+                document.getElementById("ChequeEndorsementAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#AccountNumberSecond").autocomplete({
+            source: AccPaidNumber,
+            select: function (event, ui) {
+                document.getElementById("AccountNumberSecond").value = ui.item.value;
+                document.getElementById("CustomerName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#FromCostCenter").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("FromCostCenter").value = ui.item.value;
+                document.getElementById("FromCostCenterName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#ToCostCenter").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("ToCostCenter").value = ui.item.value;
+                document.getElementById("ToCostCenterName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ChequeEndorsement</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CompanyTransactionKindNo)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.CompanyTransactionKindNo, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), Resources.Resource.CompnyTransactionKind, new { @id = "CompanyTransactionKindNo", @class = "form-control input-sml" })
+
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.CompanyTransactionKindNo, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), Resources.Resource.CompnyTransactionKind, new { @id = "CompanyTransactionKindNo", @class = "form-control input-sml" })
+                    }
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CurrencyID)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), Resources.Resource.Currency, new { @id = "FCurrencyID", @class = "form-control input-sml" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), Resources.Resource.Currency, new { @id = "FCurrencyID", @class = "form-control input-sml" })
+                    }
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.VoucherNumber)
+                    @Html.TextBoxFor(m => m.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ChequeNumber)
+                    @Html.TextBoxFor(model => model.ChequeNumber, new { @id = "ChequeNumber", @class = "form-control input-sml" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FromDate)
+                    @Html.TextBoxFor(model => model.FromDate, new { @id = "FromDate", @class = "form-control input-sml", @Value = Model.FromDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.PaidAccount)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.AccountNumberSecond, new { @id = "AccountNumberSecond", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccountNumberSecond">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.CustomerName, new { @id = "CustomerName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccountNumberSecond">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ChequeBoxName)<span style="color:red">*</span>
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.AccountNumberFirst, new { @id = "AccountNumberFirst", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccountNumberFirst">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.ChequeBoxName, new { @id = "ChequeBoxName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccountNumberFirst">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            @if (Model.WorkWithCostCenter)
+            {
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.ChequeBoxCostCenter)<span style="color:red">*</span>
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.ToCostCenter, new { @id = "ToCostCenter", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnToCostCenter">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.CostCenterName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.ToCostCenterName, new { @id = "ToCostCenterName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearToCostCenter">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div class="col-md-2">
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.PaperCount)
+                        @Html.TextBoxFor(m => m.PaperCount, new { @id = "PaperCount", @class = "form-control input-sml", @type = "number", @min = "0", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.PaperAmount)
+                        @Html.TextBoxFor(m => m.PaperAmount, new { @id = "PaperAmount", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.CheckedPaperCount)
+                        @Html.TextBoxFor(m => m.CheckPaperCount, new { @id = "CheckPaperCount", @class = "form-control input-sml", @type = "number", @min = "0", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.CheckedPaperAmount)
+                        @Html.TextBoxFor(m => m.CheckedPaperAmount, new { @id = "CheckedPaperAmount", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="display :none">
+                    <div id="sumchecked">KG selezione: <span id="checked-prices-total-sum">0</span></div>
+                    <span id="totalkg">91,200</span>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-12">
+            <a class="btn btn-anim btnSearch" id="btnSearch"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+            <a class="btn btn-primary btn-anim" id="ReceiptTransferToChequeEndorsement"> <i class="fa fa-exchange"></i><span class="btn-text">@Resources.Resource.Endorsement</span></a>
+            <button type="button" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div id="TransferToChequeEndorsement" style="display:none;">
+            <div class="col-lg-12" style="margin-top:20px;">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CompanyTransactionKindToTransferNo)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindToTransferNo, new SelectList(Model.CompanyTransactionKindToTransfer, "CompanyTransactionKindID", "ArabicName"), new { @id = "CompanyTransactionKindToTransferNo", @class = "form-control input-sml" })
+
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindToTransferNo, new SelectList(Model.CompanyTransactionKindToTransfer, "CompanyTransactionKindID", "EnglishName"), new { @id = "CompanyTransactionKindToTransferNo", @class = "form-control input-sml" })
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherNumber)
+                        @Html.TextBoxFor(m => m.Header.VoucherNumber, new { @id = "TransferVoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherDate)
+                        @Html.TextBoxFor(model => model.Header.VoucherDate, new { @id = "TransferVoucherDate", @class = "form-control input-sml", @Value = Model.Header.VoucherDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.Header.VoucherDate)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ChequeEndorsementAccountNumber)<span style="color:red">*</span>
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.ChequeEndorsementAccountNumber, new { @id = "ChequeEndorsementAccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnChequeEndorsementAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.ChequeEndorsementAccountName, new { @id = "ChequeEndorsementAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearChequeEndorsementAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ChequeEndorsementCostCenter)<span style="color:red">*</span>
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.FromCostCenter, new { @id = "FromCostCenter", @class = "form-control input-sml" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnFromCostCenter">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            <div class="form-group input-group">
+                                @Html.TextBoxFor(m => m.FromCostCenterName, new { @id = "FromCostCenterName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearFromCostCenter">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12">
+                <button type="button" class="btn btn-primary btn-anim" id="SaveReceiptTransferToChequeEndorsement"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+            </div>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th id="check-all"></th>
+                        <th>@Resources.Resource.ChequeNumber</th>
+                        <th>@Resources.Resource.ChequeDate</th>
+                        <th>@Resources.Resource.ChequeAmount</th>
+                        <th>@Resources.Resource.PaidAccount</th>
+                        <th>@Resources.Resource.DrawerName</th>
+                        <th>@Resources.Resource.ReceiptVoucherNumber</th>
+                        <th>@Resources.Resource.ReceiptVoucherDate</th>
+                        <th>@Resources.Resource.UserName</th>
+                        <th>@Resources.Resource.CompanyTransactionKindID</th>
+                        <th>@Resources.Resource.Serial</th>
+                        <th>@Resources.Resource.CustomerAccountNumber</th>
+                        <th>IsBill</th>
+                        <th>BillCustomerName</th>
+                        <th>BillCustomerName</th>
+                        <th>FCurrencyID</th>
+                        <th>ConversionFactor</th>
+                        <th>AccountNumberSecond</th>
+                        <th>ChequeYear</th>
+                        <th>ChequeDate</th>
+                        <th>VHI</th>
+                    </tr>
+                </thead>
+                <tbody id="inventario-data">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CurrencyNewValue, new { @id = "CurrencyNewValue", @class = "form-control", @readonly = "@readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CurrentYear, new { @id = "CurrentYear", @class = "form-control", @readonly = "@readonly", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.ChequeEndorsement',
+                            ScreenUrl: "/ReceiptVoucherBank/TransferFromFundToChequeEndorsement",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        $('#check-all').on('change', 'input[type="checkbox"]', function () {
+            var paperAmount = 0;
+            var $sumchecked = $('#sumchecked');
+            var $totalSum = $('#checked-prices-total-sum');
+            if ($(this).is(':checked')) {
+                document.getElementById("CheckedPaperAmount").value = document.getElementById("PaperAmount").value;
+                document.getElementById("CheckPaperCount").value = document.getElementById("PaperCount").value;
+                paperAmount = parseFloat(document.getElementById("PaperAmount").value.replace(",", ""));
+                $totalSum.html(paperAmount.toFixed(TheDecimalPointForTheLocalCurrency));
+            } else {
+                document.getElementById("CheckedPaperAmount").value = '0.000';
+                document.getElementById("CheckPaperCount").value = '0';
+                $totalSum.html(0);
+            }
+        });
+        $('#inventario-data').on('change', 'input[type="checkbox"]', function () {
+            var $sumchecked = $('#sumchecked');
+            var $totalSum = $('#checked-prices-total-sum');
+            var totalSumValue = parseFloat($totalSum.html());
+            var price = parseFloat($(this).parent().next().next().next().html().replace(",", ""));
+            if ($(this).is(':checked')) {
+                totalSumValue += price;
+            } else {
+                totalSumValue -= price;
+            }
+
+            $totalSum.html(totalSumValue.toFixed(TheDecimalPointForTheLocalCurrency));
+            document.getElementById("CheckedPaperAmount").value = formatMoney(totalSumValue, TheDecimalPointForTheLocalCurrency);
+            var CheckPaperCount = countChecked($('#tdataTable'), 'input[type="checkbox"]');
+            if (CheckPaperCount.checked - 1 < 0) {
+                document.getElementById("CheckPaperCount").value = '0'
+            }
+            else {
+                document.getElementById("CheckPaperCount").value = CheckPaperCount.checked - 1;
+            }
+            totalSumValue > 0 ? $sumchecked.css('visibility', 'visible') : $sumchecked.css('visibility', 'hidden');
+
+        });
+        var countChecked = function ($table, checkboxClass) {
+            if ($table) {
+                var chkAll = $table.find(checkboxClass);
+                var checked = chkAll.filter(':checked').length;
+                var total = chkAll.length;
+                return {
+                    total: total,
+                    checked: checked
+                }
+            }
+        }
+        $("#TransferVoucherDate").mask("99/99/9999");
+        $("#FromDate").mask("99/99/9999");
+        $("#ToDate").mask("99/99/9999");
+        $(document).on('click', '#Close', function () {
+            window.location = "/ReceiptVoucherBank/ReceivedCheque";
+        });
+        var SelectedValue = $("#CompanyTransactionKindToTransferNo").val();
+        var VoucherDate = document.getElementById("TransferVoucherDate").value;
+        var CurrentYear = document.getElementById("CurrentYear").value;
+        var mm = parseInt(VoucherDate.substring(3, 5));
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        if (SelectedValue != null && SelectedValue != '') {
+            $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CurrentYear }, function (Data) {
+
+                if (Data != null) {
+                    document.getElementById("TransferVoucherNumber").value = Data;
+
+                } else {
+
+
+                };
+            });
+        }
+        else {
+        }
+        $('#CompanyTransactionKindToTransferNo').change(function () {
+            var SelectedValue = $("#CompanyTransactionKindToTransferNo").val();
+            var VoucherDate = document.getElementById("TransferVoucherDate").value;
+            var CurrentYear = document.getElementById("CurrentYear").value;
+            var mm = parseInt(VoucherDate.substring(3, 5));
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CurrentYear }, function (Data) {
+
+                    if (Data != null) {
+                        document.getElementById("TransferVoucherNumber").value = Data;
+
+                    } else {
+
+
+                    };
+                });
+            }
+            else {
+            }
+        });
+        $(document).on('click', '#ReceiptTransferToChequeEndorsement', function () {
+            if (WorkWithCostCenter) {
+                var ChequeBoxName = $("#AccountNumberFirst").val();
+                var ChequeBoxCostName = $("#ToCostCenter").val();
+                var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                if (ChequeBoxName.trim() == "") {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseChequeBox</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (ChequeBoxCostName.trim() == "") {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseCostChequeBox</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (selectedIds == "") {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseOnCheque</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    document.getElementById("TransferToChequeEndorsement").style.display = 'block';
+                    $("#TransferVoucherDate").focus().select();
+
+                }
+            }
+            else {
+                var ChequeBoxName = $("#AccountNumberFirst").val();
+                var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                if (ChequeBoxName.trim() == "") {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseChequeBox</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (selectedIds == "") {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseOnCheque</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    document.getElementById("TransferToChequeEndorsement").style.display = 'block';
+                    $("#TransferVoucherDate").focus().select();
+                }
+            }
+        });
+        $("#VoucherNumber").focus().select();
+        $("#TransferVoucherDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ChequeEndorsementAccountNumber").focus().select();
+            }
+        });
+        $("#VoucherNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ChequeNumber").focus().select();
+            }
+        });
+        $("#ChequeNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromDate").focus().select();;
+            }
+        });
+        $("#FromDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToDate").focus().select();;
+            }
+        });
+        $("#ToDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#AccountNumberSecond").focus().select();
+            }
+        });
+        $(document).on('click', '#btnSearch', function () {
+            var dDate = document.getElementById("FromDate").value;
+            var dToDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dToDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                $('#tdataTable').DataTable().clear().draw();
+                $('#tdataTable').DataTable().ajax.reload();
+                dialog.modal('hide');
+            }
+        });
+        $('#BtnAccountNumberSecond').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/DAccountNumberSecondSearch';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnAccountNumberFirst').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchChequeFundAccountNumber/AccountNumberFirstSearch';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnChequeEndorsementAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ChequeEndorsementAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnFromCostCenter').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/FromCostCenter';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnToCostCenter').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/ToCostCenter';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearAccountNumberSecond').on('click', function () {
+            document.getElementById("AccountNumberSecond").value = '';
+            document.getElementById("CustomerName").value = '';
+        });
+        $('#BtnClearAccountNumberFirst').on('click', function () {
+            document.getElementById("AccountNumberFirst").value = '';
+            document.getElementById("ChequeBoxName").value = '';
+        });
+        $('#BtnClearChequeEndorsementAccountNumber').on('click', function () {
+            document.getElementById("ChequeEndorsementAccountNumber").value = '';
+            document.getElementById("ChequeEndorsementAccountName").value = '';
+        });
+        $('#BtnClearFromCostCenter').on('click', function () {
+            document.getElementById("FromCostCenter").value = '';
+            document.getElementById("FromCostCenterName").value = '';
+        });
+        $('#BtnClearToCostCenter').on('click', function () {
+            document.getElementById("ToCostCenter").value = '';
+            document.getElementById("ToCostCenterName").value = '';
+        });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "paging": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "orderable": false,
+                    "checkboxes": {
+                        "selectRow": true
+                    }
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [5],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [6],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [7],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [8],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [9],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [10],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [11],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [12],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [13],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [14],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [15],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [16],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [17],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [18],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [19],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [20],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            "select": {
+                "style": "multi"
+            },
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/ReceiptVoucherBank/GetAllTransferFromFundToChequeEndorsement",
+                "data": function (d) {
+                    d.FromDate = $("#FromDate").val();
+                    d.ToDate = $("#ToDate").val();
+                    d.VoucherNumber = $("#VoucherNumber").val();
+                    d.CompanyTransactionKindNo = $("#CompanyTransactionKindNo").val();
+                    d.AccountNumberFirst = $("#AccountNumberFirst").val();
+                    d.AccountNumberSecond = $("#AccountNumberSecond").val();
+                    d.ChequeNumber = $("#ChequeNumber").val();
+                    d.FCurrencyID = $("#FCurrencyID").val();
+                },
+
+                dataSrc: ""
+            },
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+                total = api.column(3).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                var table = $('#tdataTable').DataTable();
+                document.getElementById("PaperCount").value = table.rows().count();
+                document.getElementById("PaperAmount").value = formatMoney(total, TheDecimalPointForTheLocalCurrency);
+            },
+            columns: [
+                {
+                    data: "iRowTable"
+
+                },
+                {
+                    data: "ChequeNumber"
+                },
+                {
+                    data: "ChequeDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+
+                },
+                {
+                    data: "ChequeAmount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "IsBill",
+                    render: function (data, type, r) {
+                        if (data == 1) {
+                            return r.CustomerName + ' / ' + r.BillCustomerName
+                        }
+                        else {
+                            return r.CustomerName
+                        }
+                    }
+                },
+                {
+                    data: "DrawerName"
+
+                },
+                {
+
+                    data: "VoucherNumber"
+                },
+
+                {
+                    data: "VoucherDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+                },
+
+
+                {
+                    data: "UserName"
+                },
+                {
+                    data: "CompanyTransactionKindNo"
+                },
+                {
+                    data: "RowNumber"
+                },
+                {
+                    data: "AccountNumberFirst"
+                },
+                {
+                    data: "IsBill"
+                },
+                {
+                    data: "BillCustomerNumber"
+                },
+                {
+                    data: "BillCustomerName"
+                },
+                {
+                    data: "FCurrencyID"
+                },
+                {
+                    data: "ConversionFactor"
+                },
+                {
+                    data: "AccountNumberSecond"
+                },
+                {
+                    data: "CompanyYear"
+                },
+                {
+                    data: "sChequeDate"
+                },
+                {
+                    data: "VHI"
+                }
+            ]
+
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        $('#FCurrencyID').change(function () {
+            var SelectedCurrency = $("#FCurrencyID").val();
+            if (SelectedCurrency != null && SelectedCurrency != '') {
+                $.getJSON('@Url.Action("GetCurrencyValueById", "CurrencyValue")', { id: SelectedCurrency }, function (Data) {
+                    if (Data != null) {
+                        document.getElementById("CurrencyNewValue").value = (Data).toFixed(TheDecimalPointForTheLocalCurrency);
+                        if (Data == 0) {
+                            Data = 1;
+                        };
+                        if (Data == 1) {
+                            document.getElementById("CurrencyNewValue").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+                        }
+                        else {
+                        }
+                    } else {
+                        document.getElementById("CurrencyNewValue").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+                    };
+                });
+            } else {
+            }
+
+        });
+        $(document).on('click', '#SaveReceiptTransferToChequeEndorsement', function () {
+            var dDate = document.getElementById("TransferVoucherDate").value;
+            var CurrentYear = document.getElementById("CurrentYear").value;
+            var d1 = dDate.split("/");
+            var From = new Date(d1[2], parseInt(d1[1]) - 1, d1[0]);
+            if (d1[2] > CurrentYear || d1[2] < CurrentYear) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DateIsNotWithinThisYear</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                if (WorkWithCostCenter) {
+                    if (!validatedate(dDate) && dDate != null && dDate != '') {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else if (dDate != null && dDate != '') {
+                        var dd = parseInt(dDate.substring(0, 2));
+                        if (dd < 10) {
+                            dd = '0' + dd;
+                        }
+                        var mm = parseInt(dDate.substring(3, 5));
+                        if (mm < 10) {
+                            mm = '0' + mm;
+                        }
+                        var yyyy = parseInt(dDate.substring(6, 10));
+                        dDate = mm + '/' + dd + '/' + yyyy;
+                        $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                            if (Data >= 1) {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                                if (selectedIds == "") {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseOnCheque</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else if ($("#ChequeEndorsementAccountNumber").val() == '') {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else if ($("#FromCostCenter").val() == '') {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else if ($("#AccountNumberFirst").val() == "") {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseChequeBox</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else if ($("#ToCostCenter").val() == "") {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseCostChequeBox</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else {
+                                    bootbox.confirm({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            confirm: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                className: 'btn-success'
+                                            },
+                                            cancel: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                className: 'btn-danger'
+                                            }
+                                        },
+                                        callback: function (result) {
+                                            if (result) {
+                                                var dialog = bootbox.dialog({
+                                                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                                    closeButton: false
+                                                });
+                                                var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                                                var rows_selected = [];
+                                                $.each(selectedIds, function (index, rowId) {
+                                                    var data = tabelMemRef.row(rowId).data();
+                                                    rows_selected.push(data);
+                                                });
+                                                var Header = {
+                                                    VoucherNumber: $("#TransferVoucherNumber").val(),
+                                                    VoucherDate: $("#TransferVoucherDate").val(),
+                                                    ConversionFactor: $("#CurrencyNewValue").val()
+                                                };
+                                                var DataToSave = {
+                                                    Paper: rows_selected,
+                                                    Header: Header,
+                                                    CompanyTransactionKindToTransferNo: $("#CompanyTransactionKindToTransferNo").val(),
+                                                    ChequeEndorsementAccountNumber: $("#ChequeEndorsementAccountNumber").val(),
+                                                    AccountNumberFirst: $("#AccountNumberFirst").val(),
+                                                    FromCostCenter: $("#FromCostCenter").val(),
+                                                    ToCostCenter: $("#ToCostCenter").val(),
+                                                    CurrencyID: $("#CurrencyID").val()
+                                                };
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "/ReceiptVoucherBank/SaveReceiptTransferToChequeEndorsement",
+                                                    data: JSON.stringify(DataToSave),
+                                                    contentType: 'application/json',
+                                                    success: function (data) {
+
+                                                        dialog.modal('hide');
+                                                        if (data.Code == 0) {
+                                                            toastr.error(data.Msg);
+                                                        }
+                                                        else if (data.Code == 1) {
+
+                                                            toastr.success(data.Msg);
+                                                            tabelMemRef.ajax.reload();
+                                                            var today = new Date();
+                                                            var dd = today.getDate();
+                                                            var mm = today.getMonth() + 1;
+                                                            var yyyy = today.getFullYear();
+                                                            if (dd < 10) {
+                                                                dd = '0' + dd;
+                                                            }
+                                                            if (mm < 10) {
+                                                                mm = '0' + mm;
+                                                            }
+                                                            var today = dd + '/' + mm + '/' + yyyy;
+                                                            document.getElementById("TransferVoucherDate").value = today;
+                                                            var $totalSum = $('#checked-prices-total-sum');
+                                                            document.getElementById("CheckedPaperAmount").value = '0.000';
+                                                            document.getElementById("CheckPaperCount").value = '0';
+                                                            $totalSum.html(0);
+                                                            document.getElementById("CompanyTransactionKindToTransferNo").selectedIndex = "0";
+                                                            var SelectedValue = $("#CompanyTransactionKindToTransferNo").val();
+                                                            var VoucherDate = document.getElementById("TransferVoucherDate").value;
+                                                            var mm = parseInt(VoucherDate.substring(3, 5));
+                                                            if (mm < 10) {
+                                                                mm = '0' + mm;
+                                                            }
+                                                            if (SelectedValue != null && SelectedValue != '') {
+                                                                $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CurrentYear }, function (Data) {
+
+                                                                    if (Data != null) {
+                                                                        document.getElementById("TransferVoucherNumber").value = Data;
+
+                                                                    } else {
+
+
+                                                                    };
+                                                                });
+                                                            }
+                                                            else {
+                                                            }
+                                                            document.getElementById("ChequeEndorsementAccountNumber").value = '';
+                                                            document.getElementById("ChequeEndorsementAccountName").value = '';
+                                                            document.getElementById("FromCostCenter").value = '';
+                                                            document.getElementById("FromCostCenterName").value = '';
+                                                            document.getElementById("TransferToChequeEndorsement").style.display = 'none';
+                                                            $('#modal-container').modal('hide');
+                                                            dialog.modal('hide');
+                                                        }
+
+                                                    },
+                                                    error: function (data) {
+                                                        dialog.modal('hide');
+                                                        toastr.error(data);
+                                                        bootbox.alert(data.Msg);
+                                                    }
+
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            };
+                        });
+                    }
+
+                }
+                else {
+                    if (!validatedate(dDate) && dDate != null && dDate != '') {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else if (dDate != null && dDate != '') {
+                        var dd = parseInt(dDate.substring(0, 2));
+                        if (dd < 10) {
+                            dd = '0' + dd;
+                        }
+                        var mm = parseInt(dDate.substring(3, 5));
+                        if (mm < 10) {
+                            mm = '0' + mm;
+                        }
+                        var yyyy = parseInt(dDate.substring(6, 10));
+                        dDate = mm + '/' + dd + '/' + yyyy;
+                        $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                            if (Data >= 1) {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                                if (selectedIds == "") {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseOnCheque</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else if ($("#ChequeEndorsementAccountNumber").val() == '') {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else if ($("#AccountNumberFirst").val() == "") {
+                                    bootbox.alert({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseChequeBox</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            ok: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                className: 'btn-primary'
+                                            }
+                                        }
+                                    });
+                                }
+                                else {
+                                    bootbox.confirm({
+                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                        className: 'rubberBand animated',
+                                        buttons: {
+                                            confirm: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                className: 'btn-success'
+                                            },
+                                            cancel: {
+                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                className: 'btn-danger'
+                                            }
+                                        },
+                                        callback: function (result) {
+                                            if (result) {
+                                                var dialog = bootbox.dialog({
+                                                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                                    closeButton: false
+                                                });
+                                                var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                                                var rows_selected = [];
+                                                $.each(selectedIds, function (index, rowId) {
+                                                    var data = tabelMemRef.row(rowId).data();
+                                                    rows_selected.push(data);
+                                                });
+                                                var Header = {
+                                                    VoucherNumber: $("#TransferVoucherNumber").val(),
+                                                    VoucherDate: $("#TransferVoucherDate").val(),
+                                                    ConversionFactor: $("#CurrencyNewValue").val()
+                                                };
+                                                var DataToSave = {
+                                                    Paper: rows_selected,
+                                                    Header: Header,
+                                                    CompanyTransactionKindToTransferNo: $("#CompanyTransactionKindToTransferNo").val(),
+                                                    ChequeEndorsementAccountNumber: $("#ChequeEndorsementAccountNumber").val(),
+                                                    AccountNumberFirst: $("#AccountNumberFirst").val(),
+                                                    FromCostCenter: "",
+                                                    ToCostCenter: "",
+                                                    CurrencyID: $("#CurrencyID").val()
+                                                };
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: "/ReceiptVoucherBank/SaveReceiptTransferToChequeEndorsement",
+                                                    data: JSON.stringify(DataToSave),
+                                                    contentType: 'application/json',
+                                                    success: function (data) {
+
+                                                        dialog.modal('hide');
+                                                        if (data.Code == 0) {
+                                                            toastr.error(data.Msg);
+                                                        }
+                                                        else if (data.Code == 1) {
+
+                                                            toastr.success(data.Msg);
+                                                            tabelMemRef.ajax.reload();
+                                                            var today = new Date();
+                                                            var dd = today.getDate();
+                                                            var mm = today.getMonth() + 1;
+                                                            var yyyy = today.getFullYear();
+                                                            if (dd < 10) {
+                                                                dd = '0' + dd;
+                                                            }
+                                                            if (mm < 10) {
+                                                                mm = '0' + mm;
+                                                            }
+                                                            var today = dd + '/' + mm + '/' + yyyy;
+                                                            document.getElementById("TransferVoucherDate").value = today;
+                                                            var $totalSum = $('#checked-prices-total-sum');
+                                                            document.getElementById("CheckedPaperAmount").value = '0.000';
+                                                            document.getElementById("CheckPaperCount").value = '0';
+                                                            $totalSum.html(0);
+                                                            document.getElementById("CompanyTransactionKindToTransferNo").selectedIndex = "0";
+                                                            var SelectedValue = $("#CompanyTransactionKindToTransferNo").val();
+                                                            var VoucherDate = document.getElementById("TransferVoucherDate").value;
+                                                            var mm = parseInt(VoucherDate.substring(3, 5));
+                                                            if (mm < 10) {
+                                                                mm = '0' + mm;
+                                                            }
+                                                            if (SelectedValue != null && SelectedValue != '') {
+                                                                $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CurrentYear }, function (Data) {
+
+                                                                    if (Data != null) {
+                                                                        document.getElementById("TransferVoucherNumber").value = Data;
+
+                                                                    } else {
+
+
+                                                                    };
+                                                                });
+                                                            }
+                                                            else {
+                                                            }
+                                                            document.getElementById("ChequeEndorsementAccountNumber").value = '';
+                                                            document.getElementById("ChequeEndorsementAccountName").value = '';
+                                                            document.getElementById("TransferToChequeEndorsement").style.display = 'none';
+                                                            $('#modal-container').modal('hide');
+                                                            dialog.modal('hide');
+                                                        }
+
+                                                    },
+                                                    error: function (data) {
+                                                        dialog.modal('hide');
+                                                        toastr.error(data);
+                                                        bootbox.alert(data.Msg);
+                                                    }
+
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            };
+                        });
+                    }
+                }
+            }
+        });
+        $("#TransferVoucherDate").blur(function () {
+            var dDate = document.getElementById("TransferVoucherDate").value;
+            var CurrentYear = document.getElementById("CurrentYear").value;
+            var d1 = dDate.split("/");
+            var From = new Date(d1[2], parseInt(d1[1]) - 1, d1[0]);
+            if (d1[2] > CurrentYear || d1[2] < CurrentYear) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DateIsNotWithinThisYear</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                if (dDate != null && dDate != '') {
+                    if (!validatedate(dDate)) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        var dd = parseInt(dDate.substring(0, 2));
+                        if (dd < 10) {
+                            dd = '0' + dd;
+                        }
+                        var mm = parseInt(dDate.substring(3, 5));
+                        if (mm < 10) {
+                            mm = '0' + mm;
+                        }
+                        var yyyy = parseInt(dDate.substring(6, 10));
+                        dDate = mm + '/' + dd + '/' + yyyy;
+                        $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                            if (Data >= 1) {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                        var SelectedValue = $("#CompanyTransactionKindID").val();
+                        var VoucherDate = document.getElementById("TransferVoucherNumber").value;
+                        var mm = parseInt(VoucherDate.substring(3, 5));
+                        if (mm < 10) {
+                            mm = '0' + mm;
+                        }
+                        if (SelectedValue != null && SelectedValue != '') {
+                            $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CurrentYear }, function (Data) {
+
+                                if (Data != null) {
+                                    document.getElementById("TransferVoucherNumber").value = Data;
+
+                                } else {
+                                };
+                            });
+                        }
+                        else {
+                        }
+                    }
+                }
+                else {
+                }
+            }
+        });
+        $("#FromDate").blur(function () {
+            var dDate = document.getElementById("FromDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToDate").blur(function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#AccountNumberSecond").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#AccountNumberFirst").focus().select();
+            }
+            else if (event.keyCode == 113) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/DAccountNumberSecondSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#AccountNumberSecond").blur(function () {
+            var AccountNumber = document.getElementById("AccountNumberSecond").value;
+            if (AccountNumber == '') {
+                document.getElementById("CustomerName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccountNumberSecond").value = '';
+                            document.getElementById("CustomerName").value = '';
+                            $("#AccountNumberSecond").focus();
+                        }
+                        else {
+                            document.getElementById("CustomerName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#AccountNumberFirst").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToCostCenter").focus().select();
+            }
+            else if (event.keyCode == 113) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchChequeFundAccountNumber/AccountNumberFirstSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#ChequeEndorsementAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromCostCenter").focus().select();
+            }
+            else if (event.keyCode == 113) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/ChequeEndorsementAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#AccountNumberFirst").blur(function () {
+            var AccountNumber = document.getElementById("AccountNumberFirst").value;
+            if (AccountNumber == '') {
+                document.getElementById("ChequeBoxName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckDefinitionChequeFund", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccountNumberFirst").value = '';
+                            document.getElementById("ChequeBoxName").value = '';
+                            $("#AccountNumberFirst").focus();
+                        }
+                        else {
+                            document.getElementById("ChequeBoxName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#ChequeEndorsementAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("ChequeEndorsementAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("ChequeEndorsementAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ChequeEndorsementAccountNumber").value = '';
+                            document.getElementById("ChequeEndorsementAccountName").value = '';
+                            $("#ChequeEndorsementAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("ChequeEndorsementAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("ChequeEndorsementAccountNumber").value = '';
+                                document.getElementById("ChequeEndorsementAccountName").value = '';
+                                $("#ChequeEndorsementAccountNumber").focus();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#FromCostCenter").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#TransferVoucherDate").focus().select();
+            }
+            else if (event.keyCode == 113) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/FromCostCenter';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#ToCostCenter").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#TransferVoucherDate").focus().select();
+            }
+            else if (event.keyCode == 113) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/ToCostCenter';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#FromCostCenter").blur(function () {
+            var CostNumber = document.getElementById("FromCostCenter").value;
+            if (CostNumber == '') {
+                document.getElementById("FromCostCenterName").value = '';
+            }
+            else {
+                if (CostNumber != null && CostNumber != '') {
+                    $.getJSON('@Url.Action("CheckCostCenter", "MultiUse")', { id: CostNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("FromCostCenter").value = '';
+                            document.getElementById("FromCostCenterName").value = '';
+                            $("#FromCostCenter").focus();
+                        }
+                        else {
+                            if (!Data.StoppedCost) {
+                                document.getElementById("FromCostCenterName").value = Data.CostName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("FromCostCenter").value = '';
+                                document.getElementById("FromCostCenterName").value = '';
+                                $("#FromCostCenter").focus();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#ToCostCenter").blur(function () {
+            var CostNumber = document.getElementById("ToCostCenter").value;
+            if (CostNumber == '') {
+                document.getElementById("ToCostCenterName").value = '';
+            }
+            else {
+                if (CostNumber != null && CostNumber != '') {
+                    $.getJSON('@Url.Action("CheckCostCenter", "MultiUse")', { id: CostNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ToCostCenter").value = '';
+                            document.getElementById("ToCostCenterName").value = '';
+                            $("#ToCostCenter").focus();
+                        }
+                        else {
+                            if (!Data.StoppedCost) {
+                                document.getElementById("ToCostCenterName").value = Data.CostName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("ToCostCenter").value = '';
+                                document.getElementById("ToCostCenterName").value = '';
+                                $("#ToCostCenter").focus();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}
+

@@ -1,0 +1,141 @@
+﻿
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+        settings.Name = "TransActionGrid";
+          settings.Theme = "iOS";
+        settings.CallbackRouteValues = new { Controller = "OpeningBalance", Action = "GridViewTransActionPartial" };
+        settings.SettingsEditing.BatchEditSettings.KeepChangesOnCallbacks = DefaultBoolean.False;
+        settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+        settings.SettingsEditing.BatchEditSettings.HighlightDeletedRows = false;
+        settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+        settings.ClientSideEvents.BatchEditConfirmShowing = "function(s, e){ e.cancel = true; }";
+        settings.CommandColumn.Visible = false;
+        settings.CommandColumn.ShowNewButtonInHeader = false;
+        settings.SettingsEditing.ShowModelErrorsForEditors = true;
+        settings.SettingsBehavior.ConfirmDelete = false;
+        settings.Settings.ShowFilterBar = GridViewStatusBarMode.Hidden;
+        settings.Settings.ShowPreview = false;
+        settings.Settings.ShowFilterRowMenu = false;
+        settings.Settings.ShowTitlePanel = false;
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+        }
+        else
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+        }
+        settings.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+        settings.Settings.VerticalScrollableHeight = 400;
+        settings.Settings.VerticalScrollBarMode = ScrollBarMode.Hidden;
+        settings.Settings.VerticalScrollBarStyle = GridViewVerticalScrollBarStyle.Standard;
+        settings.CommandColumn.ShowDeleteButton = false;
+        settings.CommandColumn.ShowNewButton = false;
+        settings.CommandColumn.ShowUpdateButton = false;
+        settings.KeyFieldName = "AccountNumber";
+        settings.SettingsPager.Visible = true;
+        settings.Settings.ShowGroupPanel = false;
+        settings.SettingsBehavior.AllowSort = false;
+        settings.SettingsBehavior.AllowDragDrop = false;
+        settings.ClientSideEvents.Init = "OnInit";
+        settings.ClientSideEvents.BatchEditEndEditing = "Grid_BatchEditEndEditing";
+        settings.ClientSideEvents.BatchEditStartEditing = "Grid_BatchEditStartEditing";
+        settings.KeyboardSupport = true;
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel)
+                e.Visible = false;
+        };
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Debit";
+            column.Width = 100;
+            column.Caption = Resources.Resource.Debit;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+        });
+
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Credit";
+            column.Width = 100;
+            column.Caption = Resources.Resource.Credit;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+        });
+
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "CreditDebitForeign";
+            column.Width = 100;
+            column.Caption = Resources.Resource.Foreign;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "AccountNumber";
+            column.Width = 200;
+            column.Caption = Resources.Resource.AccountNumber;
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+
+
+        settings.Columns.Add(column =>
+        {
+            column.Width = 400;
+            column.FieldName = "AccountName";
+            column.Caption = Resources.Resource.Name;
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+
+        settings.CustomJSProperties = (s, e) =>
+        {
+            if (ViewData["ErrorFlag"] != null)
+                e.Properties.Add("cpErrorFlag", (bool)ViewData["ErrorFlag"]);
+        };
+
+
+    });
+    if (ViewData["EditError"] != null)
+    {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

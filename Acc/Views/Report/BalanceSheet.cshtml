@@ -1,0 +1,414 @@
+﻿@model Acc.ViewModels.AccountLevelRepVM
+@{
+    ViewBag.Title = "MyVacationReport";
+    Layout = "~/Views/Shared/NoMenu.cshtml";
+}
+    <script>
+
+        function GetSelectedAccount(data) {
+             
+
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+              document.getElementById("AccNo").value = data.AccountNumber;
+            if (@Resources.Resource.CurLang= "Arb") {
+                document.getElementById("AccName").value = data.AccountName;
+            }
+            else {
+                document.getElementById("AccName").value = data.AccountName;
+            }
+        }
+        else {
+            document.getElementById("AccNo").value = '';
+            document.getElementById("AccName").value = '';
+          }
+
+    }
+       function GetSelectedCostCenter(data) {
+
+            if (data.CostNumber != null && data.AccNo != '') {
+                document.getElementById("CostCenterNumber").value = data.CostNumber;
+                document.getElementById("CostCenterName").value = data.CostName;
+            }
+            else {
+                document.getElementById("CostCenterNumber").value = '';
+                document.getElementById("CostCenterName").value = '';
+            }
+
+        }
+//------------------------------End Auto Complete--------------------//
+    </script>
+ 
+ 
+
+
+
+
+    <div class="panel panel-primary" style="margin-top:5px;">
+        <div class="panel-heading "><i class=" fa fa-bookmark-o"></i> @Resources.Resource.TrialBalance</div>
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AccountLevelDropVMID)*
+
+                        @Html.DropDownListFor(m => m.AccountLevelDropVMID, new SelectList(Model.AccountLevelDropVM, "AccountLevel", "LevelName"), Resources.Resource.Level, new { @id = "AccountLevelID", @class = "form-control input-sml" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FromDate)
+                        @Html.TextBoxFor(model => model.FromDate, new { @id = "FromDate", @class = "form-control input-sml", @Value = Model.FromDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.FromDate)
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ToDate)
+                        @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.ToDate)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-3">
+                    @Html.Label(Resources.Resource.AccountNumber)
+                    <div class="form-group  input-group">
+
+                        @Html.TextBoxFor(m => m.AccNo, new { @id = "AccNo", @class = "form-control input-sml" })
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-sm" type="button" id="BtnAccNo">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.AccNo)
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.Name)
+                        @Html.TextBoxFor(m => m.AccName, new { @id = "AccName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group  ">
+
+                        @Html.CheckBoxFor(m => m.ShowZeroBalance, new { @id = "ShowZeroBalance" })
+                        @Html.ValidationMessageFor(m => m.ShowZeroBalance)
+                        @Html.Label(Resources.Resource.ShowZeroBalance)
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group  ">
+
+                        @Html.CheckBoxFor(m => m.Detail, new { @id = "Detail" })
+                        @Html.ValidationMessageFor(m => m.Detail)
+                        @Html.Label(Resources.Resource.TrialBalanceDetailed)
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-md-12">
+            <div class="form-group">
+
+                <div class="col-lg-3">
+                    @Html.CheckBoxFor(m => m.ByCostCenter, new { @id = "ByCostCenter", @class = "text-danger" })
+                    @Html.ValidationMessageFor(m => m.ByCostCenter)
+                    @Html.Label(Resources.Resource.ByCostCenter, new { @class = "text-danger" })
+                    <div class="form-group  input-group">
+
+                        @Html.TextBoxFor(m => m.CostCenterNumber, new { @id = "CostCenterNumber", @class = "form-control input-sml" })
+
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-sm" type="button" id="BtnCostCenter">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.CostCenterNumber)
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CostCenterName)
+                        @Html.TextBoxFor(m => m.CostCenterName, new { @id = "CostCenterName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.CheckBoxFor(m => m.Partofthenumber, new { @id = "Partofthenumber", @class = "text-danger" })
+
+                        @Html.LabelFor(m => m.Partofthenumber)
+                        @Html.DropDownListFor(m => m.CostSearchType, new List<SelectListItem>
+                                                         {
+
+                                                          new SelectListItem{ Text=Resources.Resource. StartWith, Value = "1",Selected=false },
+                                                           new SelectListItem{ Text=Resources.Resource. EndWith, Value = "2",Selected=false },
+                                                          new SelectListItem{ Text=Resources.Resource.Contain, Value = "3",Selected=false }
+
+
+
+
+
+                                                            }, new { @id = "CostSearchType", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(model => model.CostSearchType, "", new { @class = "text-danger" })
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+            <div class="col-md-12">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-sm add-new   fa  fa-search" style="margin-top:25px" id="reload">  @Resources.Resource.Search </button>
+                </div>
+            </div>
+      
+
+
+        <div id="MemberShipTypeBody1" class="panel-body">
+
+            <div class="form-group">
+                <table id="tdataTableTransAction" class="display compact table-bordered" style="width:100%">
+                    <thead>
+                        <tr>
+                           
+                           
+                            <th>@Resources.Resource.AccountName</th>
+                           
+                          
+                            <th>@Resources.Resource.NetTotal</th>
+
+                  
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                     
+                </table>
+            </div>
+
+        </div>
+
+
+
+    </div>
+   
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+    <script>
+
+
+
+
+          $(document).ready(function () {
+                        $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+                          $('#FromDate').datepicker({
+                                autoclose: true
+                            });
+
+                            $('#ToDate').datepicker({
+                                autoclose: true
+                         });
+ 
+
+                    $(document).on('click', '#reload', function () {
+                   var dialog = bootbox.dialog({
+				    	title: '@Resources.Resource.PleaseWait',
+					    message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+					    closeButton: false
+
+
+					});
+                        tdataTableTransActionRef.ajax.reload();
+                         dialog.modal('hide');
+                    });
+
+              var tdataTableTransActionRef = $("#tdataTableTransAction").DataTable({
+                          dom: 'Bfrtip',
+                          buttons: [
+                              'excel' 
+                                     ],
+                               "columnDefs": [
+                   
+                                  {
+                                                                   "className": "text-center"
+                                   }
+                                   
+
+                              ],
+                               "decimal": ",",
+                               "thousands": ".",
+                                 "scrollY":  "250px",
+                               "scrollX": true,
+                               searching: false,
+                               paging: false,
+                              "ordering": false,
+                              fixedHeader: {
+                              header: true,
+                              footer: true
+                             },
+                        ajax: {
+                            "type": "POST",
+                            url: "/Report/GetBalanceSheet",
+                            "data": function (d) {
+                               
+                                
+                                d.FromDate = $("#FromDate").val();
+                                d.ToDate = $("#ToDate").val();
+                                d.AccountLevelDropVMID = $("#AccountLevelID").val();
+                                d.AccNo = $("#AccNo").val();
+                                d.ShowZeroBalance = $("#ShowZeroBalance:checked").val();
+                                d.Detail = $("#Detail:checked").val();
+                                d.CostCenterNumber = $("#CostCenterNumber").val();
+                                d.ByCostCenter = $("#ByCostCenter:checked").val();
+                                d.CostSearchType = $("#CostSearchType").val();
+                                d.Partofthenumber = $("#Partofthenumber:checked").val();
+
+                                d.ProfitLostNetTotal = $("#CostSearchType").val();
+                                d.ProfitLostNetTotal = $("#CostSearchType").val();
+
+                            },
+                           dataSrc: ""
+                        },
+				                     
+ 
+
+                        columns: [
+                                   
+                                  {
+                                      
+                                   data: "Name",
+                                        render: function (data, type, r) {
+                                            if (r.AccountNumber == "*") {
+                                                 return "<i class='text-primary'><strong>" + data + "</strong></i>";
+                                            }
+                                            else   if (r.AccountNumber == "**") {
+                                                 return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                                            }
+                                            else {
+                                                return data;
+                                              }
+                                             
+                                          }                               						                                               
+                                    } ,
+                                    
+                                   {
+                                        data: "AccountNumber",
+                                          render: function (data, type, r) {
+                                              if (data == "*") {
+                                                  return ''; 
+                                                
+                                                  
+                                              }
+                                              else {
+                                                   return new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(r.NetTot);
+                                              }
+							                
+						                }
+
+                                  } 
+                                 
+                                 
+                               
+                                 
+                  ] 
+                           
+ 
+              });
+ 
+
+              
+                   $('#tdataTableAccount').on('click', '.js-delete', function (e) {
+
+                        $('#modal-container').removeData('bs.modal');
+                        e.preventDefault();
+                        $(this).removeData('bs.modal');
+                        $(this).attr('data-target', '#modal-container');
+                        $(this).attr('data-toggle', 'modal');
+
+                    });
+                    $('#tdataTableAccount').on('click', '.js-modify', function (e) {
+                             $('#modal-container').removeData('bs.modal');
+                        e.preventDefault();
+                        $(this).attr('data-target', '#modal-container');
+                        $(this).attr('data-toggle', 'modal');
+                    });
+                    $('#tdataTableAccount').on('click', '.js-reason', function (e) {
+
+                            // console.log(e.target.getAttribute("data-content"));
+                             var d = e.target.getAttribute("data-content");
+
+                                 bootbox.alert(d);
+
+
+
+                         });
+                    $('#js-addnew').on('click', function (e) {
+                        $('#modal-container').removeData('bs.modal');
+                        e.preventDefault();
+                        $(this).attr('data-target', '#modal-container');
+                        $(this).attr('data-toggle', 'modal');
+                    });
+                    // Attach listener to .modal-close-btn's so that when the button is pressed the modal dialog disappears
+                    $('#tdataTableAccount').on('click', '.modal-close-btn', function () {
+                        $('#modal-container').modal('hide');
+                    });
+                    //clear modal cache, so that new content can be loaded
+                    $('#modal-container').on('hidden.bs.modal', function () {
+                        $(this).removeData('bs.modal');
+                        console.log('modal-containe');
+                    });
+                    $('#CancelModal').on('click', function () {
+                        return false;
+                    });
+
+               $('#BtnAccNo').on('click', function () {
+                 		 var dialog = bootbox.dialog({
+					title: '@Resources.Resource.PleaseWait',
+					  message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+					  closeButton: false
+
+
+					});
+                var url = '/MultiUse/SearchFatherAccount/AccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                     dialog.modal('hide');
+                })
+          });
+
+           $('#BtnCostCenter').on('click', function () {
+	   
+                   var dialog = bootbox.dialog({
+                            title: '@Resources.Resource.PleaseWait',
+                              message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                               closeButton: false
+                            });
+                        var url = '/MultiUse/SearchCostCenter/CostCenter';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+        
+            });
+
+
+          });
+
+
+
+    </script>
+
+}
+
+
+

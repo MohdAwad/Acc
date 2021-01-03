@@ -1,0 +1,115 @@
+﻿
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+
+        settings.Name = "TempPrepaidGrid";
+        settings.CallbackRouteValues = new { Controller = "TempPrepaid", Action = "GridViewTempPrepaidPartial" };
+        settings.SettingsEditing.BatchEditSettings.KeepChangesOnCallbacks = DefaultBoolean.False;
+        settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+        settings.SettingsEditing.BatchEditSettings.HighlightDeletedRows = false;
+        settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+        settings.ClientSideEvents.BatchEditConfirmShowing = "function(s, e){ e.cancel = true; }";
+        settings.CommandColumn.Visible = false;
+        settings.CommandColumn.ShowNewButtonInHeader = false;
+        settings.SettingsEditing.ShowModelErrorsForEditors = true;
+        settings.SettingsBehavior.ConfirmDelete = false;
+        settings.SettingsBehavior.AllowSort = false;
+        settings.SettingsBehavior.AllowDragDrop = false;
+        settings.Settings.ShowFilterBar = GridViewStatusBarMode.Hidden;
+        settings.Settings.ShowPreview = false;
+        settings.Settings.ShowFilterRowMenu = false;
+        settings.Settings.ShowTitlePanel = false;
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+        }
+        else
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+        }
+        //settings.Settings.VerticalScrollableHeight = 200;
+        settings.Settings.VerticalScrollBarMode = ScrollBarMode.Hidden;
+        settings.SettingsEditing.NewItemRowPosition = GridViewNewItemRowPosition.Bottom;
+        settings.CommandColumn.ShowDeleteButton = false;
+        settings.CommandColumn.ShowNewButton = false;
+
+        settings.KeyFieldName = "RowNumber";
+        settings.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.ClientSideEvents.Init = "OnInit";
+        settings.ClientSideEvents.BatchEditEndEditing = "Grid_BatchEditEndEditing";
+        settings.ClientSideEvents.BatchEditStartEditing = "Grid_BatchEditStartEditing";
+
+        settings.Theme = "iOS";
+        settings.KeyboardSupport = true;
+        settings.CellEditorInitialize += (s,e) => {
+            e.Editor.ReadOnly = false;
+        };
+
+
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel)
+                e.Visible = false;
+        };
+        settings.Columns.Add(column =>
+        {
+            column.Width = 150;
+            column.FieldName = "CollectionDate";
+            column.Caption = Resources.Resource.CollectionDate;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ColumnType = MVCxGridViewColumnType.DateEdit;
+            column.PropertiesEdit.DisplayFormatString = "dd/MM/yyyy";
+            DateEditProperties deProp = column.PropertiesEdit as DateEditProperties;
+            deProp.DisplayFormatInEditMode = true;
+            deProp.DisplayFormatString = "dd/MM/yyyy";
+            deProp.EditFormat = EditFormat.Date;
+            deProp.EditFormatString = "dd/MM/yyyy";
+        });
+
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Amount";
+            column.Width = 100;
+            column.Caption = Resources.Resource.Amount;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Note";
+            column.Width = 500;
+            column.Caption = Resources.Resource.Note;
+
+            column.Settings.ShowEditorInBatchEditMode = true;
+
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+
+        });
+        settings.CustomJSProperties = (s, e) =>
+        {
+            if (ViewData["ErrorFlag"] != null)
+                e.Properties.Add("cpErrorFlag", (bool)ViewData["ErrorFlag"]);
+        };
+    });
+    if (ViewData["EditError"] != null)
+    {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

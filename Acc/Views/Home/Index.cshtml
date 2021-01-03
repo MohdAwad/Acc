@@ -1,0 +1,1093 @@
+﻿@model Acc.ViewModels.DashBoardVM
+@{
+    ViewBag.Title = @Resources.Resource.Home;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <style>
+        .row {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+        .dt-button {
+            display: none !important;
+        }
+        table.dataTable th.dt-center {
+            font-size: 8pt !important;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        #BodyStyle {
+            font-size: 8pt;
+            font-weight: bold;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after {
+            display: none !important;
+        }
+        .labelView {
+            font-size: 12pt !important;
+            color: #d11818 !important;
+            font-weight: bold;
+        }
+    </style>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+<div>
+    
+    <div class="row">
+        <div class="panel-wrapper collapse in">
+            <div class="col-lg-3">
+                <div class="panel card-view pa-0" style=" border-color: darkcyan !important">
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body pa-0">
+                            <div class="sm-data-box">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-xs-12 text-center pl-0 pr-0">
+                                            <span class="labelView block">@Resources.Resource.UnpaidChequesReceived</span>
+                                            <span class="txt-dark block counter"><span class="" id="ChequeUnderCollection">0</span></span>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel card-view pa-0" style="border-color : darkcyan !important">
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body pa-0">
+                            <div class="sm-data-box">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-xs-12 text-center pl-0 pr-0  ">
+                                            <span class="labelView block">@Resources.Resource.UnpaidChequesPayment</span>
+                                            <span class="txt-dark block counter"><span class="" id="PostdatedCheque">0</span></span>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel card-view pa-0" style="border-color : darkcyan !important">
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body pa-0">
+                            <div class="sm-data-box">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-xs-12 text-center pl-0 pr-0  ">
+                                            <span class="labelView block">@Resources.Resource.BanksBalances</span>
+                                            <span class="txt-dark block counter"><span class="" id="BankBalance">0</span></span>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel card-view pa-0" style="border-color : darkcyan !important">
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body pa-0">
+                            <div class="sm-data-box">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div class="col-xs-12 text-center pl-0 pr-0  ">
+                                            <span class="labelView block">@Resources.Resource.FundsBalances</span>
+                                            <span class="txt-dark block counter"><span class="" id="FundBalance">0</span></span>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel card-view pa-0" style="border-color : darkcyan !important">
+
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body pa-0">
+
+                            <div class="sm-data-box">
+                                <div class="container-fluid">
+
+                                    <div class="row">
+                                        <div Style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: small ;text-align:center " class="row">
+                                            <div style="padding:15px;margin-top:17px;">
+                                                <canvas id="Chart1" style="padding: 0;margin: auto;display: block; width:100%"> </canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="col-lg-6">
+                    <div class="panel card-view pa-0" style="border-color : darkcyan !important">
+                        <div class="panel-wrapper collapse in">
+                            <div class="panel-body pa-0">
+                                <div class="sm-data-box">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-xs-12 text-center pl-0 pr-0  ">
+                                                <span class="labelView block">@Resources.Resource.ClientsBalances</span>
+                                                <span class="txt-dark block counter"><span class="" id="ClientBalance">0</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="panel card-view pa-0" style="border-color : darkcyan !important">
+                        <div class="panel-wrapper collapse in">
+                            <div class="panel-body pa-0">
+                                <div class="sm-data-box">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-xs-12 text-center pl-0 pr-0  ">
+                                                <span class="labelView block">@Resources.Resource.SuppliersBalances</span>
+                                                <span class="txt-dark block counter"><span class="" id="SupBalance">0</span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="panel card-view pa-0" style="height: 229px;border-color : darkcyan !important">
+                        <div class="panel-wrapper collapse in" style="height: 229px">
+                            <div class="panel-body pa-0">
+                                <div class="sm-data-box" style="height: 229px">
+                                    <div class="container-fluid" style="height: 207px">
+                                        <div class="row" style="height: 229px">
+                                            <div Style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: small ;text-align:center " class="row">
+                                                <div style="margin:5px; ">
+                                                    <canvas id="Chart2" style="padding: 0;margin: auto;display: block; height:200px !important; width:80%; "> </canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel card-view" style=" border-color: darkcyan !important;    width: 99.7%;">
+
+                <div class="panel-wrapper collapse in">
+                    <div class="panel-body">
+                        <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                        <canvas id="Chart3" height="404" width="1213" style="display: block; width: 1213px; height: 404px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel card-view" style=" border-color: darkcyan !important;    width: 99.7%;">
+
+                <div class="panel-wrapper collapse in">
+                    <div class="panel-body">
+                        <iframe class="chartjs-hidden-iframe" style="width: 100%; display: block; border: 0px; height: 0px; margin: 0px; position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px;"></iframe>
+                        <canvas id="Chart4" height="404" width="1213" style="        display: block;
+        width: 1213px;
+        height: 404px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="col-lg-4">
+                <div class="panel card-view">
+                    <div class="panel-heading" style="background-color: #34495E">
+                        <div class="col-lg-11"> <h6 class="panel-title txt-light"><i class="fa fa-star-o"></i> @Resources.Resource.FavScreen</h6></div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body">
+                            <div class="pills-struct">
+                                <ul role="tablist" class="nav nav-pills" id="myTabs_9">
+                                    <li class="active" role="presentation"><a aria-expanded="true" data-toggle="tab" role="tab" id="home_tab_9" style="background: #34495E" href="#FavAction"><i class="fa fa-exchange"></i></a></li>
+                                    <li role="presentation" class=""><a data-toggle="tab" id="profile_tab_9" role="tab" href="#FavRep" style="background: #34495E" aria-expanded="false"><i class="fa fa-file-pdf-o"></i></a></li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent_9">
+                                    <div id="FavAction" class="tab-pane fade active in" role="tabpanel">
+                                        <div id="DataContainAction">
+                                        </div>
+                                    </div>
+                                    <div id="FavRep" class="tab-pane fade" role="tabpanel">
+                                        <div id="DataContainRep">
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="panel card-view">
+                    <div class="panel-heading" style="background-color: #34495E">
+                        <div class="col-lg-10"> <h6 class="panel-title txt-light"><i class="fa fa-star-o"></i> @Resources.Resource.DailyChequesRegister </h6></div>
+                        <div class="col-lg-2"> <h6 class="panel-title txt-light" id="date"></h6></div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-wrapper collapse in">
+                        <div class="panel-body">
+                            <div class="pills-struct">
+                                <ul role="tablist" class="nav nav-pills" id="myTabs_6">
+                                    <li class="active" id="sChequeFund" role="presentation"><a data-toggle="tab" role="tab" style="background: #34495E" href="#ChequeFund" aria-expanded="true">@Resources.Resource.ChequeFund</a></li>
+                                    <li role="presentation" id="sUnderCollection" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#UnderCollection" aria-expanded="false">@Resources.Resource.UnderCollection</a></li>
+                                    <li role="presentation" id="sPostdatedCheques" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#PostdatedCheques" aria-expanded="false">@Resources.Resource.PostdatedCheque</a></li>
+                                </ul>
+                                <div class="tab-content" id="myTabContent_6">
+                                    <div id="ChequeFund" class="tab-pane fade active in" role="tabpanel">
+                                        <table id="TableChequeFund" class="table table-hover table-bordered mb-0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>@Resources.Resource.ChequeNumber</th>
+                                                    <th>@Resources.Resource.ChequeDate</th>
+                                                    <th>@Resources.Resource.ChequeAmount</th>
+                                                    <th>@Resources.Resource.PaidAccount</th>
+                                                    <th>@Resources.Resource.DrawerName</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="UnderCollection" class="tab-pane fade" role="tabpanel">
+                                        <table id="TableChequeUnderCollection" class="table table-hover table-bordered mb-0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>@Resources.Resource.ChequeNumber</th>
+                                                    <th>@Resources.Resource.ChequeDate</th>
+                                                    <th>@Resources.Resource.ChequeAmount</th>
+                                                    <th>@Resources.Resource.PaidAccount</th>
+                                                    <th>@Resources.Resource.DrawerName</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div id="PostdatedCheques" class="tab-pane fade" role="tabpanel">
+                                        <table id="TablePostdatedCheque" class="table table-hover table-bordered mb-0" width="100%">
+                                            <thead>
+                                                <tr>
+                                                    <th>@Resources.Resource.ChequeNumber</th>
+                                                    <th>@Resources.Resource.ChequeDate</th>
+                                                    <th>@Resources.Resource.ChequeAmount</th>
+                                                    <th>@Resources.Resource.PaidToAccount</th>
+                                                    <th>@Resources.Resource.PostdatedCheque</th>
+                                                    <th>@Resources.Resource.BankAccountNumber</th>
+                                                    <th>@Resources.Resource.NameOfThePayee</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $($.fn.dataTable.tables(true)).DataTable()
+                .columns.adjust();
+        });
+        n = new Date();
+        y = n.getFullYear();
+        m = n.getMonth() + 1;
+        d = n.getDate();
+        document.getElementById("date").innerHTML = "(" + d + "/" + m + "/" + y + ")";
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+     
+        GetMyFav();
+        GetDash1();
+        GetDash2();
+        GetDash3();
+        GetDash4();
+        function GetMyFav() {
+            var $LineDataAction = "";
+            var $TimeLineDataAction = " ";
+            var DataContainAction = $("#DataContainAction");
+
+            var $LineDataRep = "";
+            var $TimeLineDataRep = " ";
+            var DataContainRep = $("#DataContainRep");
+
+            DataContainAction.html('');
+            DataContainRep.html('');
+
+            var dialog = bootbox.dialog({
+                title: '@Resources.Resource.PleaseWait',
+                message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PleaseWait...</p>',
+                closeButton: false
+            });
+
+            $.ajax({
+                method: "GET",
+                url: "/FavScreen/GetAllFave",
+                success: function (data) {
+                    $.each(data, function (id, item) {
+                        if (item.ScreenType == 0) {
+                            $LineDataAction = "";
+                            $LineDataAction = "  <div class='col-sm-12 col-xs-12 mt-15'> ";
+                            $LineDataAction += " <a   target='_blank' href='" + item.ScreenUrl + "' class='btn btn-rounded btn-block btn-anim' style='background-color:#E74C3C'><i class='fa fa-file'></i><span class='btn-text'>" + item.ScreenName + "</span></a>";
+                            $LineDataAction += "   </div> ";
+                            $TimeLineDataAction += $LineDataAction;
+                        }
+                        else if (item.ScreenType == 1) {
+                            $LineDataRep = "";
+                            $LineDataRep = "  <div class='col-sm-12 col-xs-12 mt-15'> ";
+                            $LineDataRep += " <a   target='_blank' href='" + item.ScreenUrl + "' class='btn btn-rounded btn-block btn-anim' style='background-color:#1ABC9C'><i class='fa fa-file'></i><span class='btn-text'>" + item.ScreenName + "</span></a>";
+                            $LineDataRep += "   </div> ";
+                            $TimeLineDataRep += $LineDataRep;
+                        }
+                    });
+                    DataContainAction.html($TimeLineDataAction);
+                    DataContainRep.html($TimeLineDataRep);
+
+                    dialog.modal('hide');
+                },
+                error: function (xhr, AJAXOptions, thrownError) {
+                    dialog.modal('hide');
+                    alert('Failed to retrieve .');
+                }
+            });
+            dialog.modal('hide');
+        };
+        function GetDash1() {
+            var ctx6 = document.getElementById("Chart1").getContext("2d");
+            $.ajax({
+                method: "GET",
+                url: "/AccDashBoard/GetDash1",
+                success: function (chData) {
+                    $("#ChequeUnderCollection").html('0');
+                    $("#ChequeUnderCollection").html(formatMoney(chData[2][0], TheDecimalPointForTheLocalCurrency));
+                    $("#PostdatedCheque").html('0');
+                    $("#PostdatedCheque").html(formatMoney(chData[2][1], TheDecimalPointForTheLocalCurrency));
+                    $("#FundBalance").html('0');
+                    $("#FundBalance").html(formatMoney(chData[2][2], TheDecimalPointForTheLocalCurrency));
+                    $("#BankBalance").html('0');
+                    $("#BankBalance").html(formatMoney(chData[2][3], TheDecimalPointForTheLocalCurrency));
+                    var aData = chData;
+                    var data6 = {
+                        labels: aData[0],
+                        datasets: [
+                            {
+                                data: aData[2],
+                                backgroundColor: [
+                                    "rgba(233,81,81)",
+                                    "rgba(255,215,0)",
+                                    "rgba(135,206,250)",
+                                    "rgba(154,205,50)"
+
+
+                                ],
+                                hoverBackgroundColor: [
+                                    "rgba(233,81,81)",
+                                    "rgba(255,215,0)",
+                                    "rgba(135,206,250)",
+                                    "rgba(154,205,50)"
+                                ]
+                            }]
+                    };
+
+                    var pieChart = new Chart(ctx6, {
+                        type: 'pie',
+                        data: data6,
+                        options: {
+                            responsive: true,
+                            legend: {
+                                labels: {
+                                    fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                    fontColor: "darkcyan",
+                                    fontSize: "8pt"
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(33,33,33,1)',
+                                cornerRadius: 0,
+                                footerFontFamily: "'Verdana, Geneva, Tahoma, sans-serif'"
+                            },
+                            elements: {
+                                arc: {
+                                    borderWidth: 0,
+                                    fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                    fontColor: "darkcyan",
+                                    fontSize: "8pt"
+                                }
+                            },
+                            legend: {
+                                position: "left",
+                                align: "end",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt"
+                            }
+                        }
+                    });
+                }
+            });
+
+        };
+        function GetDash2() {
+            var ctx6 = document.getElementById("Chart2").getContext("2d");
+            $.ajax({
+                method: "GET",
+                url: "/AccDashBoard/GetDash2",
+                //contentType: "application/json; charset=utf-8",
+                //dataType: "json",
+                success: function (chData) {
+
+                    $("#ClientBalance").html('0');
+                    $("#ClientBalance").html(formatMoney(chData[2][0], TheDecimalPointForTheLocalCurrency));
+                    $("#SupBalance").html('0');
+                    $("#SupBalance").html(formatMoney(chData[2][1], TheDecimalPointForTheLocalCurrency));
+
+
+                    var aData = chData;
+                    var data6 = {
+                        labels: aData[0],
+                        datasets: [
+                            {
+                                data: aData[2],
+                                backgroundColor: [
+                                    "rgba(233,81,81)",
+                                    "rgba(154,205,50)"
+
+                                ],
+                                hoverBackgroundColor: [
+                                    "rgba(233,81,81)",
+                                    "rgba(154,205,50)"
+                                ]
+                            }]
+                    };
+
+                    var pieChart = new Chart(ctx6, {
+                        type: 'pie',
+                        data: data6,
+                        options: {
+
+
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            legend: {
+
+                                labels: {
+                                    fontFamily: "Roboto",
+                                    fontColor: "#878787"
+
+
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(33,33,33,1)',
+                                cornerRadius: 0,
+                                footerFontFamily: "'Roboto'"
+                            },
+                            elements: {
+                                arc: {
+                                    borderWidth: 0
+                                }
+                            },
+                            legend: {
+                                position: "left",
+                                align: "end"
+                            }
+
+
+                        }
+                    });
+                }
+            });
+
+        };
+        function GetDash3() {
+            if ('@Resources.Resource.CurLang' == 'Arb') {
+                var January = "كانون الثاني";
+                var February = "شباط";
+                var March = "اذار";
+                var April = "نيسان";
+                var May = "ايار";
+                var June = "حزيران";
+                var July = "تموز";
+                var August = "اب";
+                var September = "ايلول";
+                var October = "تشرين الاول";
+                var November = "تشرين الثاني";
+                var December = "كانون الاول";
+            }
+            else {
+                var January = "January";
+                var February = "February";
+                var March = "March";
+                var April = "April";
+                var May = "May";
+                var June = "June";
+                var July = "July";
+                var August = "August";
+                var September = "September";
+                var October = "October";
+                var November = "November";
+                var December = "December";
+            }
+            var ctx1 = document.getElementById("Chart3").getContext("2d");
+            $.ajax({
+                method: "GET",
+                url: "/AccDashBoard/GetDash3",
+                success: function (chData) {
+
+                    var data1 = {
+
+                        labels: [January, February, March, April, May, June, July, August, September, October, November, December],
+                        datasets: [
+                            {
+                                label: "@Resources.Resource.Saless",
+                                backgroundColor: "rgba(209,24,24,1)",
+                                borderColor: "rgba(209,24,24,1)",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt",
+                                data: chData[0]
+                            }, 
+                            {
+                                label: "@Resources.Resource.Purchases",
+                                backgroundColor: "rgba(13,177,75,1)",
+                                borderColor: "rgba(13,177,75,1)",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt",
+                                data: chData[1],
+                            }
+
+                        ]
+                    };
+
+                    var areaChart = new Chart(ctx1, {
+                        type: "bar",
+                        data: data1,
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: true,
+                                text: '@Resources.Resource.Saless -@Resources.Resource.Purchases'
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                intersect: true
+                            },
+                            scales: {
+                                yAxes: [{
+                                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                                    display: true,
+                                    position: 'left',
+                                    id: 'y-axis-1',
+                                }, {
+                                    type: 'linear', // only linear but allow scale type registration. This allows extensions to exist solely for log scale for instance
+                                    display: true,
+                                    position: 'right',
+                                    id: 'y-axis-2',
+                                    gridLines: {
+                                        drawOnChartArea: false
+                                    }
+                                }],
+                            }
+                        }
+
+                    });
+
+
+                }
+            });
+        };
+        function GetDash4() {
+            if ('@Resources.Resource.CurLang' == 'Arb') {
+                var January = "كانون الثاني";
+                var February = "شباط";
+                var March = "اذار";
+                var April = "نيسان";
+                var May = "ايار";
+                var June = "حزيران";
+                var July = "تموز";
+                var August = "اب";
+                var September = "ايلول";
+                var October = "تشرين الاول";
+                var November = "تشرين الثاني";
+                var December = "كانون الاول";
+                var Month = 'الاشهر';
+                var Value = 'القيم';
+            }
+            else {
+                var January = "January";
+                var February = "February";
+                var March = "March";
+                var April = "April";
+                var May = "May";
+                var June = "June";
+                var July = "July";
+                var August = "August";
+                var September = "September";
+                var October = "October";
+                var November = "November";
+                var December = "December";
+                var Month = "Month";
+                var Value = "Value"
+            }
+            var ctx1 = document.getElementById("Chart4").getContext("2d");
+            $.ajax({
+                method: "GET",
+                url: "/AccDashBoard/GetDash4",
+                //contentType: "application/json; charset=utf-8",
+                //dataType: "json",
+                success: function (chData) {
+
+                    var data1 = {
+                        labels: [January, February, March, April, May, June, July, August, September, October, November, December],
+                        datasets: [
+                            {
+                                label: "@Resources.Resource.All",
+                                backgroundColor: "rgba(74, 162, 60,1)",
+                                borderColor: "rgba(74, 162, 60,1)",
+                                pointBorderColor: "rgba(74, 162, 60,1)",
+                                pointHighlightStroke: "rgba(74, 162, 60,1)",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt",
+                                data: chData[0],
+                                fill: false
+                            },
+                            {
+                                label: "@Resources.Resource.ADMINISTRATIONEXPENSES",
+                                backgroundColor: "rgba(255, 102, 102,1)",
+                                borderColor: "rgba(255, 102, 102,1)",
+                                pointBorderColor: "rgba(255, 102, 102,1)",
+                                pointBackgroundColor: "rgba(255, 102, 102,1)",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt",
+                                data: chData[1],
+                                fill: false
+                            },
+                            {
+                                label: "@Resources.Resource.SALESEXPENSES",
+                                backgroundColor: "rgba(248, 179, 45,1)",
+                                borderColor: "rgba(248, 179, 45,1)",
+                                pointBorderColor: "rgba(248, 179, 45,1)",
+                                pointBackgroundColor: "rgba(248, 179, 45,1)",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt",
+                                data: chData[2],
+                                fill: false
+                            },
+                            {
+                                label: "@Resources.Resource.FINANCIALEXPENSES",
+                                backgroundColor: "rgba(231, 54, 141,1)",
+                                borderColor: "rgba(231, 54, 141,1)",
+                                pointBorderColor: "rgba(231, 54, 141,1)",
+                                pointHighlightStroke: "rgba(231, 54, 141,1)",
+                                fontFamily: "'Verdana, Geneva, Tahoma, sans-serif'",
+                                fontColor: "darkcyan",
+                                fontSize: "8pt",
+                                data: chData[3],
+                                fill: false
+                            }
+
+
+
+                        ]
+                    };
+
+                    var areaChart = new Chart(ctx1, {
+                        type: "line",
+                        data: data1,
+                        options: {
+                            responsive: true,
+                            title: {
+                                display: true,
+                                text: '@Resources.Resource.Expenses'
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                intersect: false,
+                            },
+                            hover: {
+                                mode: 'nearest',
+                                intersect: true
+                            },
+                            scales: {
+                                xAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: Month
+                                    }
+                                }],
+                                yAxes: [{
+                                    display: true,
+                                    scaleLabel: {
+                                        display: true,
+                                        labelString: Value
+                                    }
+                                }]
+                            }
+                        }
+                    });
+                }
+            });
+        };
+        var TableChequeFund = $("#TableChequeFund").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "150px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "info": false,
+            "infoEmpty": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center"
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+            ],
+            ajax: {
+                "type": "GET",
+                url: '/Home/GetShowChequeFund',
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "ChequeNumber"
+                },
+                {
+                    data: "ChequeDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+
+                },
+                {
+                    data: "ChequeAmount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "IsBill",
+                    render: function (data, type, r) {
+                        if (data == 1) {
+                            return r.CustomerName + ' / ' + r.BillCustomerName
+                        }
+                        else {
+                            return r.CustomerName
+                        }
+                    }
+                },
+                {
+                    data: "DrawerName"
+
+                },
+
+            ]
+        });
+        var TableChequeUnderCollection = $("#TableChequeUnderCollection").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "150px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "info": false,
+            "infoEmpty": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center"
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+            ],
+            ajax: {
+                "type": "GET",
+                url: '/Home/GetShowChequesUnderCollection',
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "ChequeNumber"
+                },
+                {
+                    data: "ChequeDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+
+                },
+                {
+                    data: "ChequeAmount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "IsBill",
+                    render: function (data, type, r) {
+                        if (data == 1) {
+                            return r.CustomerName + ' / ' + r.BillCustomerName
+                        }
+                        else {
+                            return r.CustomerName
+                        }
+                    }
+                },
+                {
+                    data: "DrawerName"
+
+                }
+
+            ]
+        });
+        var TablePostdatedCheque = $("#TablePostdatedCheque").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "150px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "info": false,
+            "infoEmpty": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [5],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [6],
+                    "className": "dt-center"
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+            ],
+            ajax: {
+                "type": "GET",
+                url: '/Home/GetShowPostdatedCheques',
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "ChequeNumber"
+                },
+                {
+                    data: "ChequeDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+
+                },
+                {
+                    data: "ChequeAmount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "PaidToAccount"
+                },
+                {
+                    data: "PostdatedChequeName"
+                },
+                {
+                    data: "BankName"
+                },
+                {
+                    data: "DrawerName"
+
+                }
+
+            ]
+        });
+
+
+         
+
+    });
+</script>
+    <script src="~/Scripts/dashboard-data.js"></script>
+}

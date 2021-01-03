@@ -1,0 +1,294 @@
+﻿@model Acc.ViewModels.St_TransActionFileVM
+@{
+    ViewBag.Title = @Resources.Resource.Attach;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    #dropZone {
+        background: gray;
+        border: black dashed 3px;
+        width: 200px;
+        padding: 50px;
+        text-align: center;
+        color: white;
+    }
+</style>
+<link href="~/Content/dropzone.css" rel="stylesheet" />
+<link href="~/Content/dropzone.min.css" rel="stylesheet" />
+<link href="~/Content/basic.css" rel="stylesheet" />
+<link href="~/Content/basic.min.css" rel="stylesheet" />
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Attach - @Resources.Resource.SaleOrder - @Resources.Resource.VoucherNumber : @Model.VoucherNumber </h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+
+            <form action="~/St_Attach/SaveSt_TransActionFile/@Model.Year/@Model.VoucherNumber/@Model.CompanyTransactionKindNo/@Model.TransactionKindNo" method="post" class="dropzone" id="dropzoneForm" enctype="multipart/form-data">
+                <div id="dropzone-previews">
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-12">
+
+
+
+            <div id="dropzone-previews">
+            </div>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>@Resources.Resource.Name</th>
+                        <th>@Resources.Resource.Download</th>
+                        <th>@Resources.Resource.Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "columnDefs": [
+
+                { "width": "100px", "targets": 0, "className": "dt-center" },
+                { "targets": 1, "className": "dt-center" },
+                { "width": "100px", "targets": 2, "className": "dt-center" },
+                { "width": "50px", "targets": 3, "className": "dt-center" }
+            ],
+
+            dom: 'Bfrtip',
+            buttons: [
+
+                {
+                    messageTop: '@Resources.Resource.Attach',
+                    extend: 'excelHtml5'
+
+                }
+
+            ],
+
+            ajax: {
+                url: "/St_Attach/GetAllTRansFiles/@Model.Year/@Model.VoucherNumber/@Model.CompanyTransactionKindNo/@Model.TransactionKindNo",
+                dataSrc: ""
+            },
+            columns: [
+                {
+
+                    data: "FileName",
+                    render: function (data, type, r) {
+                        if (getFileExtension(data.toLowerCase()) == 'png' || getFileExtension(data.toLowerCase()) == 'jpg' || getFileExtension(data.toLowerCase()) == 'jpeg' ||
+                            getFileExtension(data.toLowerCase()) == 'gif') {
+                            var path = location.protocol + '//' + location.host + '/St_TransActionStockFiles/' + r.Year + '/' + r.VoucherNumber + '/' + r.TransactionKindNo + '/' + r.CompanyTransactionKindNo + '/' + data;
+                            return '<a href=' + path + ' target = "_blank"> <img  width="100%" style="object-fit:contain;" src="' + path + '"/></a>'
+                        }
+                        else if (getFileExtension(data.toLowerCase()) == 'pdf') {
+                            var path = location.protocol + '//' + location.host + '/St_TransActionStockFiles/' + r.Year + '/' + r.VoucherNumber + '/' + r.TransactionKindNo + '/' + r.CompanyTransactionKindNo + '/' + data;
+                            var pathImage = location.protocol + '//' + location.host + '/images/pdf.png';
+                            return '<a href=' + path + ' target = "_blank"><img width="100%"style="object-fit:contain;" src="' + pathImage + '"/></a>'
+                        }
+                        else if (getFileExtension(data.toLowerCase()) == 'xls' || getFileExtension(data.toLowerCase()) == 'xlsx') {
+                            var path = location.protocol + '//' + location.host + '/images/xls.png';
+                            return '<img width="100%"style="object-fit:contain;" src="' + path + '"/>'
+                        }
+                        else {
+                            var path = location.protocol + '//' + location.host + '/images/File.png';
+                            return '<img width="100%"style="object-fit:contain;"src="' + path + '"/>'
+                        }
+                    }
+                },
+                {
+
+                    data: "FileName",
+                    render: function (data, type, r) {
+                        var path = location.protocol + '//' + location.host + '/St_TransActionStockFiles/' + r.Year + '/' + r.VoucherNumber + '/' + r.TransactionKindNo + '/' + r.CompanyTransactionKindNo + '/' + data;
+                        if (getFileExtension(data.toLowerCase()) == 'png' || getFileExtension(data.toLowerCase()) == 'jpg' || getFileExtension(data.toLowerCase()) == 'jpeg' ||
+                            getFileExtension(data.toLowerCase()) == 'gif' || getFileExtension(data.toLowerCase()) == 'pdf') {
+                            return "<a href=" + path + " target = '_blank' style = 'color: #008CBA'>" + data + "' </a>"
+                        }
+                        else {
+                            return data
+                        }
+                    }
+                },
+                {
+
+
+                    data: "Id",
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-icon-anim btn-square btnAttach js-modify  btn-sm' href='/St_Attach/DownloadDocument/" + r.Year + "/" + r.VoucherNumber + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + "/" + r.Id + "'><i class='fa fa-cloud-download' style='margin-top: 4px;'></i></a>";
+                    }
+
+                },
+                {
+                    data: "Id",
+                    render: function (data) {
+                        return "<a  class='btn btn-icon-anim btn-square js-Pop btnDelete btn-sm' href='/St_Attach/DeleteAttach/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i></a>";
+
+                    }
+                }
+            ]
+
+
+        });
+        function getFileExtension(file) {
+            var regexp = /\.([0-9a-z]+)(?:[\?#]|$)/i;
+            var extension = file.match(regexp);
+            return extension && extension[1];
+        }
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        Dropzone.options.dropzoneForm = {
+            init: function () {
+                this.on("complete", function (data) {;
+                    var res = JSON.parse(data.xhr.responseText);
+                    toastr.success('@Resources.Resource.TheFilesHaveBeenUploadedSuccessfully');
+                    tabelMemRef.ajax.reload();
+                });
+            }
+        };
+        $(document).on('click', '#DeleteFile', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                            closeButton: false
+                        });
+                        var dataToSave = {
+
+                            Id: $("#IdDel").val()
+
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/St_Attach/DeleteAttachById",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    $('#modal-container').modal('hide');
+                                    toastr.success(data.Msg);
+
+                                    tabelMemRef.ajax.reload();
+
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+    });
+
+    </script>
+}
+

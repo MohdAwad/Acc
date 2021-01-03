@@ -1,0 +1,1301 @@
+﻿@model Acc.ViewModels.AssetToAccVM
+@{
+    ViewBag.Title = @Resources.Resource.PostConsumAsset;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<script>
+    function GetDepreciationExpenseNo(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("DebitAccountNo").value = data.AccountNumber;
+            document.getElementById("DebitAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("DebitAccountNo").value = '';
+            document.getElementById("DebitAccountName").value = '';
+        }
+    }
+    function GetSelectedDebitCostAccNo(data) {
+        if (data.CostNumber != null && data.AccNo != '') {
+            document.getElementById("DebitCostNo").value = data.CostNumber;
+            document.getElementById("DebitCostName").value = data.CostName;
+        }
+        else {
+            document.getElementById("DebitCostNo").value = '';
+            document.getElementById("DebitCostName").value = '';
+        }
+    }
+
+      var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    var DefinitionNumber = [];
+    $.getJSON('@Url.Action("GetDefinitionExpense", "MultiUse")', { id: 0 }, function (Data) {
+        DefinitionNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                DefinitionNumber.push(r);
+            }
+    });
+    var ClientNumber = [];
+    $.getJSON('@Url.Action("GetClientAccount", "MultiUse")', { id: 0 }, function (Data) {
+        ClientNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                ClientNumber.push(r);
+            }
+    });
+    var CostCenter = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostCenter = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedAccount };
+                CostCenter.push(r);
+            }
+    });
+    $(function () {
+        $("#DebitAccountNo").autocomplete({
+            source: DefinitionNumber,
+            select: function (event, ui) {
+                document.getElementById("DebitAccountNo").value = ui.item.value;
+                document.getElementById("DebitAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#DebitCostNumber").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("DebitCostNumber").value = ui.item.value;
+                document.getElementById("DebitCostName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#DebitCostNo").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("DebitCostNo").value = ui.item.value;
+                document.getElementById("DebitCostName").value = ui.item.label;
+            }
+        });
+    });
+
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.PostConsumAsset</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-5">
+                <table id="tdataTableHeader" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.Serial</th>
+                            <th>@Resources.Resource.Date</th>
+                            <th>@Resources.Resource.Total</th>
+                            <th>@Resources.Resource.Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="col-lg-1">
+            </div>
+            <div class="col-lg-5">
+                <table id="tdataTableTransAction" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.AssetID</th>
+                            <th>@Resources.Resource.AssetName</th>
+                            <th>@Resources.Resource.ValueofConsumption</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-12" style="margin-top : 10px">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.PostedEntry)
+                    @Html.DropDownListFor(m => m.PostedEntry, new List<SelectListItem>
+                                                     {
+
+                                                      new SelectListItem{ Text=Resources.Resource. ToExpenseAccount, Value = "1",Selected=false },
+                                                       new SelectListItem{ Text=Resources.Resource. ToAssetExpenseAccount, Value = "2",Selected=false },
+                                                        }, new { @id = "PostedEntry", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(model => model.PostedEntry, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CompanyTransactionKindID)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml" })
+
+
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml" })
+                    }
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TransNo)
+                    @Html.TextBoxFor(m => m.TransNo, new { @id = "TransNo", @class = "form-control input-sml", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.TransNo)
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TransDate)
+                    @Html.TextBoxFor(model => model.TransDate, new { @id = "TransDate", @class = "form-control input-sml", @Value = Model.TransDate.ToString("dd/MM/yyyy") })
+                    @Html.ValidationMessageFor(m => m.TransDate)
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.DepreciationExpenseNo)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.DebitAccountNo, new { @id = "DebitAccountNo", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnDebitAccountNo">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.DebitAccountNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.DebitAccountName, new { @id = "DebitAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearDebitAccountNo">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Note)
+                    @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.Note)
+                </div>
+            </div>
+        </div>
+        @if (Model.WorkWithCostCenter)
+        {
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.DepreciationExpenseCostNo)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.DebitCostNo, new { @id = "DebitCostNo", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnDebitCostNo">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.DebitCostNo)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.CostCenterName)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.DebitCostName, new { @id = "DebitCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearDebitCostNo">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-lg-12">
+            <table id="tdataTableToPost" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.Debit</th>
+                        <th>@Resources.Resource.Credit</th>
+                        <th>@Resources.Resource.AccountNumber</th>
+                        <th>@Resources.Resource.AccountName</th>
+                        @if (Model.WorkWithCostCenter)
+                        {
+                            <th>@Resources.Resource.CostCenter</th>
+                        }
+                        <th>@Resources.Resource.Note</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div class="col-md-3" style="text-align: center">
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.TotalDebit)
+                        @Html.TextBoxFor(m => m.TotalDebit, new { @id = "TotalDebit", @class = "form-control input-sml", @min = "0", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.TotalCredit)
+                        @Html.TextBoxFor(m => m.TotalCredit, new { @id = "TotalCredit", @class = "form-control input-sml", @min = "0", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.Diff)
+                        @Html.TextBoxFor(m => m.Difference, new { @id = "Difference", @class = "form-control input-sml", @min = "0", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3" style="text-align: center">
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="form-group">
+            @if (User.IsInRole("AddAssetToAcc") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-primary btn-anim" id="Save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+            }
+
+            <button type="submit" class="btn btn-warning btn-anim" id="Clear"> <i class="fa fa-circle-o"></i><span class="btn-text">@Resources.Resource.Clear</span></button>
+            <button type="submit" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.PostConsumAsset',
+                            ScreenUrl: "/Asset/AssetToAcc",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        document.getElementById("TotalDebit").value = formatMoney(0, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("TotalCredit").value = formatMoney(0, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("Difference").value = formatMoney(0, TheDecimalPointForTheLocalCurrency);
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        $(document).on('click', '#Close', function () {
+            window.location = "/AssetType/AssetDash";
+        });
+        $("#TransDate").mask("99/99/9999");
+        var $VouchrNo = 0;
+        var SelectedValue = $("#CompanyTransactionKindID").val();
+        var VoucherDate = document.getElementById("TransDate").value;
+        var mm = parseInt(VoucherDate.substring(3, 5));
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        if (SelectedValue != null && SelectedValue != '') {
+            $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm }, function (Data) {
+
+                if (Data != null) {
+                    document.getElementById("TransNo").value = Data;
+
+                } else {
+
+
+                };
+            });
+        }
+        else {
+        }
+        $(document).on('click', '#Save', function () {
+            var PostedEntry = $("#PostedEntry").val();
+            var dDate = document.getElementById("TransDate").value;
+           
+                if (!validatedate(dDate) && dDate != null && dDate != '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (dDate != null && dDate != '') {
+                    var dd = parseInt(dDate.substring(0, 2));
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    var mm = parseInt(dDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    var yyyy = parseInt(dDate.substring(6, 10));
+                    dDate = mm + '/' + dd + '/' + yyyy;
+                    $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                        if (Data >= 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            if (PostedEntry == 1 && $("#DebitAccountNo").val() == '') {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                            }
+                            else if (PostedEntry == 1 && $("#DebitCostNo").val() == '' && WorkWithCostCenter) {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                            }
+                            else if ($VouchrNo == 0) {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                            }
+                            else {
+                                bootbox.confirm({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        confirm: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                            className: 'btn-success'
+                                        },
+                                        cancel: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                            className: 'btn-danger'
+                                        }
+                                    },
+                                    callback: function (result) {
+                                        if (result) {
+                                            var dialog = bootbox.dialog({
+                                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                                closeButton: false
+                                            });
+                                            var dataToSave = {
+                                                VouchrNo: $VouchrNo,
+                                                CoTranKind: $("#CompanyTransactionKindID").val(),
+                                                AccountNo: $("#DebitAccountNo").val(),
+                                                CostCenter: $("#DebitCostNo").val(),
+                                                PostedEntry: $("#PostedEntry").val(),
+                                                TransDate: $("#TransDate").val()
+                                            };
+
+                                            $.ajax({
+                                                type: "POST",
+                                                url: "/Asset/SaveAssetNewTransAction",
+                                                data: JSON.stringify(dataToSave),
+                                                contentType: 'application/json',
+                                                success: function (data) {
+
+                                                    dialog.modal('hide');
+                                                    if (data.Code == 0) {
+                                                        toastr.error(data.Msg);
+                                                    }
+                                                    else if (data.Code == 1) {
+                                                        $('#modal-container').modal('hide');
+                                                        toastr.success(data.Msg);
+                                                        Clear();
+                                                    }
+                                                },
+                                                error: function (data) {
+                                                    dialog.modal('hide');
+                                                    toastr.error(data);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+                        };
+                    });
+                }
+            
+        });
+        var tabelMemRefHeader = $("#tdataTableHeader").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            scrollY: '250px',
+            "searching": false,
+            "bInfo": false,
+            "columnDefs": [
+                { "width": "20px", "targets": 0, "className": "dt-center" },
+                { "width": "70px", "targets": 1, "className": "dt-center" },
+                { "targets": 2, "className": "dt-center" },
+                { "width": "50px", "targets": 3, "className": "dt-center" }
+            ],
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                url: "/Asset/GetAllAssetHeader",
+                dataSrc: ""
+            },
+            columns: [
+                {
+
+                    data: "VouchrNo"
+                },
+
+
+                {
+                    data: "VouchrDate",
+                    render: function (data) {
+                        return moment(data).format('DD/MM/YYYY');
+
+
+                    }
+                },
+                {
+                    data: "Total",
+                    render: function (data) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "VouchrNo",
+                    render: function (data) {
+                        return "<a  class='btn btn-icon-anim btn-square js-inpage btnDetail btn-sm'><i class='fa fa-tasks' style='margin-top: 4px;'></i> </a>";
+                    }
+
+                }
+
+
+            ]
+
+
+        });
+        var tdataTableTransActionRef = $("#tdataTableTransAction").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            scrollY: '250px',
+            "searching": false,
+            "bInfo": false,
+            "columnDefs": [
+                { "width": "50px", "targets": 0, "className": "dt-center" },
+                { "targets": 1, "className": "dt-center" },
+                { "width": "70px", "targets": 2, "className": "dt-center" }
+            ],
+
+            dom: 'Bfrtip',
+            buttons: [
+            ],
+
+            ajax: {
+                "type": "POST",
+                url: "/Asset/GetAllAssetTransAction",
+                "data": function (d) {
+                    d.id = $VouchrNo;
+                },
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "AssetID"
+
+                },
+                {
+                    data: "AssetName"
+
+                },
+
+                {
+                    data: "ValueofConsumption",
+                    render: function (data) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+
+            ]
+
+
+        });
+        if (WorkWithCostCenter) {
+            var tdataTableToPostRef = $("#tdataTableToPost").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                scrollY: '250px',
+                "searching": false,
+                "bInfo": false,
+                "columnDefs": [
+                    { "width": "70px", "targets": 0, "className": "dt-center" },
+                    { "width": "70px", "targets": 1, "className": "dt-center" },
+                    { "targets": 2, "className": "dt-center" },
+                    { "targets": 3, "className": "dt-center" },
+                    { "targets": 4, "className": "dt-center" },
+                    { "targets": 5, "className": "dt-center" }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+                ajax: {
+                    "type": "POST",
+                    url: "/Asset/GetAssetTransActionToPost",
+                    "data": function (d) {
+                        d.id = $VouchrNo;
+                    },
+                    dataSrc: ""
+                },
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+                    totalDebit = api.column(0).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    totalCredit = api.column(1).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    document.getElementById("TotalDebit").value = formatMoney(totalDebit, TheDecimalPointForTheLocalCurrency);
+                    document.getElementById("TotalCredit").value = formatMoney(totalCredit, TheDecimalPointForTheLocalCurrency);
+                    document.getElementById("Difference").value = formatMoney((totalDebit - totalCredit), TheDecimalPointForTheLocalCurrency);
+                },
+                columns: [
+                    {
+                        data: "Debit",
+                        render: function (data) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+
+                    {
+                        data: "AccountNo"
+
+                    },
+                    {
+                        data: "AccountName"
+
+                    },
+                    {
+                        data: "CostCenterName"
+
+                    },
+                    {
+                        data: "Note"
+
+                    }
+
+                ]
+
+
+            });
+        }
+        else {
+            var tdataTableToPostRef = $("#tdataTableToPost").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                scrollY: '250px',
+                "searching": false,
+                "bInfo": false,
+                "columnDefs": [
+                    { "width": "70px", "targets": 0, "className": "dt-center" },
+                    { "width": "70px", "targets": 1, "className": "dt-center" },
+                    { "targets": 2, "className": "dt-center" },
+                    { "targets": 3, "className": "dt-center" },
+                    { "targets": 4, "className": "dt-center" }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+                ajax: {
+                    "type": "POST",
+                    url: "/Asset/GetAssetTransActionToPost",
+                    "data": function (d) {
+                        d.id = $VouchrNo;
+                    },
+                    dataSrc: ""
+                },
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+                    totalDebit = api.column(0).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    totalCredit = api.column(1).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    document.getElementById("TotalDebit").value = formatMoney(totalDebit, TheDecimalPointForTheLocalCurrency);
+                    document.getElementById("TotalCredit").value = formatMoney(totalCredit, TheDecimalPointForTheLocalCurrency);
+                    document.getElementById("Difference").value = formatMoney((totalDebit - totalCredit), TheDecimalPointForTheLocalCurrency);
+                },
+                columns: [
+                    {
+                        data: "Debit",
+                        render: function (data) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+
+                    {
+                        data: "AccountNo"
+
+                    },
+                    {
+                        data: "AccountName"
+
+                    },
+                    {
+                        data: "Note"
+
+                    }
+                ]
+
+
+            });
+        }
+        $('#tdataTableHeader').on('click', '.js-inpage', function (e) {
+            e.preventDefault();
+            var table = $('#tdataTableHeader').DataTable();
+            var data = table.row($(this).closest('tr')).data();
+            console.log(data);
+            $VouchrNo = data.VouchrNo;
+            tdataTableTransActionRef.ajax.reload();
+            tdataTableToPostRef.ajax.reload();
+
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        $('#BtnDebitAccountNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchExpenseAccountNumber/DepreciationExpenseNo';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnDebitCostNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/DebitCostAccNo';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#CompanyTransactionKindID').change(function () {
+            var SelectedValue = $("#CompanyTransactionKindID").val();
+            var VoucherDate = document.getElementById("TransDate").value;
+            var mm = parseInt(VoucherDate.substring(3, 5));
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm }, function (Data) {
+
+                    if (Data != null) {
+                        document.getElementById("TransNo").value = Data;
+
+                    } else {
+
+
+                    };
+                });
+            } else {
+            }
+        });
+        $("#TransDate").focus().select();
+        $("#TransDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#DebitAccountNo").focus().select();
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TransDate").focus().select();
+        });
+        $('#BtnClearDebitAccountNo').on('click', function () {
+            document.getElementById("DebitAccountNo").value = '';
+            document.getElementById("DebitAccountName").value = '';
+        });
+        $('#BtnClearDebitCostNo').on('click', function () {
+            document.getElementById("DebitCostNo").value = '';
+            document.getElementById("DebitCostName").value = '';
+        });
+        function Clear() {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("TransDate").value = today;
+            tabelMemRefHeader.ajax.reload();
+            $('#tdataTableTransAction').DataTable().clear().draw();
+            $('#tdataTableToPost').DataTable().clear().draw();
+            document.getElementById("CompanyTransactionKindID").selectedIndex = "0";
+            var SelectedValue = $("#CompanyTransactionKindID").val();
+            var VoucherDate = document.getElementById("TransDate").value;
+            var mm = parseInt(VoucherDate.substring(3, 5));
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm}, function (Data) {
+
+                    if (Data != null) {
+                        document.getElementById("TransNo").value = Data;
+
+                    } else {
+
+
+                    };
+                });
+            }
+            else {
+            }
+            document.getElementById("Note").value = '';
+            document.getElementById("PostedEntry").selectedIndex = "0";
+            document.getElementById("DebitAccountNo").value = '';
+            document.getElementById("DebitAccountName").value = '';
+            if (WorkWithCostCenter) {
+                document.getElementById("DebitCostNo").value = '';
+                document.getElementById("DebitCostName").value = '';
+            }
+            document.getElementById("TotalDebit").value = formatMoney(0, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("TotalCredit").value = formatMoney(0, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("Difference").value = formatMoney(0, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("BtnDebitAccountNo").disabled = false;
+            document.getElementById("BtnClearDebitAccountNo").disabled = false;
+            document.getElementById("BtnClearDebitCostNo").disabled = false;
+            document.getElementById("BtnDebitCostNo").disabled = false;
+        }
+        $(document).on('click', '#Clear', function () {
+            Clear();
+        });
+        $('#PostedEntry').change(function () {
+            var PostedEntry = $("#PostedEntry").val();
+            if (PostedEntry == 2) {
+                document.getElementById("BtnDebitAccountNo").disabled = true;
+                document.getElementById("BtnClearDebitAccountNo").disabled = true;
+                document.getElementById("BtnClearDebitCostNo").disabled = true;
+                document.getElementById("BtnDebitCostNo").disabled = true;
+                document.getElementById("DebitAccountName").value = '';
+                document.getElementById("DebitAccountNo").value = '';
+                document.getElementById("DebitCostNo").value = '';
+                document.getElementById("DebitCostName").value = '';
+            }
+            else {
+                document.getElementById("BtnDebitAccountNo").disabled = false;
+                document.getElementById("BtnClearDebitAccountNo").disabled = false;
+                document.getElementById("BtnClearDebitCostNo").disabled = false;
+                document.getElementById("BtnDebitCostNo").disabled = false;
+            }
+
+        });
+        $("#TransDate").blur(function () {
+            var dDate = document.getElementById("TransDate").value;
+
+            if (dDate != null && dDate != '') {
+                if (!validatedate(dDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dd = parseInt(dDate.substring(0, 2));
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    var mm = parseInt(dDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    var yyyy = parseInt(dDate.substring(6, 10));
+                    dDate = mm + '/' + dd + '/' + yyyy;
+                    $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                        if (Data >= 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                    });
+                    var SelectedValue = $("#CompanyTransactionKindID").val();
+                    var VoucherDate = document.getElementById("TransDate").value;
+                    var mm = parseInt(VoucherDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    if (SelectedValue != null && SelectedValue != '') {
+                        $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm }, function (Data) {
+
+                            if (Data != null) {
+                                document.getElementById("TransNo").value = Data;
+
+                            } else {
+                            };
+                        });
+                    }
+                    else {
+                    }
+                }
+            }
+            else {
+            }
+
+
+        });
+        $("#DebitAccountNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#DebitCostNo").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchExpenseAccountNumber/DepreciationExpenseNo';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#DebitCostNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#Note").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/DebitCostAccNo';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#DebitAccountNo").blur(function () {
+            var AccountNumber = document.getElementById("DebitAccountNo").value;
+            if (AccountNumber == '') {
+                document.getElementById("DebitAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckDefinitionExpense", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("DebitAccountNo").value = '';
+                            document.getElementById("DebitAccountName").value = '';
+                            $("#DebitAccountNo").focus();
+                        }
+                        else {
+                            document.getElementById("DebitAccountName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#DebitCostNo").blur(function () {
+            var AccountNumber = document.getElementById("DebitCostNo").value;
+            if (AccountNumber == '') {
+                document.getElementById("DebitCostName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("DebitCostNo").value = '';
+                            document.getElementById("DebitCostName").value = '';
+                            $("#DebitCostNo").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("DebitCostName").value = Data.ArabicName;
+                            }
+                            else {
+                                document.getElementById("DebitCostName").value = Data.EnglishName;
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+</script>
+}
+
+
+
+

@@ -1,0 +1,1782 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.AccountChart;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <style>
+        .panel-body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .panel-footer {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .panel-title {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        #ChartOfAccountList_H {
+            font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+			font-size : 10pt;
+        }
+        #ChartOfAccountList_D {
+            font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+            font-size: 10pt;
+        }
+        .HeaderStyle {
+            color: black !important;
+        }
+    </style>
+    <div class="panel card-view">
+        
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.AccountChart</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                @if (User.IsInRole("CoOwner") || User.IsInRole("AddmainaccountChartofaccount"))
+                {
+                    <button type="button" class="btn btn-primary btn-anim js-Part" id="AddNewFather" href="/ChartOfAccount/AddNewFatherAccount/0"><i class="fa  fa-bookmark"></i><span class="btn-text">@Resources.Resource.CreateFatherAccount</span></button>
+
+                    <button type="button" class="btn btn-success btn-anim js-Part" id="AddNewAnAccount" href="#"><i class="fa fa-leaf"></i><span class="btn-text">@Resources.Resource.CreateSubAccount</span></button>
+
+                }
+
+                @if (User.IsInRole("CoOwner") || User.IsInRole("UpdateChartofaccoun"))
+                {
+                    <button type="button" class="btn btn-warning btn-anim js-Part" id="Update"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.UpdateAccount</span></button>
+                }
+                @if (User.IsInRole("CoOwner") || User.IsInRole("DeleteChartofaccoun"))
+                {
+                    <button type="button" class="btn btn-anim js-Part btnDelete-lg" id="Delete"><i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.DeleteAccount</span></button>
+                }
+                <button type="button" class="btn  btn-anim" id="Refresh" style="background-color:#D16587"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Refresh</span></button>
+                <button type="submit" class="btn btn-anim btnFav"  id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+                <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+            <script type="text/javascript">
+                function OnNodeDblClick(s, e) {
+                    document.getElementById("AddNewAnAccount").click();
+                }
+                function OnGetNodeDblClickValues(values) {
+                    document.getElementById("Update").click();
+                }
+
+                function OnFocusedNodeChange(s, e) {
+                    var nodeKey = s.GetFocusedNodeKey();
+                    OnGetSelectedNodeKeyValues(nodeKey);
+                }
+                function OnGetSelectedNodeKeyValues(values) {
+
+                    $("#AddNewAnAccount").attr("href", "/ChartOfAccount/AddNewChildAccount/" + values + "/0");
+                    $("#AddNewClient").attr("href", "/ChartOfAccount/AddNewChildAccount/" + values + "/1");
+                    $("#AddNewSupplier").attr("href", "/ChartOfAccount/AddNewChildAccount/" + values + "/2");
+                    $("#AddNewApproval").attr("href", "/ChartOfAccount/AddNewChildAccount/" + values + "/3");
+                    $("#Update").attr("href", "/ChartOfAccount/UpdateAccount/" + values);
+                    $("#Delete").attr("href", "/ChartOfAccount/DeleteAccount/" + values);
+                }
+
+            </script>
+            <div class="col-lg-12" style="margin-top: 10px">
+                @{ Html.BeginForm(); }
+                @Html.Action("TreeListPartial")
+                @{ Html.EndForm(); }
+            </div>
+            <div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-content">
+                </div>
+            </div>
+            <div id="modal-containerClient" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-content">
+                </div>
+            </div>
+        </div>
+    </div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+    $(document).ready(function () {
+    $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.AccountChart',
+                            ScreenUrl: "/ChartOfAccount/Index",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/ChartOfAccount/ChartDash";
+        });
+        $('#modal-containerClient').on('hidden.bs.modal', function () {
+            $(".modal-content").html("");
+
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+            $(".modal-containerClient").html("");
+            $(this).removeData('bs.modal');
+            return false;
+        });
+        $(document).on('click', '.js-Part', function (e) {
+            $('#modal-containerClient').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-containerClient').on('hidden.bs.modal', function () {
+            $(".modal-content").html("");
+            $(this).removeData('bs.modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(".modal-content").html("");
+
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+            $(".modal-content").html("");
+            $(this).removeData('bs.modal');
+            return false;
+        });
+        $(document).on('click', '.js-Part', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(".modal-content").html("");
+            $(this).removeData('bs.modal');
+
+        });
+        function OnGridFocusedNodeChanged(s, e) {
+            s.GetFocusedNodeKey();
+
+            console.log(s.GetFocusedNodeKey());
+        }
+        function OnGetSelectedNodeKeyValues(values) {
+            console.log(values);
+
+        }
+        $(document).on('click', '#Refresh', function () {
+            ChartOfAccountList.PerformCallback('refresh');
+        });
+        $(document).on('click', '#SaveChildAccount', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                AccountFather: $("#AccountFather").val(), AccountFatherName: $("#AccountFatherName").val(),
+                                CurrencyID: $("#CurrencyID").val()
+
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveChildAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        $("#AccountNumber").focus().select();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveFatherAccount', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                CurrencyID: $("#CurrencyID").val() /*,SalesID: $("#SalesID").val() */
+
+
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveFatherAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        $("#AccountNumber").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#UpdateAccount', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedAccount: $("#StoppedAccount:checked").val(), CurrencyID: $("#CurrencyID").val()
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/UpdateAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#DeleteAccount', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedAccount: $("#StoppedAccount:checked").val(), CurrencyID: $("#CurrencyID").val()
+
+
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/DeleteAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+
+
+        });
+        $(document).on('click', '#SaveFatherAccountClient', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var AreaID = $("#AreaID").val();
+                            if (AreaID >= 1) {
+                                AreaID = $("#AreaID").val();
+                            }
+                            else {
+                                AreaID = 0;
+                            }
+                            var CityID = $("#CityID").val();
+                            if (CityID >= 1) {
+                                CityID = $("#CityID").val();
+                            }
+                            else {
+                                CityID = 0;
+                            }
+                            var FSalesID = $("#SalesID").val();
+                            if (FSalesID >= 1) {
+                                FSalesID = $("#SalesID").val();
+                            }
+                            else {
+                                FSalesID = 0;
+                            }
+                            var dataToSave = {
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), CityID: CityID,
+                                AreaID: AreaID, NextTo: $("#NextTo").val(), StreetName: $("#StreetName").val(),
+                                BuildingNo: $("#BuildingNo").val(), FloorNo: $("#FloorNo").val(), KnownTo: $("#KnownTo").val(),
+                                TradeName: $("#TradeName").val(), CommercialRecord: $("#CommercialRecord").val(), ProfessionLicence: $("#ProfessionLicence").val(),
+                                NationalNumberOfTheFacility: $("#NationalNumberOfTheFacility").val(), AuthorizedSignatory: $("#AuthorizedSignatory").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(), TaxCaseID: $("#TaxCaseID").val(), UpperLimitForUncollectedCheques: $("#UpperLimitForUncollectedCheques").val(),
+                                DebitLimit: $("#DebitLimit").val(), DebitPeriod: $("#DebitPeriod").val(), DiscountPercentage: $("#DiscountPercentage").val(), SalesID: FSalesID
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveFatherAccountClient",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        document.getElementById("CityID").value = '0';
+                                        var AreaID = $('#AreaID');
+                                        AreaID.empty();
+                                        document.getElementById("Website").value = '';
+                                        document.getElementById("Email").value = '';
+                                        document.getElementById("Telephone").value = '';
+                                        document.getElementById("Mobile").value = '';
+                                        document.getElementById("TeleFax").value = '';
+                                        document.getElementById("NextTo").value = '';
+                                        document.getElementById("StreetName").value = '';
+                                        document.getElementById("BuildingNo").value = '';
+                                        document.getElementById("FloorNo").value = '';
+                                        document.getElementById("KnownTo").value = '';
+                                        document.getElementById("TradeName").value = '';
+                                        document.getElementById("CommercialRecord").value = '';
+                                        document.getElementById("ProfessionLicence").value = '';
+                                        document.getElementById("NationalNumberOfTheFacility").value = '';
+                                        document.getElementById("AuthorizedSignatory").value = '';
+                                        document.getElementById("DebitLimit").value = '0';
+                                        document.getElementById("DebitPeriod").value = '0';
+                                        document.getElementById("DiscountPercentage").value = '0';
+                                        document.getElementById("UpperLimitForUncollectedCheques").value = '0';
+                                        document.getElementById("PaymnetMethodTypeID").selectedIndex = "0";
+                                        document.getElementById("TaxCaseID").selectedIndex = "0";
+                                        $("#AccountNumber").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveChildAccountClient', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var AreaID = $("#AreaID").val();
+                            if (AreaID >= 1) {
+                                AreaID = $("#AreaID").val();
+                            }
+                            else {
+                                AreaID = 0;
+                            }
+                            var CityID = $("#CityID").val();
+                            if (CityID >= 1) {
+                                CityID = $("#CityID").val();
+                            }
+                            else {
+                                CityID = 0;
+                            }
+                            var FSalesID = $("#SalesID").val();
+                            if (FSalesID >= 1) {
+                                FSalesID = $("#SalesID").val();
+                            }
+                            else {
+                                FSalesID = 0;
+                            }
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                AccountFather: $("#AccountFather").val(), AccountFatherName: $("#AccountFatherName").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), CityID,
+                                AreaID: AreaID, NextTo: $("#NextTo").val(), StreetName: $("#StreetName").val(),
+                                BuildingNo: $("#BuildingNo").val(), FloorNo: $("#FloorNo").val(), KnownTo: $("#KnownTo").val(),
+                                TradeName: $("#TradeName").val(), CommercialRecord: $("#CommercialRecord").val(), ProfessionLicence: $("#ProfessionLicence").val(),
+                                NationalNumberOfTheFacility: $("#NationalNumberOfTheFacility").val(), AuthorizedSignatory: $("#AuthorizedSignatory").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(), TaxCaseID: $("#TaxCaseID").val(), UpperLimitForUncollectedCheques: $("#UpperLimitForUncollectedCheques").val(),
+                                DebitLimit: $("#DebitLimit").val(), DebitPeriod: $("#DebitPeriod").val(), DiscountPercentage: $("#DiscountPercentage").val(), FSalesID: FSalesID
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveChildAccountClient",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        document.getElementById("AccountTypeID").selectedIndex = "0";
+                                        document.getElementById("CurrencyID").selectedIndex = "0";
+                                        document.getElementById("CityID").value = '0';
+                                        var AreaID = $('#AreaID');
+                                        AreaID.empty();
+                                        document.getElementById("Website").value = '';
+                                        document.getElementById("Email").value = '';
+                                        document.getElementById("Telephone").value = '';
+                                        document.getElementById("Mobile").value = '';
+                                        document.getElementById("TeleFax").value = '';
+                                        document.getElementById("NextTo").value = '';
+                                        document.getElementById("StreetName").value = '';
+                                        document.getElementById("BuildingNo").value = '';
+                                        document.getElementById("FloorNo").value = '';
+                                        document.getElementById("KnownTo").value = '';
+                                        document.getElementById("TradeName").value = '';
+                                        document.getElementById("CommercialRecord").value = '';
+                                        document.getElementById("ProfessionLicence").value = '';
+                                        document.getElementById("NationalNumberOfTheFacility").value = '';
+                                        document.getElementById("AuthorizedSignatory").value = '';
+                                        document.getElementById("DebitLimit").value = '0';
+                                        document.getElementById("DebitPeriod").value = '0';
+                                        document.getElementById("DiscountPercentage").value = '0';
+                                        document.getElementById("UpperLimitForUncollectedCheques").value = '0';
+                                        document.getElementById("PaymnetMethodTypeID").selectedIndex = "0";
+                                        document.getElementById("TaxCaseID").selectedIndex = "0";
+                                        $("#AccountNumber").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#UpdateAccountClient', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                closeButton: false
+                            });
+                            var AreaID = $("#AreaID").val();
+                            if (AreaID >= 1) {
+                                AreaID = $("#AreaID").val();
+                            }
+                            else {
+                                AreaID = 0;
+                            }
+                            var CityID = $("#CityID").val();
+                            if (CityID >= 1) {
+                                CityID = $("#CityID").val();
+                            }
+                            else {
+                                CityID = 0;
+                            }
+                            var FSalesID = $("#SalesID").val();
+                            if (FSalesID >= 1) {
+                                FSalesID = $("#SalesID").val();
+                            }
+                            else {
+                                FSalesID = 0;
+                            }
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedAccount: $("#StoppedAccount:checked").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), CityID: CityID,
+                                AreaID: AreaID, NextTo: $("#NextTo").val(), StreetName: $("#StreetName").val(),
+                                BuildingNo: $("#BuildingNo").val(), FloorNo: $("#FloorNo").val(), KnownTo: $("#KnownTo").val(),
+                                TradeName: $("#TradeName").val(), CommercialRecord: $("#CommercialRecord").val(), ProfessionLicence: $("#ProfessionLicence").val(),
+                                NationalNumberOfTheFacility: $("#NationalNumberOfTheFacility").val(), AuthorizedSignatory: $("#AuthorizedSignatory").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(), TaxCaseID: $("#TaxCaseID").val(), UpperLimitForUncollectedCheques: $("#UpperLimitForUncollectedCheques").val(),
+                                DebitLimit: $("#DebitLimit").val(), DebitPeriod: $("#DebitPeriod").val(), DiscountPercentage: $("#DiscountPercentage").val()
+                                , FSalesID: FSalesID
+
+
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/UpdateAccountClient",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveFatherAccountAccreditation', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+                                Bank: $("#Bank").val(), CreditInlocalCurrency: $("#CreditInlocalCurrency").val(), CreditForeignCurrency: $("#CreditForeignCurrency").val(),
+                                CurrencyType: $("#CurrencyType").val(), ExchangeRate: $("#ExchangeRate").val(), TypeOfGoods: $("#TypeOfGoods").val(),
+                                ValidityOfAccreditation: $("#ValidityOfAccreditation").val(), PaymentTerms: $("#PaymentTerms").val(),
+                                ShippingPort: $("#ShippingPort").val(),
+                                ArrivePort: $("#ArrivePort").val(), BankInsurance: $("#BankInsurance").val(), CommissionsPaid: $("#CommissionsPaid").val(),
+                                DateOfIssuanceOfCredit: $("#DateOfIssuanceOfCredit").val(), LastShipmentDate: $("#LastShipmentDate").val(), AccreditationExpiresPlace: $("#AccreditationExpiresPlace").val(),
+                                BeneficiaryOfAccreditation: $("#BeneficiaryOfAccreditation").val(), PartialCharging: $("#PartialCharging").val(), MultipleShippingMethods: $("#MultipleShippingMethods").val()
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveFatherAccountAccreditation",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        document.getElementById("Bank").value = '';
+                                        document.getElementById("CreditInlocalCurrency").value = '0';
+                                        document.getElementById("CreditForeignCurrency").value = '0';
+                                        document.getElementById("CurrencyType").value = '';
+                                        document.getElementById("ExchangeRate").value = '0';
+                                        document.getElementById("TypeOfGoods").value = '';
+                                        document.getElementById("PaymentTerms").value = '';
+                                        document.getElementById("ShippingPort").value = '';
+                                        document.getElementById("ArrivePort").value = '';
+                                        document.getElementById("PhoneOfPersonInCharge").value = '';
+                                        document.getElementById("BankInsurance").value = '0';
+                                        document.getElementById("CommissionsPaid").value = '0';
+                                        document.getElementById("AccreditationExpiresPlace").value = '';
+                                        document.getElementById("BeneficiaryOfAccreditation").value = '';
+                                        document.getElementById("PartialCharging").value = '';
+                                        document.getElementById("MultipleShippingMethods").value = '';
+                                        $("#ArabicName").focus().select();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveChildAccountAccreditation', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                AccountFather: $("#AccountFather").val(), AccountFatherName: $("#AccountFatherName").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+                                Bank: $("#Bank").val(), CreditInlocalCurrency: $("#CreditInlocalCurrency").val(), CreditForeignCurrency: $("#CreditForeignCurrency").val(),
+                                CurrencyType: $("#CurrencyType").val(), ExchangeRate: $("#ExchangeRate").val(), TypeOfGoods: $("#TypeOfGoods").val(),
+                                ValidityOfAccreditation: $("#ValidityOfAccreditation").val(), PaymentTerms: $("#PaymentTerms").val(),
+                                ShippingPort: $("#ShippingPort").val(),
+                                ArrivePort: $("#ArrivePort").val(), BankInsurance: $("#BankInsurance").val(), CommissionsPaid: $("#CommissionsPaid").val(),
+                                DateOfIssuanceOfCredit: $("#DateOfIssuanceOfCredit").val(), LastShipmentDate: $("#LastShipmentDate").val(), AccreditationExpiresPlace: $("#AccreditationExpiresPlace").val(),
+                                BeneficiaryOfAccreditation: $("#BeneficiaryOfAccreditation").val(), PartialCharging: $("#PartialCharging").val(), MultipleShippingMethods: $("#MultipleShippingMethods").val()
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveChildAccountAccreditation",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        document.getElementById("Bank").value = '';
+                                        document.getElementById("CreditInlocalCurrency").value = '0';
+                                        document.getElementById("CreditForeignCurrency").value = '0';
+                                        document.getElementById("CurrencyType").value = '';
+                                        document.getElementById("ExchangeRate").value = '0';
+                                        document.getElementById("TypeOfGoods").value = '';
+                                        document.getElementById("PaymentTerms").value = '';
+                                        document.getElementById("ShippingPort").value = '';
+                                        document.getElementById("ArrivePort").value = '';
+                                        document.getElementById("PhoneOfPersonInCharge").value = '';
+                                        document.getElementById("BankInsurance").value = '0';
+                                        document.getElementById("CommissionsPaid").value = '0';
+                                        document.getElementById("AccreditationExpiresPlace").value = '';
+                                        document.getElementById("BeneficiaryOfAccreditation").value = '';
+                                        document.getElementById("PartialCharging").value = '';
+                                        document.getElementById("MultipleShippingMethods").value = '';
+                                        $("#ArabicName").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#UpdateAccountAccreditation', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedAccount: $("#StoppedAccount:checked").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+
+
+                                Bank: $("#Bank").val(), CreditInlocalCurrency: $("#CreditInlocalCurrency").val(), CreditForeignCurrency: $("#CreditForeignCurrency").val(),
+                                CurrencyType: $("#CurrencyType").val(), ExchangeRate: $("#ExchangeRate").val(), TypeOfGoods: $("#TypeOfGoods").val(),
+                                ValidityOfAccreditation: $("#ValidityOfAccreditation").val(), PaymentTerms: $("#PaymentTerms").val(),
+                                ShippingPort: $("#ShippingPort").val(),
+                                ArrivePort: $("#ArrivePort").val(), BankInsurance: $("#BankInsurance").val(), CommissionsPaid: $("#CommissionsPaid").val(),
+                                DateOfIssuanceOfCredit: $("#DateOfIssuanceOfCredit").val(), LastShipmentDate: $("#LastShipmentDate").val(), AccreditationExpiresPlace: $("#AccreditationExpiresPlace").val(),
+                                BeneficiaryOfAccreditation: $("#BeneficiaryOfAccreditation").val(), PartialCharging: $("#PartialCharging").val(), MultipleShippingMethods: $("#MultipleShippingMethods").val()
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/UpdateAccountAccreditation",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveFatherAccountSupplier', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var SupplierCityID = $("#SupplierCityID").val();
+                            if (SupplierCityID >= 1) {
+                                SupplierCityID = $("#SupplierCityID").val();
+                            }
+                            else {
+                                SupplierCityID = 0;
+                            }
+                            var SupplierCityBankID = $("#SupplierCityBankID").val();
+                            if (SupplierCityBankID >= 1) {
+                                SupplierCityBankID = $("#SupplierCityBankID").val();
+                            }
+                            else {
+                                SupplierCityBankID = 0;
+                            }
+                            var SupplierBranchBankID = $("#SupplierBranchBankID").val();
+                            if (SupplierBranchBankID >= 1) {
+                                SupplierBranchBankID = $("#SupplierBranchBankID").val();
+                            }
+                            else {
+                                SupplierBranchBankID = 0;
+                            }
+                            var SupplierTypeID = $("#SupplierTypeID").val();
+                            if (SupplierTypeID >= 1) {
+                                SupplierTypeID = $("#SupplierTypeID").val();
+                            }
+                            else {
+                                SupplierTypeID = 0;
+                            }
+                            var SupplierCountryBankID = $("#SupplierCountryBankID").val();
+                            if (SupplierCountryBankID >= 1) {
+                                SupplierCountryBankID = $("#SupplierCountryBankID").val();
+                            }
+                            else {
+                                SupplierCountryBankID = 0;
+                            }
+                            var SupplierCountryID = $("#SupplierCountryID").val();
+                            if (SupplierCountryID >= 1) {
+                                SupplierCountryID = $("#SupplierCountryID").val();
+                            }
+                            else {
+                                SupplierCountryID = 0;
+                            }
+                            var SupplierBankID = $("#SupplierBankID").val();
+                            if (SupplierBankID >= 1) {
+                                SupplierBankID = $("#SupplierBankID").val();
+                            }
+                            else {
+                                SupplierBankID = 0;
+                            }
+                            var dataToSave = {
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), SupplierCityID: SupplierCityID,
+                                SupplierCountryID: SupplierCountryID, Address: $("#Address").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(),
+                                NameOfPersonInCharge: $("#NameOfPersonInCharge").val(), PhoneOfPersonInCharge: $("#PhoneOfPersonInCharge").val(),
+                                SupplierCityBankID: SupplierCityBankID, SupplierCountryBankID: SupplierCountryBankID,
+                                SupplierBranchBankID: SupplierBranchBankID, SupplierBankID: SupplierBankID,
+                                SupplierTypeID: SupplierTypeID, BankAccountNumber: $("#BankAccountNumber").val(), BeneficiaryName: $("#BeneficiaryName").val(),
+                                IBAN: $("#IBAN").val(), SwiftCode: $("#SwiftCode").val(), BankAdderss: $("#BankAdderss").val()
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveFatherAccountSupplier",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        document.getElementById("Bank").value = '';
+                                        document.getElementById("CreditInlocalCurrency").value = '0';
+                                        document.getElementById("CreditForeignCurrency").value = '0';
+                                        document.getElementById("CurrencyType").value = '';
+                                        document.getElementById("ExchangeRate").value = '0';
+                                        document.getElementById("TypeOfGoods").value = '';
+                                        document.getElementById("PaymentTerms").value = '';
+                                        document.getElementById("ShippingPort").value = '';
+                                        document.getElementById("ArrivePort").value = '';
+                                        document.getElementById("PhoneOfPersonInCharge").value = '';
+                                        document.getElementById("BankInsurance").value = '0';
+                                        document.getElementById("CommissionsPaid").value = '0';
+                                        document.getElementById("AccreditationExpiresPlace").value = '';
+                                        document.getElementById("BeneficiaryOfAccreditation").value = '';
+                                        document.getElementById("PartialCharging").value = '';
+                                        document.getElementById("MultipleShippingMethods").value = '';
+                                        document.getElementById("SupplierCountryID").value = '0';
+                                        var SupplierCityID = $('#SupplierCityID');
+                                        SupplierCityID.empty();
+                                        document.getElementById("SupplierBankID").value = '0';
+                                        var SupplierBranchBankID = $('#SupplierBranchBankID');
+                                        SupplierBranchBankID.empty();
+                                        document.getElementById("SupplierCountryBankID").value = '0';
+                                        var SupplierCityBankID = $('#SupplierCityBankID');
+                                        SupplierCityBankID.empty();
+                                        document.getElementById("BankAdderss").value = '';
+                                        document.getElementById("BeneficiaryName").value = '';
+                                        document.getElementById("SwiftCode").value = '';
+                                        document.getElementById("IBAN").value = '';
+                                        document.getElementById("BankAccountNumber").value = '';
+                                        document.getElementById("SupplierTypeID").value = '0';
+                                        $("#ArabicName").focus().select();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveChildAccountSupplier', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var SupplierCityID = $("#SupplierCityID").val();
+                            if (SupplierCityID >= 1) {
+                                SupplierCityID = $("#SupplierCityID").val();
+                            }
+                            else {
+                                SupplierCityID = 0;
+                            }
+                            var SupplierCityBankID = $("#SupplierCityBankID").val();
+                            if (SupplierCityBankID >= 1) {
+                                SupplierCityBankID = $("#SupplierCityBankID").val();
+                            }
+                            else {
+                                SupplierCityBankID = 0;
+                            }
+                            var SupplierBranchBankID = $("#SupplierBranchBankID").val();
+                            if (SupplierBranchBankID >= 1) {
+                                SupplierBranchBankID = $("#SupplierBranchBankID").val();
+                            }
+                            else {
+                                SupplierBranchBankID = 0;
+                            }
+                            var SupplierTypeID = $("#SupplierTypeID").val();
+                            if (SupplierTypeID >= 1) {
+                                SupplierTypeID = $("#SupplierTypeID").val();
+                            }
+                            else {
+                                SupplierTypeID = 0;
+                            }
+                            var SupplierCountryBankID = $("#SupplierCountryBankID").val();
+                            if (SupplierCountryBankID >= 1) {
+                                SupplierCountryBankID = $("#SupplierCountryBankID").val();
+                            }
+                            else {
+                                SupplierCountryBankID = 0;
+                            }
+                            var SupplierCountryID = $("#SupplierCountryID").val();
+                            if (SupplierCountryID >= 1) {
+                                SupplierCountryID = $("#SupplierCountryID").val();
+                            }
+                            else {
+                                SupplierCountryID = 0;
+                            }
+                            var SupplierBankID = $("#SupplierBankID").val();
+                            if (SupplierBankID >= 1) {
+                                SupplierBankID = $("#SupplierBankID").val();
+                            }
+                            else {
+                                SupplierBankID = 0;
+                            }
+                            var dataToSave = {
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                AccountFather: $("#AccountFather").val(), AccountFatherName: $("#AccountFatherName").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), SupplierCityID: SupplierCityID,
+                                SupplierCountryID: SupplierCountryID, Address: $("#Address").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(),
+                                NameOfPersonInCharge: $("#NameOfPersonInCharge").val(), PhoneOfPersonInCharge: $("#PhoneOfPersonInCharge").val(),
+                                SupplierCityBankID: SupplierCityBankID, SupplierCountryBankID: SupplierCountryBankID,
+                                SupplierBranchBankID: SupplierBranchBankID, SupplierBankID: SupplierBankID,
+                                SupplierTypeID: SupplierTypeID, BankAccountNumber: $("#BankAccountNumber").val(), BeneficiaryName: $("#BeneficiaryName").val(),
+                                IBAN: $("#IBAN").val(), SwiftCode: $("#SwiftCode").val(), BankAdderss: $("#BankAdderss").val()
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveChildAccountSupplier",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+
+                                        document.getElementById("AccountNumber").value = data.LastID;
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+
+
+                                        document.getElementById("Website").value = '';
+                                        document.getElementById("Email").value = '';
+                                        document.getElementById("Telephone").value = '';
+                                        document.getElementById("Mobile").value = '';
+                                        document.getElementById("TeleFax").value = '';
+
+
+                                        document.getElementById("Address").value = '';
+                                        document.getElementById("NameOfPersonInCharge").value = '';
+                                        document.getElementById("PhoneOfPersonInCharge").value = '';
+
+                                        document.getElementById("BankAdderss").value = '';
+                                        document.getElementById("BeneficiaryName").value = '';
+                                        document.getElementById("SwiftCode").value = '';
+                                        document.getElementById("IBAN").value = '';
+                                        document.getElementById("BankAccountNumber").value = '';
+                                        document.getElementById("SupplierTypeID").value = '0';
+                                        document.getElementById("SupplierCountryID").value = '0';
+                                        var SupplierCityID = $('#SupplierCityID');
+                                        SupplierCityID.empty();
+                                        document.getElementById("SupplierBankID").value = '0';
+                                        var SupplierBranchBankID = $('#SupplierBranchBankID');
+                                        SupplierBranchBankID.empty();
+                                        document.getElementById("SupplierCountryBankID").value = '0';
+                                        var SupplierCityBankID = $('#SupplierCityBankID');
+                                        SupplierCityBankID.empty();
+                                        $("#ArabicName").focus().select();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#UpdateAccountSupplier', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                closeButton: false
+                            });
+                            var SupplierCityID = $("#SupplierCityID").val();
+                            if (SupplierCityID >= 1) {
+                                SupplierCityID = $("#SupplierCityID").val();
+                            }
+                            else {
+                                SupplierCityID = 0;
+                            }
+                            var SupplierCityBankID = $("#SupplierCityBankID").val();
+                            if (SupplierCityBankID >= 1) {
+                                SupplierCityBankID = $("#SupplierCityBankID").val();
+                            }
+                            else {
+                                SupplierCityBankID = 0;
+                            }
+                            var SupplierBranchBankID = $("#SupplierBranchBankID").val();
+                            if (SupplierBranchBankID >= 1) {
+                                SupplierBranchBankID = $("#SupplierBranchBankID").val();
+                            }
+                            else {
+                                SupplierBranchBankID = 0;
+                            }
+                            var SupplierTypeID = $("#SupplierTypeID").val();
+                            if (SupplierTypeID >= 1) {
+                                SupplierTypeID = $("#SupplierTypeID").val();
+                            }
+                            else {
+                                SupplierTypeID = 0;
+                            }
+                            var SupplierCountryBankID = $("#SupplierCountryBankID").val();
+                            if (SupplierCountryBankID >= 1) {
+                                SupplierCountryBankID = $("#SupplierCountryBankID").val();
+                            }
+                            else {
+                                SupplierCountryBankID = 0;
+                            }
+                            var SupplierCountryID = $("#SupplierCountryID").val();
+                            if (SupplierCountryID >= 1) {
+                                SupplierCountryID = $("#SupplierCountryID").val();
+                            }
+                            else {
+                                SupplierCountryID = 0;
+                            }
+                            var SupplierBankID = $("#SupplierBankID").val();
+                            if (SupplierBankID >= 1) {
+                                SupplierBankID = $("#SupplierBankID").val();
+                            }
+                            else {
+                                SupplierBankID = 0;
+                            }
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedAccount: $("#StoppedAccount:checked").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), SupplierCityID: SupplierCityID,
+                                SupplierCountryID: SupplierCountryID, Address: $("#Address").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(),
+                                NameOfPersonInCharge: $("#NameOfPersonInCharge").val(), PhoneOfPersonInCharge: $("#PhoneOfPersonInCharge").val(),
+                                SupplierCityBankID: SupplierCityBankID, SupplierCountryBankID: SupplierCountryBankID,
+                                SupplierBranchBankID: SupplierBranchBankID, SupplierBankID: SupplierBankID,
+                                SupplierTypeID: SupplierTypeID, BankAccountNumber: $("#BankAccountNumber").val(), BeneficiaryName: $("#BeneficiaryName").val(),
+                                IBAN: $("#IBAN").val(), SwiftCode: $("#SwiftCode").val(), BankAdderss: $("#BankAdderss").val()
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/UpdateAccountSupplier",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+}
+
+
+
+

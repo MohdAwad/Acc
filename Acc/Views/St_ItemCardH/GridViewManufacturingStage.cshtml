@@ -1,0 +1,113 @@
+﻿
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+
+        settings.Name = "ManufacturingStageGrid";
+        settings.CallbackRouteValues = new { Controller = "St_ItemCardH", Action = "GridViewManufacturingStage" };
+        settings.SettingsEditing.BatchEditSettings.KeepChangesOnCallbacks = DefaultBoolean.False;
+        settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+        settings.SettingsEditing.BatchEditSettings.HighlightDeletedRows = false;
+        settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+        settings.ClientSideEvents.BatchEditConfirmShowing = "function(s, e){ e.cancel = true; }";
+        settings.CommandColumn.Visible = false;
+        settings.CommandColumn.ShowNewButtonInHeader = false;
+        settings.SettingsEditing.ShowModelErrorsForEditors = true;
+        settings.ClientSideEvents.BeginCallback = "OnBeginCallbackManufacturingStage";
+        settings.ClientSideEvents.EndCallback = "OnEndCallbackManufacturingStage";
+        settings.SettingsBehavior.ConfirmDelete = false;
+        settings.SettingsBehavior.AllowSort = false;
+        settings.SettingsBehavior.AllowDragDrop = false;
+        settings.Settings.ShowFilterBar = GridViewStatusBarMode.Hidden;
+        settings.Settings.ShowPreview = false;
+        settings.Settings.ShowFilterRowMenu = false;
+        settings.Settings.ShowTitlePanel = false;
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+        }
+        else
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+        }
+        settings.Settings.VerticalScrollBarMode = ScrollBarMode.Hidden;
+        settings.SettingsEditing.NewItemRowPosition = GridViewNewItemRowPosition.Bottom;
+        settings.CommandColumn.ShowDeleteButton = false;
+        settings.CommandColumn.ShowNewButton = false;
+
+        settings.KeyFieldName = "ManufacturingStageRowNumber";
+        settings.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.ClientSideEvents.Init = "OnInitManufacturingStage";
+        settings.ClientSideEvents.BatchEditEndEditing = "Grid_BatchEditEndEditingManufacturingStage";
+        settings.ClientSideEvents.BatchEditStartEditing = "Grid_BatchEditStartEditingManufacturingStage";
+
+        settings.Theme = "iOS";
+        settings.KeyboardSupport = true;
+        settings.CellEditorInitialize += (s, e) =>
+        {
+            e.Editor.ReadOnly = false;
+        };
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel)
+                e.Visible = false;
+        };
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "ManufacturingStageFactoryNo";
+            column.Width = 50;
+            column.Caption = Resources.Resource.FactoryNo;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.EditorProperties().TextBox(txtbox =>
+            {
+                txtbox.ClientSideEvents.Init = "AutoCompleteManufacturingStage";
+            });
+        });
+        settings.Columns.Add(column =>
+        {
+            column.Width = 100;
+            column.FieldName = "ManufacturingStageFactoryName";
+            column.Caption = Resources.Resource.FactoryName;
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "NumberOfDays";
+            column.Width = 50;
+            column.Caption = Resources.Resource.NumberOfDays;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Integer;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 0;
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 0;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 1;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 30;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+
+        });
+        settings.InitNewRow += (s, e) =>
+        {
+            e.NewValues["NumberOfDays"] = 1;
+        };
+        settings.CustomJSProperties = (s, e) =>
+        {
+            if (ViewData["ErrorFlag"] != null)
+                e.Properties.Add("cpErrorFlag", (bool)ViewData["ErrorFlag"]);
+        };
+    });
+    if (ViewData["EditError"] != null)
+    {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

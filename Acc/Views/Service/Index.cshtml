@@ -1,0 +1,646 @@
+﻿@model Acc.ViewModels.ServiceVM
+@{
+    ViewBag.Title = @Resources.Resource.Service;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view" style="margin-top:10px;">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Service</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            @if (User.IsInRole("AddService") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-primary btn-anim js-Pop" id="btnSave" href="/Service/AddNew"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            }
+            @if (User.IsInRole("PrintService") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-warning btn-anim" id="btnPrintExcel"> <i class="fa fa-file-excel-o"></i><span class="btn-text">@Resources.Resource.PrintExcel</span></a>
+            }
+
+
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.Serial</th>
+                        <th>@Resources.Resource.ServiceName</th>
+                        <th>@Resources.Resource.ServiceGroup</th>
+                        <th>@Resources.Resource.SalePrice</th>
+                        <th>@Resources.Resource.CostPrice</th>
+                        <th>@Resources.Resource.TaxPercentage</th>
+                        <th>@Resources.Resource.Modify</th>
+                        <th>@Resources.Resource.Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+  
+
+    <script>
+	$(document).ready(function () {
+		var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+		var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+		function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+			try {
+				decimalCount = Math.abs(decimalCount);
+				decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+				const negativeSign = amount < 0 ? "-" : "";
+
+				let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+				let j = (i.length > 3) ? i.length % 3 : 0;
+
+				return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+			} catch (e) {
+				console.log(e)
+			}
+		};
+		$(document).on('click', '#CloseForm', function () {
+			window.location = "/CompanySettingsDash/Index";
+		});
+		$(document).on('click', '#btnPrintExcel', function () {
+			$(".dt-button").click();
+		});
+		$(document).on('click', '#SaveNewService', function () {
+			if ($("#ArabicName").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else if ($("#CostPrice").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else if ($("#SalePrice").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else if ($("#TaxPercentage").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else {
+				bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+								closeButton: false
+							});
+							var dataToSave = {
+
+								ServiceID: $("#ServiceID").val(),
+								ArabicName: $("#ArabicName").val(),
+								EnglishName: $("#EnglishName").val(),
+								ServiceGroupID: $("#ServiceGroupID").val(),
+								Note: $("#Note").val(),
+								CostPrice: $("#CostPrice").val(),
+								SalePrice: $("#SalePrice").val(),
+								TaxPercentage: $("#TaxPercentage").val()
+							};
+
+							$.ajax({
+								type: "POST",
+								url: "/Service/SaveService",
+								data: JSON.stringify(dataToSave),
+								contentType: 'application/json',
+								success: function (data) {
+
+									dialog.modal('hide');
+									if (data.Code == 0) {
+										toastr.error(data.Msg);
+									}
+									else if (data.Code == 1) {
+										$('#modal-container').modal('hide');
+										toastr.success(data.Msg);
+
+										tabelMemRef.ajax.reload();
+
+										document.getElementById("ServiceID").value = data.LastID;
+										document.getElementById("ArabicName").value = '';
+										document.getElementById("EnglishName").value = '';
+										document.getElementById("ServiceGroupID").value = 1;
+										document.getElementById("Note").value = '';
+										document.getElementById("CostPrice").value = 0.000;
+										document.getElementById("SalePrice").value = 0.000;
+										document.getElementById("TaxPercentage").value = 0.0;
+										;
+										$("#ArabicName").focus().select();
+
+
+									}
+
+								},
+								error: function (data) {
+									dialog.modal('hide');
+									toastr.error(data);
+								}
+							});
+						}
+					}
+				});
+
+
+			}
+
+		});
+		$(document).on('click', '#UpdateService', function () {
+			if ($("#ArabicName").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else if ($("#CostPrice").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else if ($("#SalePrice").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else if ($("#TaxPercentage").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else {
+				bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+								closeButton: false
+							});
+
+							var dataToSave = {
+
+								ServiceID: $("#ServiceID").val(),
+								ArabicName: $("#ArabicName").val(),
+								EnglishName: $("#EnglishName").val(),
+								ServiceGroupID: $("#ServiceGroupID").val(),
+								Note: $("#Note").val(),
+								CostPrice: $("#CostPrice").val(),
+								SalePrice: $("#SalePrice").val(),
+								TaxPercentage: $("#TaxPercentage").val()
+							};
+
+							$.ajax({
+								type: "POST",
+								url: "/Service/UpdateService",
+								data: JSON.stringify(dataToSave),
+								contentType: 'application/json',
+								success: function (data) {
+
+									dialog.modal('hide');
+									if (data.Code == 0) {
+										toastr.error(data.Msg);
+									}
+									else if (data.Code == 1) {
+										$('#modal-container').modal('hide');
+										toastr.success(data.Msg);
+
+										tabelMemRef.ajax.reload();
+										document.getElementById("Close").click();
+
+									}
+
+								},
+								error: function (data) {
+									dialog.modal('hide');
+									toastr.error(data);
+								}
+
+							});
+
+						}
+					}
+				});
+
+
+
+
+			}
+
+
+		});
+		$(document).on('click', '#DeleteService', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						var Service = $("#ServiceID").val();
+						if (Service != null && Service != '') {
+							$.getJSON('@Url.Action("CheckServiceBeforDelete", "Service")', { id: Service }, function (Data) {
+								if (Data != null) {
+									var checkService = Data;
+									if (checkService == 0) {
+										var dialog = bootbox.dialog({
+											title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+											message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+											closeButton: false
+										});
+
+										var dataToSave = {
+
+											ServiceID: $("#ServiceID").val(),
+											ArabicName: $("#ArabicName").val(),
+											EnglishName: $("#EnglishName").val(),
+											ServiceGroupID: $("#ServiceGroupID").val(),
+											Note: $("#Note").val(),
+											CostPrice: $("#CostPrice").val(),
+											SalePrice: $("#SalePrice").val(),
+											TaxPercentage: $("#TaxPercentage").val()
+										};
+
+										$.ajax({
+											type: "POST",
+											url: "/Service/DeleteService",
+											data: JSON.stringify(dataToSave),
+											contentType: 'application/json',
+											success: function (data) {
+
+												dialog.modal('hide');
+												if (data.Code == 0) {
+													toastr.error(data.Msg);
+												}
+												else if (data.Code == 1) {
+													$('#modal-container').modal('hide');
+													toastr.success(data.Msg);
+
+													tabelMemRef.ajax.reload();
+													document.getElementById("Close").click();
+
+												}
+
+											},
+											error: function (data) {
+												dialog.modal('hide');
+												toastr.error(data);
+											}
+
+										});
+									}
+									else {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+								};
+							});
+						}
+						else {
+						}
+					}
+				}
+			});
+		});
+
+
+
+				$(document).on('click', '#btnPrintExcel', function () {
+
+			var dialog = bootbox.dialog({
+				title: '@Resources.Resource.PleaseWait',
+				message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Print...</p>',
+				closeButton: false
+			});
+
+
+			var dataToSave = [];
+			tabelMemRef.rows().every(function (rowIdx, tableLoop, rowLoop) {
+				var data = this.data();
+				dataToSave.push(data);
+
+
+			});
+
+
+			$.ajax({
+				type: "POST",
+                url: "/ExcelREport/CreateServiceExcel",
+				data: JSON.stringify(dataToSave),
+				contentType: 'application/json',
+				success: function (data) {
+					dialog.modal('hide');
+
+
+                    window.location = '/ExcelReport/DownloadServiceExcel?fileGuid=' + data.FileGuid;
+
+
+
+				},
+				error: function (data) {
+					dialog.modal('hide');
+					toastr.error(data);
+				}
+
+			});
+
+			dialog.modal('hide');
+			//$('#tdataTable').DataTable().ajax.reload();
+
+		});
+
+		var tabelMemRef = $("#tdataTable").DataTable({
+			"language": {
+				"emptyTable": '@Resources.Resource.EmptyTable',
+				"search": '@Resources.Resource.Search',
+				"loadingRecords": '@Resources.Resource.LoadingRecords',
+				"processing": '@Resources.Resource.Processing',
+				"zeroRecords": '@Resources.Resource.ZeroRecords',
+				"info": '@Resources.Resource.Info',
+				"infoEmpty": '@Resources.Resource.InfoEmpty',
+				"lengthMenu": '@Resources.Resource.LengthMenu',
+				"infoFiltered": '@Resources.Resource.InfoFiltered',
+				"paginate": {
+					"previous": '@Resources.Resource.Previous',
+					"next": '@Resources.Resource.Next',
+					"first": '@Resources.Resource.First',
+					"last": '@Resources.Resource.Last',
+				},
+				"aria": {
+					"sortAscending": '@Resources.Resource.SortAscending',
+					"sortDescending": '@Resources.Resource.SortDescending'
+				}
+			},
+			"scrollY": "500px",
+			"scrollX": true,
+			"ordering": false,
+			"autoWidth": false,
+			"paging": false,
+			"columnDefs": [
+				{ "width": "50px", "targets": 0, "className": "dt-center" },
+				{ "targets": 1, "className": "dt-center" },
+				{ "targets": 2, "className": "dt-center" },
+				{ "width": "70px", "targets": 3, "className": "dt-center" },
+				{ "width": "70px", "targets": 4, "className": "dt-center" },
+				{ "width": "50px", "targets": 5, "className": "dt-center" },
+				{ "width": "50px", "targets": 6, "className": "dt-center" },
+				{ "width": "50px", "targets": 7, "className": "dt-center" }
+			],
+
+			dom: 'Bfrtip',
+			buttons: [
+
+				{
+					messageTop: '@Resources.Resource.Service',
+					extend: 'excelHtml5',
+					exportOptions: {
+						columns: [0, 1, 2, 3, 4, 5]
+					}
+				}
+
+			],
+
+			ajax: {
+				url: "/Service/GetAllServices",
+				dataSrc: ""
+			},
+			columns: [
+				{
+
+					data: "ServiceID"
+				},
+
+				{
+					data: "ServiceName"
+
+				},
+				{
+					data: "ServiceGroupName"
+
+				},
+				{
+					data: "SalePrice",
+					render: function (data, type, r) {
+						return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+					}
+
+				},
+				{
+					data: "CostPrice",
+					render: function (data, type, r) {
+						return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+					}
+
+				},
+				{
+					data: "TaxPercentage",
+					render: function (data, type, r) {
+						return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+					}
+
+				},
+				{
+					data: "ServiceID",
+					render: function (data) {
+						if ("@(User.IsInRole("UpdateService") || User.IsInRole("CoOwner"))" == "True") {
+							return "<a  class='btn btn-success btn-icon-anim btn-square js-Pop btn-sm' href='/Service/UpdateService/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+
+						}
+						else {
+							return "";
+						}
+
+
+					}
+
+				},
+				{
+					data: "ServiceID",
+					render: function (data) {
+						if ("@(User.IsInRole("DeleteService") || User.IsInRole("CoOwner"))" == "True") {
+							return "<a  class='btn btn-icon-anim btn-square js-Pop btnDelete btn-sm' href='/Service/DeleteService/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i></a>";
+
+						}
+						else {
+							return "";
+						}
+
+
+					}
+
+				}
+
+			]
+
+
+		});
+
+		$(document).on('click', '.js-Pop', function (e) {
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+
+		});
+
+		$('#modal-container').on('hidden.bs.modal', function () {
+			$(this).removeData('bs.modal');
+
+		});
+
+
+		$('#CancelModal').on('click', function () {
+			return false;
+		});
+		if ("@(User.IsInRole("UpdateService") || User.IsInRole("CoOwner"))" == "False") {
+			var column = tabelMemRef.column(6);
+
+			// Toggle the visibility
+			column.visible(!column.visible());
+		}
+
+		if ("@(User.IsInRole("DeleteService") || User.IsInRole("CoOwner"))" == "False") {
+			var column = tabelMemRef.column(7);
+
+			// Toggle the visibility
+			column.visible(!column.visible());
+		}
+	});
+    </script>
+}

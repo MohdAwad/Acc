@@ -1,0 +1,55 @@
+﻿@model Acc.ViewModels.TransActionFileVM
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<style>
+    #dropZone {
+        background: gray;
+        border: black dashed 3px;
+        width: 200px;
+        padding: 50px;
+        text-align: center;
+        color: white;
+    }
+</style>
+<link href="~/Content/dropzone.css" rel="stylesheet" />
+<link href="~/Content/dropzone.min.css" rel="stylesheet" />
+<link href="~/Content/basic.css" rel="stylesheet" />
+<link href="~/Content/basic.min.css" rel="stylesheet" />
+
+<h1> Upload Files </h1>
+<div class="col-lg-12">
+
+    <form action="~/Attach/SaveTransActionFile/@Model.Year/@Model.VoucherNumber/@Model.CompanyTransactionKindNo/@Model.TransactionKindNo" method="post" class="dropzone" id="dropzoneForm" enctype="multipart/form-data">
+        <div id="dropzone-previews">
+        </div>
+    </form>
+
+
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            //File Upload response from the server
+            Dropzone.options.dropzoneForm = {
+                init: function () {
+                    this.on("complete", function (data) {
+                        //var res = eval('('+data.xhr.responseText+')');
+                        var res = JSON.parse(data.xhr.responseText);
+                         toastr.success("تم رفع الملفات بنجاح");
+                       //tabelMemRefDoc.ajax.reload();
+                    });
+                }
+            };
+        });
+    </script>
+}
+
+
+
+

@@ -1,0 +1,659 @@
+﻿@model Acc.ViewModels.DefinitionBankVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    function GetSelectedDataBankAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("BankAccountNumber").value = data.AccountNumber;
+            document.getElementById("BankAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("BankAccountNumber").value = '';
+            document.getElementById("BankAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataChequeUnderCollectionAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ChequeUnderCollectionAccountNumber").value = data.AccountNumber;
+            document.getElementById("ChequeUnderCollectionAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ChequeUnderCollectionAccountNumber").value = '';
+            document.getElementById("ChequeUnderCollectionAccountName").value = '';
+        }
+    }
+    function GetSelectedDataPostdatedChequeAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("PostdatedChequeAccountNumber").value = data.AccountNumber;
+            document.getElementById("PostdatedChequeAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("PostdatedChequeAccountNumber").value = '';
+            document.getElementById("PostdatedChequeAccountName").value = '';
+        }
+    }
+    function GetSelectedDataBillsOfExchangeAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("BillsOfExchangeAccountNumber").value = data.AccountNumber;
+            document.getElementById("BillsOfExchangeAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("BillsOfExchangeAccountNumber").value = '';
+            document.getElementById("BillsOfExchangeAccountName").value = '';
+        }
+    }
+    var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#BankAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("BankAccountNumber").value = ui.item.value;
+                document.getElementById("BankAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#ChequeUnderCollectionAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("ChequeUnderCollectionAccountNumber").value = ui.item.value;
+                document.getElementById("ChequeUnderCollectionAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#PostdatedChequeAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("PostdatedChequeAccountNumber").value = ui.item.value;
+                document.getElementById("PostdatedChequeAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#BillsOfExchangeAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("BillsOfExchangeAccountNumber").value = ui.item.value;
+                document.getElementById("BillsOfExchangeAccountName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Update - @Resources.Resource.DefinitionBanks</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.BankID)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.BankID, new { @id = "BankID", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.BankAccountNumber) <span style="color:red">*</span>
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.BankAccountNumber, new { @id = "BankAccountNumber", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnBankAccountNumber">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.DefinitionBank.BankAccountNumber)
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.BankAccountName, new { @id = "BankAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearBankAccountNumber">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.ChequeUnderCollectionAccountNumber)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.ChequeUnderCollectionAccountNumber, new { @id = "ChequeUnderCollectionAccountNumber", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnChequeUnderCollectionAccountNumber">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.DefinitionBank.ChequeUnderCollectionAccountNumber)
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.ChequeUnderCollectionAccountName, new { @id = "ChequeUnderCollectionAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearChequeUnderCollectionAccountNumber">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.PostdatedChequeAccountNumber)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.PostdatedChequeAccountNumber, new { @id = "PostdatedChequeAccountNumber", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnPostdatedChequeAccountNumber">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.DefinitionBank.PostdatedChequeAccountNumber)
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.PostdatedChequeAccountName, new { @id = "PostdatedChequeAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearPostdatedChequeAccountNumber">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.BillsOfExchangeAccountNumber)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.BillsOfExchangeAccountNumber, new { @id = "BillsOfExchangeAccountNumber", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnBillsOfExchangeAccountNumber">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.DefinitionBank.BillsOfExchangeAccountNumber)
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.BillsOfExchangeAccountName, new { @id = "BillsOfExchangeAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearBillsOfExchangeAccountNumber">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <button type="submit" class="btn btn-success btn-anim" id="UpdateDefinitionBank"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/DefinitionBank/Index";
+        });
+        $(document).on('click', '#UpdateDefinitionBank', function () {
+            if ($("#BankAccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                closeButton: false
+                            });
+
+                            var dataToSave = {
+                                BankID: $("#BankID").val(),
+                                BankAccountNumber: $("#BankAccountNumber").val(),
+                                ChequeUnderCollectionAccountNumber: $("#ChequeUnderCollectionAccountNumber").val(),
+                                PostdatedChequeAccountNumber: $("#PostdatedChequeAccountNumber").val(),
+                                BillsOfExchangeAccountNumber: $("#BillsOfExchangeAccountNumber").val()
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/DefinitionBank/UpdateDefinitionBank",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                        bootbox.alert(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        $('#modal-container').modal('hide');
+                                        window.location = "/DefinitionBank/Index";
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                    bootbox.alert(data.Msg);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+
+        });
+        $('#BtnBankAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/BankAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnChequeUnderCollectionAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ChequeUnderCollectionAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnPostdatedChequeAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/PostdatedChequeAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnBillsOfExchangeAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/BillsOfExchangeAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearBankAccountNumber').on('click', function () {
+            document.getElementById("BankAccountNumber").value = '';
+            document.getElementById("BankAccountName").value = '';
+        });
+        $('#BtnClearChequeUnderCollectionAccountNumber').on('click', function () {
+            document.getElementById("ChequeUnderCollectionAccountNumber").value = '';
+            document.getElementById("ChequeUnderCollectionAccountName").value = '';
+        });
+        $('#BtnClearPostdatedChequeAccountNumber').on('click', function () {
+            document.getElementById("PostdatedChequeAccountNumber").value = '';
+            document.getElementById("PostdatedChequeAccountName").value = '';
+        });
+        $('#BtnClearBillsOfExchangeAccountNumber').on('click', function () {
+            document.getElementById("BillsOfExchangeAccountNumber").value = '';
+            document.getElementById("BillsOfExchangeAccountName").value = '';
+        });
+        $("#BankAccountNumber").focus().select();
+        $("#BankAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ChequeUnderCollectionAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/BankAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#ChequeUnderCollectionAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PostdatedChequeAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/ChequeUnderCollectionAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#PostdatedChequeAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#BillsOfExchangeAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/PostdatedChequeAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#BillsOfExchangeAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#BankAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/BillsOfExchangeAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#BankAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("BankAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("BankAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("BankAccountNumber").value = '';
+                            document.getElementById("BankAccountName").value = '';
+                            $("#BankAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("BankAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("BankAccountNumber").value = "";
+                                document.getElementById("BankAccountName").value = "";
+                                $("#BankAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#ChequeUnderCollectionAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("ChequeUnderCollectionAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("ChequeUnderCollectionAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ChequeUnderCollectionAccountNumber").value = '';
+                            document.getElementById("ChequeUnderCollectionAccountName").value = '';
+                            $("#ChequeUnderCollectionAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("ChequeUnderCollectionAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("ChequeUnderCollectionAccountNumber").value = "";
+                                document.getElementById("ChequeUnderCollectionAccountName").value = "";
+                                $("#ChequeUnderCollectionAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#PostdatedChequeAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("PostdatedChequeAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("PostdatedChequeAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("PostdatedChequeAccountNumber").value = '';
+                            document.getElementById("PostdatedChequeAccountName").value = '';
+                            $("#PostdatedChequeAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("PostdatedChequeAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("PostdatedChequeAccountNumber").value = "";
+                                document.getElementById("PostdatedChequeAccountName").value = "";
+                                $("#PostdatedChequeAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#BillsOfExchangeAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("BillsOfExchangeAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("BillsOfExchangeAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("BillsOfExchangeAccountNumber").value = '';
+                            document.getElementById("BillsOfExchangeAccountName").value = '';
+                            $("#BillsOfExchangeAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("BillsOfExchangeAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("BillsOfExchangeAccountNumber").value = "";
+                                document.getElementById("BillsOfExchangeAccountName").value = "";
+                                $("#BillsOfExchangeAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+}
+
+

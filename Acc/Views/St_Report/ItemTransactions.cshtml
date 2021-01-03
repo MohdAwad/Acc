@@ -1,0 +1,640 @@
+﻿@model Acc.ViewModels.St_ItemTransactionReportVM
+@{
+    ViewBag.Title = @Resources.Resource.ItemTransactions;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    table.dataTable th.dt-center {
+        font-size: 8pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 8pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after {
+        display: none !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    function GetSelectedItemCode(data) {
+        if (data.ItemCode != null && data.ItemCode != '') {
+            document.getElementById("ItemCode").value = data.ItemCode;
+            document.getElementById("ItemName").value = data.ItemName;
+        }
+        else {
+            document.getElementById("ItemCode").value = '';
+            document.getElementById("ItemName").value = '';
+        }
+
+    }
+    var ItemCard = [];
+    $.getJSON('@Url.Action("GetSt_ItemCard", "MultiUse")', { id: 0 }, function (Data) {
+        ItemCard = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].ItemCode, value: Data[i].ItemName};
+                ItemCard.push(r);
+            }
+    });
+    $(function () {
+        $("ItemCode").autocomplete({
+            source: ItemCard,
+            select: function (event, ui) {
+                document.getElementById("ItemCode").value = ui.item.label;
+                document.getElementById("ItemName").value = ui.item.value;
+            }
+        });
+    });
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ItemTransactions</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.Label(Resources.Resource.Warehouses)
+                <div class="form-group">
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.StockCode, new SelectList(Model.St_Warehouse, "StockCode", "ArabicName"), Resources.Resource.Warehouses, new { @id = "StockCode", @class = "form-control input-sml" })
+
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.StockCode, new SelectList(Model.St_Warehouse, "StockCode", "EnglishName"), Resources.Resource.Warehouses, new { @id = "StockCode", @class = "form-control input-sml" })
+                    }
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.FromDate)
+                    @Html.TextBoxFor(model => model.FromDate, new { @id = "FromDate", @class = "form-control input-sml", @Value = Model.FromDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.Label(Resources.Resource.ItemCode)
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.ItemCode, new { @id = "ItemCode", @class = "form-control input-sml" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnItemCode">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                @Html.Label(Resources.Resource.ItemName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.ItemName, new { @id = "ItemName", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearItemCode">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-2" style="margin-top : 25px">
+                @Html.CheckBoxFor(m => m.ApprovingPreviousBalance, new { @id = "ApprovingPreviousBalance", @class = "text-danger" })
+                @Html.Label(Resources.Resource.ApprovingPreviousBalance, new { @class = "text-danger" })
+            </div>
+            <div class="col-lg-2" style="margin-top : 25px">
+                @Html.CheckBoxFor(m => m.ShowItemCost, new { @id = "ShowItemCost", @class = "text-danger" })
+                @Html.Label(Resources.Resource.ShowItemCost, new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div class="col-md-2" style="text-align: center">
+
+                </div>
+                <div class="col-md-2" style="text-align: center">
+
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.OpeningBalance)
+                        @Html.TextBoxFor(m => m.OpeningBalance, new { @id = "OpeningBalance", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.StartOfPeriodBalance)
+                        @Html.TextBoxFor(m => m.StartOfPeriodBalance, new { @id = "StartOfPeriodBalance", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.EndOfPeriodBalance)
+                        @Html.TextBoxFor(m => m.EndOfPeriodBalance, new { @id = "EndOfPeriodBalance", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AverageCost)
+                        @Html.TextBoxFor(m => m.LastAverageCost, new { @id = "LastAverageCost", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-12">
+            <a class="btn btn btn-anim btnSearch" id="btnSearch"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+            <button type="button" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" id="TableCost" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.TransactionNumber</th>
+                        <th>@Resources.Resource.Date</th>
+                        <th>@Resources.Resource.TransactionKind</th>
+                        <th>@Resources.Resource.Price</th>
+                        <th>@Resources.Resource.QuantityIn</th>
+                        <th>@Resources.Resource.QuantityOut</th>
+                        <th>@Resources.Resource.Balance</th>
+                        <th>@Resources.Resource.Total</th>
+                        <th>@Resources.Resource.StockName</th>
+                        <th>@Resources.Resource.AverageCost</th>
+                        <th>@Resources.Resource.RemainingCostBalance</th>
+                        <th>@Resources.Resource.AccountName</th>
+                        <th>@Resources.Resource.FromWarehouse</th>
+                        <th>@Resources.Resource.ToWarehouse</th>
+                        <th>@Resources.Resource.Note</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/St_Report/Index";
+        });
+        $("#FromDate").mask("99/99/9999");
+        $("#ToDate").mask("99/99/9999");
+        $("#FromDate").focus().select();
+        $("#FromDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ToDate").focus().select();
+        });
+        $("#ToDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ItemCode").focus().select();
+        });
+        $("#ItemCode").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromDate").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchSt_ItemCard/SearchItemCode';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $(document).on('click', '#btnSearch', function () {
+            var dDate = document.getElementById("FromDate").value;
+            var dToDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dToDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                $('#tdataTable').DataTable().clear().draw();
+                $('#tdataTable').DataTable().ajax.reload();
+
+                dialog.modal('hide');
+            }
+        });
+        $('#BtnItemCode').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchSt_ItemCard/SearchItemCode';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearItemCode').on('click', function () {
+            document.getElementById("ItemCode").value = '';
+            document.getElementById("ItemName").value = '';
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        $("#FromDate").blur(function () {
+            var dDate = document.getElementById("FromDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToDate").blur(function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ItemCode").blur(function () {
+            var ItemCode = document.getElementById("ItemCode").value;
+            if (ItemCode == '') {
+                document.getElementById("ItemName").value = '';
+            }
+            else {
+                if (ItemCode != null && ItemCode != '') {
+                    $.getJSON('@Url.Action("CheckSt_ItemCard", "MultiUse")', { id: ItemCode }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ItemCode").value = '';
+                            document.getElementById("ItemName").value = '';
+                            $("#ItemCode").focus();
+                        }
+                        else {
+                            document.getElementById("ItemName").value = Data.ItemName;
+                        }
+                    });
+                }
+            }
+        });
+
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "paging": false,
+            "ordering": false,
+            "order": [[1, "asc"]],
+            "scrollCollapse": true,
+            "fixedColumns": true,
+            "columnDefs": [
+                { "width": 100, "targets": 0, "className": "dt-center" },
+                { "width": 70, "targets": 1, "className": "dt-center" },
+                { "width": 70, "targets": 2, "className": "dt-center" },
+                { "width": 70, "targets": 3, "className": "dt-center" },
+                { "width": 100, "targets": 4, "className": "dt-center" },
+                { "width": 70, "targets": 5, "className": "dt-center" },
+                { "width": 70, "targets": 6, "className": "dt-center" },
+                { "width": 70, "targets": 7, "className": "dt-center" },
+                { "width": 70, "targets": 8, "className": "dt-center" },
+                { "width": 70, "targets": 9, "className": "dt-center" },
+                { "width": 70, "targets": 10, "className": "dt-center" },
+                { "width": 70, "targets": 11, "className": "dt-center" },
+                { "width": 70, "targets": 12, "className": "dt-center" },
+                { "width": 100, "targets": 13, "className": "dt-center" },
+                { "width": 100, "targets": 14, "className": "dt-center" }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/St_Report/GetItemTransactions",
+                "data": function (d) {
+                    d.FromDate = $("#FromDate").val();
+                    d.ToDate = $("#ToDate").val();
+                    d.ItemCode = $("#ItemCode").val();
+                    d.StockCode = $("#StockCode").val();
+                    d.ApprovingPreviousBalance = $("#ApprovingPreviousBalance:checked").val();
+                },
+
+                "dataSrc": function (json) {
+
+                    document.getElementById("OpeningBalance").value = '0';
+                    document.getElementById("StartOfPeriodBalance").value = '0';
+                    document.getElementById("EndOfPeriodBalance").value = '0';
+                    document.getElementById("LastAverageCost").value = '0';
+
+                    document.getElementById("OpeningBalance").value = json.OpeningBalance;
+                    document.getElementById("StartOfPeriodBalance").value = json.StartOfPeriodBalance;
+                    document.getElementById("EndOfPeriodBalance").value = json.EndOfPeriodBalance;
+                    document.getElementById("LastAverageCost").value = formatMoney(json.LastAverageCost, TheDecimalPointForTheLocalCurrency);
+
+                    return json.St_ItemTransactionReportVM;
+                }
+            },
+
+            columns: [
+                {
+                    data: "VoucherNumber"
+                },
+                {
+                    data: "VoucherDate",
+                    render: function (data, type, r) {
+                        return type === 'sort' ? data : moment(data).format('DD/MM/YYYY')
+                    }
+                },
+                {
+                    data: "TransactionKindName",
+                    render: function (data, type, r) {
+                        if (r.TransactionKindNo == 507 && r.QuantityIn > 0) {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                data = data + ' - ' + 'إدخال';
+                                return data
+                            }
+                            else {
+                                data = data + ' - ' + 'In';
+                                return data
+                            }
+                        }
+                        else if (r.TransactionKindNo == 507 && r.QuantityOut > 0) {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                data = data + ' - ' + 'إخراج';
+                                return data
+                            }
+                            else {
+                                data = data + ' - ' + 'Out';
+                                return data - "Out"
+                            }
+                        }
+                        else {
+                            return data
+                        }
+
+                    }
+                },
+                {
+                    data: "PricePieceLocalAfterDiscount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "QuantityIn",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            return data
+                        }
+                        else {
+                            return "-"
+                        }
+                    }
+                },
+                {
+                    data: "QuantityOut",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            return data
+                        }
+                        else {
+                            return "-"
+                        }
+                    }
+                },
+                {
+                    data: "SumQuantityInputOutput"
+                },
+                {
+                    data: "TotalLocalAfterDiscount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "StockName"
+                },
+                {
+                    data: "AverageCost",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "SumTotalCostLocal",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "AccountName"
+                },
+                {
+                    data: "FromStockName"
+                },
+                {
+                    data: "ToStockName"
+                },
+                {
+                    data: "Remark"
+                }
+            ]
+        });
+        $('#ShowItemCost').click(function () {
+            var ShowItemCost = document.getElementById("ShowItemCost").checked;
+            if (!ShowItemCost) {
+                var column9 = tabelMemRef.column(9);
+                var column10 = tabelMemRef.column(10);
+                column9.visible(!column9.visible());
+                column10.visible(!column10.visible());
+            }
+            else {
+                var column9 = tabelMemRef.column(9);
+                var column10 = tabelMemRef.column(10);
+                column9.visible(!column9.visible());
+                column10.visible(!column10.visible());
+            }
+        });
+
+    });
+</script>
+}
+

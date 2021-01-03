@@ -1,0 +1,167 @@
+﻿@model Acc.ViewModels.AssetMaintenanceVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+    var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+    function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+        try {
+            decimalCount = Math.abs(decimalCount);
+            decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+            const negativeSign = amount < 0 ? "-" : "";
+
+            let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+            let j = (i.length > 3) ? i.length % 3 : 0;
+
+            return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+        } catch (e) {
+            console.log(e)
+        }
+    };
+    document.getElementById("PayValue").value = formatMoney(document.getElementById("PayValue").value, TheDecimalPointForTheLocalCurrency);
+</script>
+@Html.HiddenFor(m => m.CompanyID, new { @id = "CompanyID" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Delete</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Serial)
+                            @Html.TextBoxFor(m => m.Serial, new { @id = "Serial", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AssetID)
+                            @Html.TextBoxFor(m => m.AssetID, new { @id = "UpdAssetID", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.AssetName)
+                            @Html.TextBoxFor(m => m.AssetName, new { @id = "UpdAssetName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FAssetTypeID)
+                            @Html.DropDownListFor(m => m.FAssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType,
+                           new { @id = "UpdFAssetTypeID", @class = "form-control input-sml", @disabled = "disabled" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ConsumptionComplexNo)
+                            @Html.TextBoxFor(m => m.CreditAccountNo, new { @id = "CreditAccountNo", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ConsumptionComplexName)
+                            @Html.TextBoxFor(m => m.CreditAccountName, new { @id = "CreditAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TrDate)
+                            @Html.TextBoxFor(model => model.TrDate, new { @id = "TrDate", @class = "form-control input-sml", @Value = Model.TrDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.TrDate)
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+
+                            @Html.LabelFor(m => m.TrKind)
+
+                            @Html.DropDownListFor(m => m.TrKind, new List<SelectListItem>
+                                                             {
+
+                                                          new SelectListItem{ Text=Resources.Resource. IncreaseTheEfficiency, Value = "1",Selected=false },
+                                                               new SelectListItem{ Text=Resources.Resource. Periodic, Value = "2",Selected=false },
+                                                              new SelectListItem{ Text=Resources.Resource.MaintenanceContract, Value = "3",Selected=false }
+                                                                }, new { @id = "TrKind", @class = "form-control input-sml", @disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.TrKind, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaintenanceNo)
+                            @Html.TextBoxFor(m => m.MaintenanceNo, new { @id = "MaintenanceNo", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.PayValue)
+                            @Html.TextBoxFor(m => m.PayValue, new { @id = "PayValue", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.GrundToDate)
+                            @Html.TextBoxFor(model => model.GrundToDate, new { @id = "GrundToDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.GrundToDate)
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaintenanceVoucherNo)
+                            @Html.TextBoxFor(m => m.MaintenanceVoucherNo, new { @id = "MaintenanceVoucherNo", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.VoucherDate)
+                            @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaintenanceNote)
+                            @Html.TextBoxFor(m => m.MaintenanceNote, new { @id = "MaintenanceNote", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-anim btnDelete-lg" id="DeleteMaintenance"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

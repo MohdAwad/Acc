@@ -1,0 +1,261 @@
+﻿@model Acc.ViewModels.DefinitionBanksFilterVM
+@{
+    ViewBag.Title = @Resources.Resource.DefinitionBanks;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+   
+</style>
+
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.DefinitionBanks</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            @if (User.IsInRole("AddBank") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-primary btn-anim" id="btnSave"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            }
+            @if (User.IsInRole("PrintBank") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-warning btn-anim" id="btnPrintExcel"> <i class="fa fa-file-excel-o"></i><span class="btn-text">@Resources.Resource.PrintExcel</span></a>
+            }
+
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.Serial</th>
+                        <th>@Resources.Resource.BankAccountName</th>
+                        <th>@Resources.Resource.ChequeUnderCollectionAccountName</th>
+                        <th>@Resources.Resource.PostdatedChequeAccountName</th>
+                        <th>@Resources.Resource.BillsOfExchangeAccountName</th>
+                        <th>@Resources.Resource.UserName</th>
+                        <th>@Resources.Resource.Update</th>
+                        <th>@Resources.Resource.Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/CompanySettingsDash/Index";
+        });
+     		$(document).on('click', '#btnPrintExcel', function () {
+
+			var dialog = bootbox.dialog({
+				title: '@Resources.Resource.PleaseWait',
+				message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Print...</p>',
+				closeButton: false
+			});
+
+
+			var dataToSave = [];
+			tabelMemRef.rows().every(function (rowIdx, tableLoop, rowLoop) {
+				var data = this.data();
+				dataToSave.push(data);
+
+
+			});
+
+
+			$.ajax({
+				type: "POST",
+                url: "/ExcelREport/CreateDefinitionBankExcel",
+				data: JSON.stringify(dataToSave),
+				contentType: 'application/json',
+				success: function (data) {
+					dialog.modal('hide');
+
+
+                    window.location = '/ExcelReport/DownloadDefinitionBankExcel?fileGuid=' + data.FileGuid;
+
+
+
+				},
+				error: function (data) {
+					dialog.modal('hide');
+					toastr.error(data);
+				}
+
+			});
+
+			dialog.modal('hide');
+			//$('#tdataTable').DataTable().ajax.reload();
+
+		});
+
+        $(document).on('click', '#btnSave', function () {
+            window.location = "/DefinitionBank/AddNew";
+        });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "columnDefs": [
+                {
+                    "className": "dt-center",
+                    "targets": "_all",
+                    "orderable": false,
+                }],
+
+            dom: 'Bfrtip',
+            buttons: [
+
+                {
+                    messageTop: '@Resources.Resource.DefinitionBanks',
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3, 4, 5]
+                    }
+                }
+
+            ],
+
+
+            ajax: {
+                "type": "POST",
+                url: "/DefinitionBank/GetAllDefinitionBank",
+                "data": function (d) {
+                    d.AccountNumber = $("#AccountNumber").val();
+                },
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "BankID"
+                },
+                {
+                    data: "BankAccountName"
+                },
+                {
+                    data: "ChequeUnderCollectionAccountName"
+                },
+                {
+                    data: "PostdatedChequeAccountName"
+                },
+                {
+                    data: "BillsOfExchangeAccountName"
+                },
+                {
+                    data: "UserName"
+                },
+                {
+                    data: "BankID",
+                    render: function (data, type, r) {
+                        if ("@(User.IsInRole("UpdateBank") || User.IsInRole("CoOwner"))" == "True") {
+                            return "<a  class='btn btn-success btn-icon-anim btn-square btn-sm' href='/DefinitionBank/UpdateDefinitionBank/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+
+                        }
+                        else {
+                            return "";
+                        }
+
+
+
+
+
+                    }
+                },
+                {
+                    data: "BankID",
+                    render: function (data, type, r) {
+                        if ("@(User.IsInRole("DeleteBank") || User.IsInRole("CoOwner"))" == "True") {
+                            return "<a  class='btn  btn-icon-anim btn-square btnDelete btn-sm ' href='/DefinitionBank/DeleteDefinitionBank/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i></a>";
+
+                        }
+                        else {
+                            return "";
+                        }
+
+
+                    }
+
+                }
+            ]
+
+        });
+
+        if ("@(User.IsInRole("UpdateBank") || User.IsInRole("CoOwner"))" == "False") {
+
+            var column = tabelMemRef.column(6);
+
+            // Toggle the visibility
+            column.visible(!column.visible());
+        }
+
+        if ("@(User.IsInRole("DeleteBank") || User.IsInRole("CoOwner"))" == "False") {
+
+            var column = tabelMemRef.column(7);
+
+            // Toggle the visibility
+            column.visible(!column.visible());
+
+        }
+        });
+</script>
+}
+

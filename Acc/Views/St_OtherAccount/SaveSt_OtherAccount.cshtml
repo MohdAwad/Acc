@@ -1,0 +1,1073 @@
+﻿@model Acc.ViewModels.St_OtherAccountVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    function GetSelectedDataSalesTaxAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SalesTaxAccountNumber").value = data.AccountNumber;
+            document.getElementById("SalesTaxAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SalesTaxAccountNumber").value = '';
+            document.getElementById("SalesTaxAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataSalesTaxReturnAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SalesTaxReturnAccountNumber").value = data.AccountNumber;
+            document.getElementById("SalesTaxReturnAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SalesTaxReturnAccountNumber").value = '';
+            document.getElementById("SalesTaxReturnAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataPurchaseTaxAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("PurchaseTaxAccountNumber").value = data.AccountNumber;
+            document.getElementById("PurchaseTaxAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("PurchaseTaxAccountNumber").value = '';
+            document.getElementById("PurchaseTaxAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataPurchaseTaxReturnAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("PurchaseTaxReturnAccountNumber").value = data.AccountNumber;
+            document.getElementById("PurchaseTaxReturnAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("PurchaseTaxReturnAccountNumber").value = '';
+            document.getElementById("PurchaseTaxReturnAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataForeignPurchaseAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ForeignPurchaseAccountNumber").value = data.AccountNumber;
+            document.getElementById("ForeignPurchaseAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ForeignPurchaseAccountNumber").value = '';
+            document.getElementById("ForeignPurchaseAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataDirectAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("DirectAccountNumber").value = data.AccountNumber;
+            document.getElementById("DirectAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("DirectAccountNumber").value = '';
+            document.getElementById("DirectAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataDifferenceAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("DifferenceAccountNumber").value = data.AccountNumber;
+            document.getElementById("DifferenceAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("DifferenceAccountNumber").value = '';
+            document.getElementById("DifferenceAccountName").value = '';
+        }
+
+    }
+    var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount};
+                AccNumber.push(r);
+            }
+    });
+    var FatherAccNumber = [];
+    $.getJSON('@Url.Action("GetAcountFather", "MultiUse")', { id: 0 }, function (Data) {
+        FatherAccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount};
+                FatherAccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#SalesTaxAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("SalesTaxAccountNumber").value = ui.item.value;
+                document.getElementById("SalesTaxAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#SalesTaxReturnAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("SalesTaxReturnAccountNumber").value = ui.item.value;
+                document.getElementById("SalesTaxReturnAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#PurchaseTaxAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("PurchaseTaxAccountNumber").value = ui.item.value;
+                document.getElementById("PurchaseTaxAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#PurchaseTaxReturnAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("PurchaseTaxReturnAccountNumber").value = ui.item.value;
+                document.getElementById("PurchaseTaxReturnAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#ForeignPurchaseAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("ForeignPurchaseAccountNumber").value = ui.item.value;
+                document.getElementById("ForeignPurchaseAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#DirectAccountNumber").autocomplete({
+            source: FatherAccNumber,
+            select: function (event, ui) {
+                document.getElementById("DirectAccountNumber").value = ui.item.value;
+                document.getElementById("DirectAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#DifferenceAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("DifferenceAccountNumber").value = ui.item.value;
+                document.getElementById("DifferenceAccountName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.OtherAccounts</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SalesTaxAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.SalesTaxAccountNumber, new { @id = "SalesTaxAccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSalesTaxAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.SalesTaxAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.SalesTaxAccountName, new { @id = "SalesTaxAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSalesTaxAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SalesTaxReturnAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.SalesTaxReturnAccountNumber, new { @id = "SalesTaxReturnAccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSalesTaxReturnAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.SalesTaxReturnAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.SalesTaxReturnAccountName, new { @id = "SalesTaxReturnAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSalesTaxReturnAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PurchaseTaxAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.PurchaseTaxAccountNumber, new { @id = "PurchaseTaxAccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnPurchaseTaxAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.PurchaseTaxAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.PurchaseTaxAccountName, new { @id = "PurchaseTaxAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearPurchaseTaxAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PurchaseTaxReturnAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.PurchaseTaxReturnAccountNumber, new { @id = "PurchaseTaxReturnAccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnPurchaseTaxReturnAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.PurchaseTaxReturnAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.PurchaseTaxReturnAccountName, new { @id = "PurchaseTaxReturnAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearPurchaseTaxReturnAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ForeignPurchaseAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.ForeignPurchaseAccountNumber, new { @id = "ForeignPurchaseAccountNumber", @class = "form-control input-sml"})
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnForeignPurchaseAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.ForeignPurchaseAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.ForeignPurchaseAccountName, new { @id = "ForeignPurchaseAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearForeignPurchaseAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DirectAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.DirectAccountNumber, new { @id = "DirectAccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnDirectAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.DirectAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.DirectAccountName, new { @id = "DirectAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearDirectAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DifferenceAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.DifferenceAccountNumber, new { @id = "DifferenceAccountNumber", @class = "form-control input-sml"})
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnDifferenceAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.DifferenceAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.DifferenceAccountName, new { @id = "DifferenceAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearDifferenceAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-anim" id="SaveOtherAccount"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/ST_CompanySetting/Index";
+        });
+        $(document).on('click', '#SaveOtherAccount', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+                            SalesTaxAccountNumber: $("#SalesTaxAccountNumber").val(),
+                            SalesTaxReturnAccountNumber: $("#SalesTaxReturnAccountNumber").val(),
+                            PurchaseTaxAccountNumber: $("#PurchaseTaxAccountNumber").val(),
+                            PurchaseTaxReturnAccountNumber: $("#PurchaseTaxReturnAccountNumber").val(),
+                            ForeignPurchaseAccountNumber: $("#ForeignPurchaseAccountNumber").val(),
+                            DirectAccountNumber: $("#DirectAccountNumber").val(),
+                            DifferenceAccountNumber: $("#DifferenceAccountNumber").val()
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/St_OtherAccount/SaveSt_OtherAccount",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                                bootbox.alert(data.Msg);
+                            }
+                        });
+                    }
+                }
+            });
+
+        });
+
+        $('#BtnSalesTaxAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/SalesTaxAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnSalesTaxReturnAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/SalesTaxReturnAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnPurchaseTaxAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/PurchaseTaxAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnPurchaseTaxReturnAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/PurchaseTaxReturnAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnForeignPurchaseAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ForeignPurchaseAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnDirectAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchFatherAccount/DirectAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnDifferenceAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/DifferenceAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+
+        $('#BtnClearSalesTaxAccountNumber').on('click', function () {
+            document.getElementById("SalesTaxAccountNumber").value = '';
+            document.getElementById("SalesTaxAccountName").value = '';
+        });
+        $('#BtnClearSalesTaxReturnAccountNumber').on('click', function () {
+            document.getElementById("SalesTaxReturnAccountNumber").value = '';
+            document.getElementById("SalesTaxReturnAccountName").value = '';
+        });
+        $('#BtnClearPurchaseTaxAccountNumber').on('click', function () {
+            document.getElementById("PurchaseTaxAccountNumber").value = '';
+            document.getElementById("PurchaseTaxAccountName").value = '';
+        });
+        $('#BtnClearPurchaseTaxReturnAccountNumber').on('click', function () {
+            document.getElementById("PurchaseTaxReturnAccountNumber").value = '';
+            document.getElementById("PurchaseTaxReturnAccountName").value = '';
+        });
+        $('#BtnClearForeignPurchaseAccountNumber').on('click', function () {
+            document.getElementById("ForeignPurchaseAccountNumber").value = '';
+            document.getElementById("ForeignPurchaseAccountName").value = '';
+        });
+        $('#BtnClearDirectAccountNumber').on('click', function () {
+            document.getElementById("DirectAccountNumber").value = '';
+            document.getElementById("DirectAccountName").value = '';
+        });
+        $('#BtnClearDifferenceAccountNumber').on('click', function () {
+            document.getElementById("DifferenceAccountNumber").value = '';
+            document.getElementById("DifferenceAccountName").value = '';
+        });
+
+        $("#SalesTaxAccountNumber").focus().select();
+        $("#SalesTaxAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#SalesTaxReturnAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/SalesTaxAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#SalesTaxReturnAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PurchaseTaxAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/SalesTaxReturnAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#PurchaseTaxAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PurchaseTaxReturnAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/PurchaseTaxAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#PurchaseTaxReturnAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ForeignPurchaseAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/PurchaseTaxReturnAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#ForeignPurchaseAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#DirectAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/ForeignPurchaseAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#DirectAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#DifferenceAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchFatherAccount/DirectAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#DifferenceAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#SalesTaxAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/DifferenceAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+
+        $("#SalesTaxAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("SalesTaxAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("SalesTaxAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("SalesTaxAccountNumber").value = '';
+                            document.getElementById("SalesTaxAccountName").value = '';
+                            $("#SalesTaxAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("SalesTaxAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("SalesTaxAccountNumber").value = "";
+                                document.getElementById("SalesTaxAccountName").value = "";
+                                $("#SalesTaxAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#SalesTaxReturnAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("SalesTaxReturnAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("SalesTaxReturnAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("SalesTaxReturnAccountNumber").value = '';
+                            document.getElementById("SalesTaxReturnAccountName").value = '';
+                            $("#SalesTaxReturnAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("SalesTaxReturnAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("SalesTaxReturnAccountNumber").value = "";
+                                document.getElementById("SalesTaxReturnAccountName").value = "";
+                                $("#SalesTaxReturnAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#PurchaseTaxAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("PurchaseTaxAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("PurchaseTaxAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("PurchaseTaxAccountNumber").value = '';
+                            document.getElementById("PurchaseTaxAccountName").value = '';
+                            $("#PurchaseTaxAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("PurchaseTaxAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("PurchaseTaxAccountNumber").value = "";
+                                document.getElementById("PurchaseTaxAccountName").value = "";
+                                $("#PurchaseTaxAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#PurchaseTaxReturnAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("PurchaseTaxReturnAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("PurchaseTaxReturnAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("PurchaseTaxReturnAccountNumber").value = '';
+                            document.getElementById("PurchaseTaxReturnAccountName").value = '';
+                            $("#PurchaseTaxReturnAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("PurchaseTaxReturnAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("PurchaseTaxReturnAccountNumber").value = "";
+                                document.getElementById("PurchaseTaxReturnAccountName").value = "";
+                                $("#PurchaseTaxReturnAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#ForeignPurchaseAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("ForeignPurchaseAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("ForeignPurchaseAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ForeignPurchaseAccountNumber").value = '';
+                            document.getElementById("ForeignPurchaseAccountName").value = '';
+                            $("#ForeignPurchaseAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("ForeignPurchaseAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("ForeignPurchaseAccountNumber").value = "";
+                                document.getElementById("ForeignPurchaseAccountName").value = "";
+                                $("#ForeignPurchaseAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#DirectAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("DirectAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("DirectAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckFatherAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("DirectAccountNumber").value = '';
+                            document.getElementById("DirectAccountName").value = '';
+                            $("#DirectAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("DirectAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("DirectAccountNumber").value = "";
+                                document.getElementById("DirectAccountName").value = "";
+                                $("#DirectAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#DifferenceAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("DifferenceAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("DifferenceAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("DifferenceAccountNumber").value = '';
+                            document.getElementById("DifferenceAccountName").value = '';
+                            $("#DifferenceAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("DifferenceAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("DifferenceAccountNumber").value = "";
+                                document.getElementById("DifferenceAccountName").value = "";
+                                $("#DifferenceAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+}
+
+
+
+
+
+

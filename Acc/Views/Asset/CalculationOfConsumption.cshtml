@@ -1,0 +1,597 @@
+﻿@model Acc.ViewModels.AssetVM
+@{
+    ViewBag.Title = @Resources.Resource.CalculationOfConsumption;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CalculationOfConsumption</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.LabelFor(m => m.FAssetTypeID)
+
+                @Html.DropDownListFor(m => m.FAssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType, new { @id = "FAssetTypeID", @class = "form-control input-sml" })
+
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                    @Html.ValidationMessageFor(m => m.ToDate)
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="button" class="btn btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+
+            @if (User.IsInRole("AddCalculationOfConsumption") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-primary btn-anim" id="Save"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></button>
+            }
+            <button type="submit" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.AssetType</th>
+                        <th>@Resources.Resource.AssetID</th>
+                        <th>@Resources.Resource.AssetName</th>
+                        <th>@Resources.Resource.AssetCost</th>
+                        <th>@Resources.Resource.ConsRatio</th>
+                        <th>@Resources.Resource.ConsStartDate</th>
+                        <th>@Resources.Resource.LastConsumptionDate</th>
+                        <th>@Resources.Resource.ComplexConsumption</th>
+                        <th>@Resources.Resource.AnnualConsumption</th>
+                        <th>@Resources.Resource.ConsumptionEndPeriod</th>
+                        <th>@Resources.Resource.BookValue</th>
+                        <th>@Resources.Resource.ValueofConsumption</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle"></tbody>
+                <tfoot>
+                    <tr>
+
+                        <th style="color:black !important">@Resources.Resource.AssetType</th>
+                        <th style="color:black !important">@Resources.Resource.AssetID</th>
+                        <th style="color:black !important">@Resources.Resource.AssetName</th>
+                        <th style="color:black !important">@Resources.Resource.AssetCost</th>
+                        <th style="color:black !important">@Resources.Resource.ConsRatio</th>
+                        <th style="color:black !important">@Resources.Resource.ConsStartDate</th>
+                        <th style="color:black !important">@Resources.Resource.LastConsumptionDate</th>
+                        <th style="color:black !important">@Resources.Resource.ComplexConsumption</th>
+                        <th style="color:black !important">@Resources.Resource.AnnualConsumption</th>
+                        <th style="color:black !important">@Resources.Resource.ConsumptionEndPeriod</th>
+                        <th style="color:black !important">@Resources.Resource.BookValue</th>
+                        <th style="color:black !important">@Resources.Resource.ValueofConsumption</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(model => model.CompanyYear, new { @id = "CompanyYear", @class = "form-control input-sml", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+     $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.CalculationOfConsumption',
+                            ScreenUrl: "/Asset/CalculationOfConsumption",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+     });
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        $("#ToDate").mask("99/99/9999");
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/AssetType/AssetDash";
+        });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "autoWidth": false,
+            "paging": false,
+            "columnDefs": [
+                { "targets": 0, "className": "dt-center" },
+                { "width": "50px", "targets": 1, "className": "dt-center" },
+                { "targets": 2, "className": "dt-center" },
+                { "width": "100px", "targets": 3, "className": "dt-center" },
+                { "width": "50px", "targets": 4, "className": "dt-center" },
+                { "width": "70px", "targets": 5, "className": "dt-center" },
+                { "width": "70px", "targets": 6, "className": "dt-center" },
+                { "width": "100px", "targets": 7, "className": "dt-center" },
+                { "width": "100px", "targets": 8, "className": "dt-center" },
+                { "width": "100px", "targets": 9, "className": "dt-center" },
+                { "width": "100px", "targets": 10, "className": "dt-center" },
+                { "width": "100px", "targets": 11, "className": "dt-center" }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            ajax: {
+                "type": "Post",
+                url: "/Asset/GetAssetCalculation/",
+                "data": function (d) {
+                    d.FAssetTypeID = $("#FAssetTypeID").val();
+                    d.ToDate = $("#ToDate").val();
+
+                },
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "AssetTypeName"
+                },
+
+                {
+                    data: "AssetID"
+
+                },
+                {
+                    data: "AssetName"
+
+                },
+                {
+                    data: "AssetCost",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "AssetConsumRatio",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+
+                {
+                    data: "ConsStartDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+                },
+
+                {
+                    data: "LastConsumptionDate",
+                    render: function (data, type, r) {
+                        return "<p class='text-danger' >" + moment(data).format('DD/MM/YYYY') + "</p>"
+                    }
+                },
+
+                {
+                    data: "CombinedConsum",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "AnnualConsumption",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "ConsumptionEndPeriod",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "BookValue",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "ValueofConsumption",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+
+
+
+
+
+            ],
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[, Rs]|(\.\d{2})/g, "") * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                },
+                    total3 = api
+                        .column(3)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+                    total7 = api
+                        .column(7)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total8 = api
+                        .column(8)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total9 = api
+                        .column(9)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total10 = api
+                        .column(10)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total11 = api
+                        .column(11)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                $(api.column(0).footer()).html('');
+                $(api.column(1).footer()).html('');
+                $(api.column(2).footer()).html('');
+                $(api.column(3).footer()).html((formatMoney(total3, TheDecimalPointForTheLocalCurrency)));
+                $(api.column(4).footer()).html('');
+                $(api.column(5).footer()).html('');
+                $(api.column(6).footer()).html('');
+                $(api.column(7).footer()).html((formatMoney(total7, TheDecimalPointForTheLocalCurrency)));
+                $(api.column(8).footer()).html((formatMoney(total8, TheDecimalPointForTheLocalCurrency)));
+                $(api.column(9).footer()).html((formatMoney(total9, TheDecimalPointForTheLocalCurrency)));
+                $(api.column(10).footer()).html((formatMoney(total10, TheDecimalPointForTheLocalCurrency)));
+                $(api.column(11).footer()).html((formatMoney(total11, TheDecimalPointForTheLocalCurrency)));
+            }
+        });
+        $(document).on('click', '#reload', function () {
+            var dToDate = document.getElementById("ToDate").value;
+            var CompanyYear = document.getElementById("CompanyYear").value;
+            var d1 = dToDate.split("/");
+            var From = new Date(d1[2], parseInt(d1[1]) - 1, d1[0]);
+            if (d1[2] > CompanyYear || d1[2] < CompanyYear) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DateIsNotWithinThisYear</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                if (!validatedate(dToDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dialog = bootbox.dialog({
+                        title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                        message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                        closeButton: false
+                    });
+                    $('#tdataTable').DataTable().clear().draw();
+                    $('#tdataTable').DataTable().ajax.reload();
+                    dialog.modal('hide');
+                }
+            }
+
+        });
+        $(document).on('click', '#Save', function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var rows_selected = [];
+                            tabelMemRef.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                                var data = this.data();
+                                rows_selected.push(data);
+
+                            });
+                            var DataToSave = {
+                                AssetData: rows_selected,
+                                ToDate: $("#ToDate").val()
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/Asset/SaveCalculationOfConsumption",
+                                data: JSON.stringify(DataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+
+                                        toastr.success(data.Msg);
+
+                                        tabelMemRef.ajax.reload();
+                                        $('#modal-container').modal('hide');
+                                        dialog.modal('hide');
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                    bootbox.alert(data.Msg);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+         $("#ToDate").blur(function () {
+             var dDate = document.getElementById("ToDate").value;
+            var CompanyYear = document.getElementById("CompanyYear").value;
+            var d1 = dDate.split("/");
+            var From = new Date(d1[2], parseInt(d1[1]) - 1, d1[0]);
+             if (d1[2] > CompanyYear || d1[2] < CompanyYear) {
+                 bootbox.alert({
+                     message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DateIsNotWithinThisYear</h6>',
+                     className: 'rubberBand animated',
+                     buttons: {
+                         ok: {
+                             label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                             className: 'btn-primary'
+                         }
+                     }
+                 });
+             }
+             else {
+                 if (!validatedate(dDate)) {
+                     bootbox.alert({
+                         message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                         className: 'rubberBand animated',
+                         buttons: {
+                             ok: {
+                                 label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                 className: 'btn-primary'
+                             }
+                         }
+                     });
+                     document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+                 }
+
+             }
+         });
+
+        $(document).on('click', '#PrintPDF', function () {
+
+            var FAssetTypeID = $("#FAssetTypeID").val();
+            var ToDate = $("#ToDate").val();
+
+            if (FAssetTypeID == '' || FAssetTypeID == null) {
+                FAssetTypeID = "0";
+            }
+
+           var words = ToDate.split('/');
+              ToDate = words[0] + words[1] + words[2];
+
+            window.open('/PDFReport/GetAssetCalculationPDF/' + FAssetTypeID + "/" + ToDate + "/0", '_blank');
+
+        });
+
+    });
+    </script>
+}
+
+
+

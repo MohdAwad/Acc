@@ -1,0 +1,1145 @@
+﻿@model Acc.ViewModels.TempPrepaidAndRevenueReceivedFilterVM
+@{
+    ViewBag.Title = @Resources.Resource.CollectionRevenueReceived;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<script>
+    function GetSelectedRevenueReceivedAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("RevenueReceivedAccountNumber").value = data.AccountNumber;
+            document.getElementById("RevenueReceivedAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("RevenueReceivedAccountNumber").value = '';
+            document.getElementById("RevenueReceivedAccountName").value = '';
+        }
+
+    }
+    function GetSelectedRevenueAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("RevenueAccountNumber").value = data.AccountNumber;
+            document.getElementById("RevenueAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("RevenueAccountNumber").value = '';
+            document.getElementById("RevenueAccountName").value = '';
+        }
+
+    }
+    function GetSelectedRevenueReceivedCost(data) {
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("RevenueReceivedCostNumber").value = data.CostNumber;
+            document.getElementById("RevenueReceivedCostName").value = data.CostName;
+        }
+        else {
+            document.getElementById("RevenueReceivedCostNumber").value = '';
+            document.getElementById("RevenueReceivedCostName").value = '';
+        }
+
+    }
+    function GetSelectedRevenueCost(data) {
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("RevenueCostNumber").value = data.CostNumber;
+            document.getElementById("RevenueCostName").value = data.CostName;
+        }
+        else {
+            document.getElementById("RevenueCostNumber").value = '';
+            document.getElementById("RevenueCostName").value = '';
+        }
+
+    }
+</script>
+<div style="padding-top: 20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CollectionRevenueReceived</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RevenueReceivedAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.RevenueReceivedAccountNumber, new { @id = "RevenueReceivedAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueReceivedAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.RevenueReceivedAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.RevenueReceivedAccountName, new { @id = "RevenueReceivedAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueReceivedAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RevenueAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.RevenueAccountNumber, new { @id = "RevenueAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.RevenueAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.RevenueAccountName, new { @id = "RevenueAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.WorkWithCostCenter)
+            {
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.RevenueReceivedCostNumber)
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.RevenueReceivedCostNumber, new { @id = "RevenueReceivedCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueReceivedCostNumber">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                                @Html.ValidationMessageFor(m => m.RevenueReceivedCostNumber)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            <div class="form-group input-group">
+                                @Html.TextBoxFor(m => m.RevenueReceivedCostName, new { @id = "RevenueReceivedCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueReceivedCostNumber">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.RevenueCostNumber)
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.RevenueCostNumber, new { @id = "RevenueCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueCostNumber">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                                @Html.ValidationMessageFor(m => m.RevenueCostNumber)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            <div class="form-group input-group">
+                                @Html.TextBoxFor(m => m.RevenueCostName, new { @id = "RevenueCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueCostNumber">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FromCollectionDate)
+                        @Html.TextBoxFor(model => model.FromCollectionDate, new { @id = "FromCollectionDate", @class = "form-control", @Value = Model.FromCollectionDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ToCollectionDate)
+                        @Html.TextBoxFor(model => model.ToCollectionDate, new { @id = "ToCollectionDate", @class = "form-control input-sml", @Value = Model.ToCollectionDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CompanyTransactionKindID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml" })
+
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml" })
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.VoucherNumber)
+                        @Html.TextBoxFor(m => m.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.VoucherDate)
+                        @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <a class="btn btn-anim btnSearch" id="btnSearch"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+                <a class="btn btn-success btn-anim" id="Collect"> <i class="fa fa-sort-numeric-asc"></i><span class="btn-text">@Resources.Resource.Collect</span></a>
+                <button type="button" class="btn btn-default btn-anim" id="Close"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+            <div class="col-lg-12" style="margin-top:10px;">
+                <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            @if (Model.WorkWithCostCenter)
+                            {
+                                <th></th>
+                                <th>@Resources.Resource.RevenueReceivedAccountNumber</th>
+                                <th>@Resources.Resource.RevenueAccountNumber</th>
+                                <th>@Resources.Resource.RevenueReceivedCostNumber</th>
+                                <th>@Resources.Resource.RevenueCostNumber</th>
+                                <th>@Resources.Resource.Amount</th>
+                                <th>@Resources.Resource.CollectionDate</th>
+                                <th>@Resources.Resource.TransactionKind</th>
+                                <th>@Resources.Resource.Note</th>
+                                <th>@Resources.Resource.RevenueReceivedAccountNumber</th>
+                                <th>@Resources.Resource.RevenueAccountNumber</th>
+                                <th>@Resources.Resource.RevenueReceivedCostNumber</th>
+                                <th>@Resources.Resource.RevenueCostNumber</th>
+                                <th>@Resources.Resource.VoucherNumber</th>
+                                <th></th>
+                                <th></th>
+                            }
+                            else
+                            {
+                                <th></th>
+                                <th>@Resources.Resource.RevenueReceivedAccountNumber</th>
+                                <th>@Resources.Resource.RevenueAccountNumber</th>
+                                <th>@Resources.Resource.Amount</th>
+                                <th>@Resources.Resource.CollectionDate</th>
+                                <th>@Resources.Resource.TransactionKind</th>
+                                <th>@Resources.Resource.Note</th>
+                                <th>@Resources.Resource.RevenueReceivedAccountNumber</th>
+                                <th>@Resources.Resource.RevenueAccountNumber</th>
+                                <th>@Resources.Resource.VoucherNumber</th>
+                                <th></th>
+                                <th></th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel-footer">
+        </div>
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyYear, new { @id = "CompanyYear", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+         $(document).on('click', '#Close', function () {
+                window.location = "/TempRevenueReceived/Index";
+            });
+    $(document).ready(function () {
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        $(document).on('click', '#Close', function () {
+            window.location = "/TempRevenueReceived/index";
+        });
+        var SelectedValue = $("#CompanyTransactionKindID").val();
+        var VoucherDate = document.getElementById("VoucherDate").value;
+        var CompanyYear = document.getElementById("CompanyYear").value;
+        var mm = parseInt(VoucherDate.substring(3, 5));
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        if (SelectedValue != null && SelectedValue != '') {
+            $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CompanyYear}, function (Data) {
+
+                if (Data != null) {
+                    document.getElementById("VoucherNumber").value = Data;
+
+                } else {
+
+
+                };
+            });
+        }
+        else {
+        }
+        $("#FromCollectionDate").mask("99/99/9999");
+        $("#ToCollectionDate").mask("99/99/9999");
+        $("#VoucherDate").mask("99/99/9999");
+        $("#FromCollectionDate").focus().select();
+        $("#FromCollectionDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ToCollectionDate").focus();
+        });
+        $("#ToCollectionDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#VoucherDate").focus();
+        });
+        $("#VoucherDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FromCollectionDate").focus();
+        });
+        $(document).on('click', '#btnSearch', function () {
+            var dDate = document.getElementById("FromCollectionDate").value;
+            var dToDate = document.getElementById("ToCollectionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dToDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                $('#tdataTable').DataTable().clear().draw();
+                $('#tdataTable').DataTable().ajax.reload();
+                dialog.modal('hide');
+            }
+        });
+        $('#BtnRevenueReceivedAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchRevenueReceivedAccountNumber/RevenueReceivedAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRevenueAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchRevenueAccountNumber/RevenueAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRevenueReceivedCostNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/RevenueReceivedCostNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRevenueCostNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/RevenueCostNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearRevenueReceivedAccountNumber').on('click', function () {
+            document.getElementById("RevenueReceivedAccountNumber").value = '';
+            document.getElementById("RevenueReceivedAccountName").value = '';
+        });
+        $('#BtnClearRevenueAccountNumber').on('click', function () {
+            document.getElementById("RevenueAccountNumber").value = '';
+            document.getElementById("RevenueAccountName").value = '';
+        });
+        $('#BtnClearRevenueReceivedCostNumber').on('click', function () {
+            document.getElementById("RevenueReceivedCostNumber").value = '';
+            document.getElementById("RevenueReceivedCostName").value = '';
+        });
+        $('#BtnClearRevenueCostNumber').on('click', function () {
+            document.getElementById("RevenueCostNumber").value = '';
+            document.getElementById("RevenueCostName").value = '';
+        });
+        if (WorkWithCostCenter) {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "500px",
+                "scrollX": true,
+                "ordering": false,
+                "paging": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "orderable": false,
+                        "checkboxes": {
+                            "selectRow": true
+                        }
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [3],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [4],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [5],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [6],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [7],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [8],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [9],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [10],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [11],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [12],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [13],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [14],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [15],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+                "select": {
+                    "style": "multi"
+                },
+                dom: 'Bfrtip',
+                ajax: {
+                    "type": "POST",
+                    url: "/TempRevenueReceived/GetAllCollection",
+                    "data": function (d) {
+                        d.RevenueReceivedAccountNumber = $("#RevenueReceivedAccountNumber").val();
+                        d.RevenueAccountNumber = $("#RevenueAccountNumber").val();
+                        d.RevenueReceivedCostNumber = $("#RevenueReceivedCostNumber").val();
+                        d.RevenueCostNumber = $("#RevenueCostNumber").val();
+                        d.FromCollectionDate = $("#FromCollectionDate").val();
+                        d.ToCollectionDate = $("#ToCollectionDate").val();
+                    },
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "iRowTable"
+
+                    },
+                    {
+                        data: "RevenueReceivedAccountName"
+
+                    },
+                    {
+                        data: "RevenueAccountName"
+
+                    },
+
+                    {
+                        data: "RevenueReceivedCostName"
+
+                    },
+                    {
+                        data: "RevenueCostName"
+
+                    },
+                    {
+                        data: "Amount",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CollectionDate",
+                        render: function (data, type, r) {
+                            return moment(data).format('DD/MM/YYYY')
+                        }
+
+                    },
+                    {
+                        data: "TransactionKindNo"
+
+                    },
+                    {
+                        data: "Note"
+
+                    },
+                    {
+                        data: "RevenueReceivedAccountNumber"
+
+                    },
+                    {
+                        data: "RevenueAccountNumber"
+
+                    },
+                    {
+                        data: "RevenueReceivedCostNumber"
+
+                    },
+                    {
+                        data: "RevenueCostNumber"
+
+                    },
+                    {
+                        data: "VoucherNumber"
+
+                    },
+                    {
+                        data: "RowNumber"
+
+                    },
+                    {
+                        data: "CompanyYear"
+
+                    }
+                ]
+
+            });
+        }
+        else {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "500px",
+                "scrollX": true,
+                "ordering": false,
+                "paging": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "orderable": false,
+                        "checkboxes": {
+                            "selectRow": true
+                        }
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [3],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [4],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [5],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [6],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [7],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [8],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [9],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [10],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [11],
+                        "className": "dt-center",
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+                "select": {
+                    "style": "multi"
+                },
+                dom: 'Bfrtip',
+                ajax: {
+                    "type": "POST",
+                    url: "/TempRevenueReceived/GetAllCollection",
+                    "data": function (d) {
+                        d.RevenueReceivedAccountNumber = $("#RevenueReceivedAccountNumber").val();
+                        d.RevenueAccountNumber = $("#RevenueAccountNumber").val();
+                        d.FromCollectionDate = $("#FromCollectionDate").val();
+                        d.ToCollectionDate = $("#ToCollectionDate").val();
+                    },
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "iRowTable"
+
+                    },
+                    {
+                        data: "RevenueReceivedAccountName"
+
+                    },
+                    {
+                        data: "RevenueAccountName"
+
+                    },
+                    {
+                        data: "Amount",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CollectionDate",
+                        render: function (data, type, r) {
+                            return moment(data).format('DD/MM/YYYY')
+                        }
+
+                    },
+                    {
+                        data: "TransactionKindNo"
+
+                    },
+                    {
+                        data: "Note"
+
+                    },
+                    {
+                        data: "RevenueReceivedAccountNumber"
+
+                    },
+                    {
+                        data: "RevenueAccountNumber"
+
+                    },
+                    {
+                        data: "VoucherNumber"
+
+                    },
+                    {
+                        data: "RowNumber"
+
+                    },
+                    {
+                        data: "CompanyYear"
+
+                    }
+                ]
+
+            });
+        }
+        $(document).on('click', '#Collect', function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (dDate != null && dDate != '') {
+                var dd = parseInt(dDate.substring(0, 2));
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                var mm = parseInt(dDate.substring(3, 5));
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                var yyyy = parseInt(dDate.substring(6, 10));
+                dDate = mm + '/' + dd + '/' + yyyy;
+                $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                    if (Data >= 1) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                        if (selectedIds == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessagePleaseChooseOnTransaction</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            bootbox.confirm({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    confirm: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Exporting...</p>',
+                                            closeButton: false
+                                        });
+                                        var selectedIds = tabelMemRef.columns().checkboxes.selected()[0];
+                                        var rows_selected = [];
+
+                                        $.each(selectedIds, function (index, rowId) {
+                                            var data = tabelMemRef.row(rowId).data();
+                                            rows_selected.push(data);
+
+                                        });
+                                        var DataToSave = {
+
+                                            Transaction: rows_selected,
+                                            TempPrepaidAndRevenueReceivedDetail: rows_selected,
+                                            VoucherDate: $("#VoucherDate").val(),
+                                            CompanyTransactionKindID: $("#CompanyTransactionKindID").val()
+                                        };
+
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/TempRevenueReceived/SaveCollection",
+                                            data: JSON.stringify(DataToSave),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    toastr.success(data.Msg);
+                                                    document.getElementById("CompanyTransactionKindID").selectedIndex = "0";
+                                                    var SelectedValue = $("#CompanyTransactionKindID").val();
+                                                    var VoucherDate = document.getElementById("VoucherDate").value;
+                                                    var CompanyYear = document.getElementById("CompanyYear").value;
+                                                    var mm = parseInt(VoucherDate.substring(3, 5));
+                                                    if (mm < 10) {
+                                                        mm = '0' + mm;
+                                                    }
+                                                    if (SelectedValue != null && SelectedValue != '') {
+                                                        $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CompanyYear }, function (Data) {
+
+                                                            if (Data != null) {
+                                                                document.getElementById("VoucherNumber").value = Data;
+
+                                                            } else {
+
+
+                                                            };
+                                                        });
+                                                    }
+                                                    else {
+                                                    }
+                                                    document.getElementById("VoucherDate").value = document.getElementById("ToCollectionDate").value;
+                                                    tabelMemRef.ajax.reload();
+                                                    $('#modal-container').modal('hide');
+                                                    dialog.modal('hide');
+                                                }
+
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    };
+                });
+            }
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        $('#CompanyTransactionKindID').change(function () {
+            var SelectedValue = $("#CompanyTransactionKindID").val();
+            var VoucherDate = document.getElementById("VoucherDate").value;
+            var CompanyYear = document.getElementById("CompanyYear").value;
+            var mm = parseInt(VoucherDate.substring(3, 5));
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxVHIForAcc", "TransAction")', { id: SelectedValue, id2: mm, id3: CompanyYear }, function (Data) {
+
+                    if (Data != null) {
+                        document.getElementById("VoucherNumber").value = Data;
+
+                    } else {
+
+
+                    };
+                });
+            } else {
+            }
+        });
+        $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (dDate != null && dDate != '') {
+                if (!validatedate(dDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dd = parseInt(dDate.substring(0, 2));
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    var mm = parseInt(dDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    var yyyy = parseInt(dDate.substring(6, 10));
+                    dDate = mm + '/' + dd + '/' + yyyy;
+                    $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                        if (Data >= 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            else {
+            }
+        });
+        $("#ToCollectionDate").blur(function () {
+            var dDate = document.getElementById("ToCollectionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToCollectionDate").value = '01/01/' + new Date().getFullYear();
+            }
+            document.getElementById("VoucherDate").value = document.getElementById("ToCollectionDate").value;
+        });
+        $("#FromCollectionDate").blur(function () {
+            var dDate = document.getElementById("FromCollectionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromCollectionDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+
+    });
+
+</script>
+}
+

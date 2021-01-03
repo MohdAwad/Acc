@@ -1,0 +1,194 @@
+﻿@model Acc.ViewModels.St_CompanyTransationKindVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        var AutoSerial = document.getElementById("AutoSerial").checked;
+        if (AutoSerial) {
+            document.getElementById('SymbolSerial').checked = false;
+            document.getElementById('Symbol').readOnly = true;
+            document.getElementById('Serial').readOnly = true;
+        }
+        else {
+            document.getElementById('Symbol').readOnly = false;
+            document.getElementById('Serial').readOnly = false;
+            document.getElementById('AutoSerial').checked = false;
+        };
+        var CompanyTransactionKind = $("#St_CompanyTransactionKindID").val();
+        if (CompanyTransactionKind != null && CompanyTransactionKind != '') {
+            $.getJSON('@Url.Action("CheckST_CompanyTransactionKindBeforDelete", "St_CompanyTransactionKind")', { id: CompanyTransactionKind }, function (Data) {
+                if (Data != null) {
+                    var checkCompanyTransactionKind = Data;
+                    if (checkCompanyTransactionKind == 0) {
+                    }
+                    else {
+                        document.getElementById('AutoSerial').disabled = true;
+                        document.getElementById('MonthlySerial').disabled = true;
+                        document.getElementById('Symbol').readOnly = true;
+                        document.getElementById('Serial').readOnly = true;
+                    }
+                };
+            });
+        }
+        else {
+        }
+        $('#AutoSerial').click(function () {
+            document.getElementById('AutoSerial').checked = true;
+            document.getElementById('SymbolSerial').checked = false;
+            document.getElementById('Symbol').value = "";
+            document.getElementById('Serial').value = "0";
+            document.getElementById('Example').value = "";
+            document.getElementById('Symbol').readOnly = true;
+            document.getElementById('Serial').readOnly = true;
+
+        });
+        $('#SymbolSerial').click(function () {
+            document.getElementById('SymbolSerial').checked = true;
+            document.getElementById('Symbol').readOnly = false;
+            document.getElementById('Serial').readOnly = false;
+            document.getElementById('AutoSerial').checked = false;
+            $("#Symbol").focus().select();
+        });
+        $("#Symbol").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Serial").focus().select();
+        });
+        $("#Serial").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Symbol").focus().select();
+        });
+        $("#Symbol").blur(function () {
+            var SerialNumber = '';
+            var Serial = document.getElementById("Serial").value;
+            var i;
+            for (i = 1; i <= Serial; i++) {
+                if (i < Serial) {
+                    SerialNumber = SerialNumber + '0';
+                }
+                else if (i = Serial) {
+                    SerialNumber = SerialNumber + '1'
+                }
+            }
+            document.getElementById("Example").value = document.getElementById("Symbol").value + SerialNumber;
+        });
+        $("#Serial").blur(function () {
+            var SerialNumber = '';
+            var Serial = document.getElementById("Serial").value;
+            var i;
+            for (i = 1; i <= Serial; i++) {
+                if (i < Serial) {
+                    SerialNumber = SerialNumber + '0';
+                }
+                else if (i = Serial) {
+                    SerialNumber = SerialNumber + '1'
+                }
+            }
+            document.getElementById("Example").value = document.getElementById("Symbol").value + SerialNumber;
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.St_CompanyTransactionKindID)
+
+                            @Html.TextBoxFor(m => m.St_CompanyTransactionKindID, new { @id = "St_CompanyTransactionKindID", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Symbol)
+
+                            @Html.TextBoxFor(m => m.Symbol, new { @id = "Symbol", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.TransactionKind)
+                            @Html.TextBoxFor(m => m.TransactionKindName, new { @id = "TransactionKindName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Serial)
+
+                            @Html.TextBoxFor(m => m.Serial, new { @id = "Serial", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.StockName)
+                            @Html.TextBoxFor(m => m.WarehouseName, new { @id = "WarehouseName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Example)
+
+                            @Html.TextBoxFor(m => m.Example, new { @id = "Example", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.CheckBoxFor(m => m.AutoSerial, new { @id = "AutoSerial" })
+                            @Html.ValidationMessageFor(m => m.AutoSerial)
+                            @Html.Label(Resources.Resource.AutoSerial, new { @style = "color:red" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.CheckBoxFor(m => m.SymbolSerial, new { @id = "SymbolSerial" })
+                            @Html.ValidationMessageFor(m => m.SymbolSerial)
+                            @Html.Label(Resources.Resource.SymbolSerial, new { @style = "color:red" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-success btn-anim" id="Update"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.St_TransactionKindID, new { @id = "St_TransactionKindID", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.StockCode, new { @id = "StockCode", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+
+
+
+

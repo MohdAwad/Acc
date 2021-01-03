@@ -1,0 +1,338 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="19.1.5.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="EstimateBudgetForAccYearReport" Landscape="true" Margins="26, 14, 139, 100" PageWidth="1100" PageHeight="850" Version="19.1" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="139">
+      <Controls>
+        <Item1 Ref="3" ControlType="XRLabel" Name="LbCoName" Text="CO Name" TextAlignment="MiddleCenter" SizeF="865.8108,33.51399" LocationFloat="28.18921, 4.791673" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="4" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="5" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="6" ControlType="XRLabel" Name="LbReporttitle" Multiline="true" Text="مقارنة الارصدة التقديرية حسب السنة&#xD;&#xA;&#x9;   " TextAlignment="MiddleCenter" SizeF="393.903656,29.611" LocationFloat="264.220673, 49.7639961" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="7" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="8" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="9" ControlType="XRLabel" Name="LevelName" Multiline="true" TextAlignment="MiddleRight" SizeF="163.408936,22.9999924" LocationFloat="781.309265, 93.87499" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="10" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item3>
+      </Controls>
+    </Item1>
+    <Item2 Ref="11" ControlType="BottomMarginBand" Name="BottomMargin">
+      <Controls>
+        <Item1 Ref="12" ControlType="XRPageInfo" Name="pageInfo1" PageInfo="DateTime" SizeF="438,23" LocationFloat="6, 6" StyleName="PageInfo" />
+        <Item2 Ref="13" ControlType="XRPageInfo" Name="pageInfo2" TextFormatString="Page {0} of {1}" TextAlignment="TopRight" SizeF="438,23" LocationFloat="456, 6" StyleName="PageInfo" />
+      </Controls>
+    </Item2>
+    <Item3 Ref="14" ControlType="GroupHeaderBand" Name="GroupHeader1" GroupUnion="WithFirstDetail" HeightF="28">
+      <Controls>
+        <Item1 Ref="15" ControlType="XRTable" Name="table1" SizeF="1060,28" LocationFloat="0, 0">
+          <Rows>
+            <Item1 Ref="16" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+              <Cells>
+                <Item1 Ref="17" ControlType="XRTableCell" Name="xrTableCell5" Weight="0.10562755545659348" Multiline="true" Text="نسبة المتبقي من المتوقع" TextAlignment="MiddleCenter" StyleName="DetailCaption1" Borders="None">
+                  <StylePriority Ref="18" UseBorders="false" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="19" ControlType="XRTableCell" Name="xrTableCell3" Weight="0.094534672528585315" Multiline="true" Text="متبقي من المنوقع " TextAlignment="MiddleCenter" StyleName="DetailCaption1" Borders="None">
+                  <StylePriority Ref="20" UseBorders="false" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="21" ControlType="XRTableCell" Name="xrTableCell1" Weight="0.0993165192315743" Multiline="true" Text="المجموع الفعلي " TextAlignment="MiddleCenter" StyleName="DetailCaption1" Borders="None">
+                  <StylePriority Ref="22" UseBorders="false" UseTextAlignment="false" />
+                </Item3>
+                <Item4 Ref="23" ControlType="XRTableCell" Name="tableCell1" Weight="0.0772102358071665" Text="ديسمبر" TextAlignment="MiddleCenter" StyleName="DetailCaption1" Borders="None">
+                  <StylePriority Ref="24" UseBorders="false" UseTextAlignment="false" />
+                </Item4>
+                <Item5 Ref="25" ControlType="XRTableCell" Name="tableCell2" Weight="0.077650089809338851" Text="نوفمبر " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="26" UseTextAlignment="false" />
+                </Item5>
+                <Item6 Ref="27" ControlType="XRTableCell" Name="tableCell3" Weight="0.087678871502238243" Text="اكتوبر " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="28" UseTextAlignment="false" />
+                </Item6>
+                <Item7 Ref="29" ControlType="XRTableCell" Name="tableCell4" Weight="0.083133977312913582" Text="سبتمبر" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="30" UseTextAlignment="false" />
+                </Item7>
+                <Item8 Ref="31" ControlType="XRTableCell" Name="tableCell5" Weight="0.070549154411534934" Text="اغسطس" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="32" UseTextAlignment="false" />
+                </Item8>
+                <Item9 Ref="33" ControlType="XRTableCell" Name="tableCell6" Weight="0.05915549383202838" Text="يوليو" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="34" UseTextAlignment="false" />
+                </Item9>
+                <Item10 Ref="35" ControlType="XRTableCell" Name="tableCell7" Weight="0.073764976535435262" Text="يونيو" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="36" UseTextAlignment="false" />
+                </Item10>
+                <Item11 Ref="37" ControlType="XRTableCell" Name="tableCell8" Weight="0.047222162882486977" Text="مايو" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="38" UseTextAlignment="false" />
+                </Item11>
+                <Item12 Ref="39" ControlType="XRTableCell" Name="tableCell9" Weight="0.07450261959299001" Text="ابريل" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="40" UseTextAlignment="false" />
+                </Item12>
+                <Item13 Ref="41" ControlType="XRTableCell" Name="tableCell10" Weight="0.088321509134196563" Text="مارس" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="42" UseTextAlignment="false" />
+                </Item13>
+                <Item14 Ref="43" ControlType="XRTableCell" Name="tableCell11" Weight="0.0877894613940178" Text="فبراير " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="44" UseTextAlignment="false" />
+                </Item14>
+                <Item15 Ref="45" ControlType="XRTableCell" Name="tableCell12" Weight="0.10177270327750192" Text="يناير" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="46" UseTextAlignment="false" />
+                </Item15>
+                <Item16 Ref="47" ControlType="XRTableCell" Name="tableCell13" Weight="0.10578647660965224" Text="المتوقع السنوي " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="48" UseTextAlignment="false" />
+                </Item16>
+                <Item17 Ref="49" ControlType="XRTableCell" Name="tableCell14" Weight="0.15010776878061627" Text="اسم الحساب " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="50" UseTextAlignment="false" />
+                </Item17>
+                <Item18 Ref="51" ControlType="XRTableCell" Name="tableCell15" Weight="0.12846286526978762" Text="رقم الحساب " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="52" UseTextAlignment="false" />
+                </Item18>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item3>
+    <Item4 Ref="53" ControlType="DetailBand" Name="Detail" HeightF="25">
+      <Controls>
+        <Item1 Ref="54" ControlType="XRTable" Name="table2" SizeF="1060,25" LocationFloat="0, 0" OddStyleName="DetailData3_Odd">
+          <Rows>
+            <Item1 Ref="55" ControlType="XRTableRow" Name="tableRow2" Weight="11.5">
+              <Cells>
+                <Item1 Ref="56" ControlType="XRTableCell" Name="xrTableCell6" Weight="0.10562754778893468" TextFormatString="{0:n3}" Multiline="true" Text="xrTableCell6" TextAlignment="MiddleCenter" StyleName="DetailData1" Borders="None">
+                  <ExpressionBindings>
+                    <Item1 Ref="57" Expression="[RemainingRatio]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="58" UseBorders="false" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="59" ControlType="XRTableCell" Name="xrTableCell4" Weight="0.094534688589354626" TextFormatString="{0:n3}" Multiline="true" Text="xrTableCell4" TextAlignment="MiddleCenter" StyleName="DetailData1" Borders="None">
+                  <ExpressionBindings>
+                    <Item1 Ref="60" Expression="[RemainingExpected]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="61" UseBorders="false" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="62" ControlType="XRTableCell" Name="xrTableCell2" Weight="0.099316453823656087" TextFormatString="{0:n3}" Multiline="true" Text="xrTableCell2" TextAlignment="MiddleCenter" StyleName="DetailData1" Borders="None">
+                  <ExpressionBindings>
+                    <Item1 Ref="63" Expression="[ActualTotal]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="64" UseBorders="false" UseTextAlignment="false" />
+                </Item3>
+                <Item4 Ref="65" ControlType="XRTableCell" Name="tableCell16" Weight="0.077210333919043361" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1" Borders="None">
+                  <ExpressionBindings>
+                    <Item1 Ref="66" Expression="[December]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="67" UseBorders="false" UseTextAlignment="false" />
+                </Item4>
+                <Item5 Ref="68" ControlType="XRTableCell" Name="tableCell17" Weight="0.077650037970998689" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="69" Expression="[November]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="70" UseTextAlignment="false" />
+                </Item5>
+                <Item6 Ref="71" ControlType="XRTableCell" Name="tableCell18" Weight="0.087678819882439307" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="72" Expression="[October]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="73" UseTextAlignment="false" />
+                </Item6>
+                <Item7 Ref="74" ControlType="XRTableCell" Name="tableCell19" Weight="0.083133979972072211" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="75" Expression="[September]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="76" UseTextAlignment="false" />
+                </Item7>
+                <Item8 Ref="77" ControlType="XRTableCell" Name="tableCell20" Weight="0.070549149466006975" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="78" Expression="[August]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="79" UseTextAlignment="false" />
+                </Item8>
+                <Item9 Ref="80" ControlType="XRTableCell" Name="tableCell21" Weight="0.059155541234773561" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="81" Expression="[July]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="82" UseTextAlignment="false" />
+                </Item9>
+                <Item10 Ref="83" ControlType="XRTableCell" Name="tableCell22" Weight="0.073764930201841522" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="84" Expression="[June]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="85" UseTextAlignment="false" />
+                </Item10>
+                <Item11 Ref="86" ControlType="XRTableCell" Name="tableCell23" Weight="0.047222158643934461" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="87" Expression="[May]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="88" UseTextAlignment="false" />
+                </Item11>
+                <Item12 Ref="89" ControlType="XRTableCell" Name="tableCell24" Weight="0.074502602276057442" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="90" Expression="[April]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="91" UseTextAlignment="false" />
+                </Item12>
+                <Item13 Ref="92" ControlType="XRTableCell" Name="tableCell25" Weight="0.088321596523513665" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="93" Expression="[March]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="94" UseTextAlignment="false" />
+                </Item13>
+                <Item14 Ref="95" ControlType="XRTableCell" Name="tableCell26" Weight="0.0877892670709321" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="96" Expression="[February]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="97" UseTextAlignment="false" />
+                </Item14>
+                <Item15 Ref="98" ControlType="XRTableCell" Name="tableCell27" Weight="0.1017727902823046" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="99" Expression="[January]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="100" UseTextAlignment="false" />
+                </Item15>
+                <Item16 Ref="101" ControlType="XRTableCell" Name="tableCell28" Weight="0.10578655983979643" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="102" Expression="[ExpectedAnnually]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="103" UseTextAlignment="false" />
+                </Item16>
+                <Item17 Ref="104" ControlType="XRTableCell" Name="tableCell29" Weight="0.15010767581908446" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="105" Expression="[Name]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="106" UseTextAlignment="false" />
+                </Item17>
+                <Item18 Ref="107" ControlType="XRTableCell" Name="tableCell30" Weight="0.12846290518281958" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="108" Expression="[AccountNumber]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="109" UseTextAlignment="false" />
+                </Item18>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item4>
+    <Item5 Ref="110" ControlType="ReportFooterBand" Name="ReportFooter" HeightF="34.0094261">
+      <Controls>
+        <Item1 Ref="111" ControlType="XRPanel" Name="panel1" SizeF="1060,33.88443" LocationFloat="0, 0" StyleName="GrandTotalBackground1">
+          <Controls>
+            <Item1 Ref="112" ControlType="XRLabel" Name="xrLabel2" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="55.7310181,14.9677591" LocationFloat="184.877563, 8.916664" StyleName="GrandTotalData1">
+              <Summary Ref="113" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="114" Expression="sumSum([December])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="115" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="116" ControlType="XRLabel" Name="xrLabel4" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="63.4911728,14.9677582" LocationFloat="55.4736938, 8.916687" StyleName="GrandTotalData1">
+              <Summary Ref="117" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="118" Expression="sumSum([RemainingExpected])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="119" UseTextAlignment="false" />
+            </Item2>
+            <Item3 Ref="120" ControlType="XRLabel" Name="xrLabel1" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="36.3475952,14.8844366" LocationFloat="805.8874, 10.0833254" StyleName="GrandTotalData1">
+              <Summary Ref="121" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="122" Expression="sumSum([ExpectedAnnually])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="123" UseTextAlignment="false" />
+            </Item3>
+            <Item4 Ref="124" ControlType="XRLabel" Name="label3" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="45.4750977,14.8844366" LocationFloat="760.4123, 10.0000067" StyleName="GrandTotalData1">
+              <Summary Ref="125" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="126" Expression="sumSum([January])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="127" UseTextAlignment="false" />
+            </Item4>
+            <Item5 Ref="128" ControlType="XRLabel" Name="label5" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="49.0367432,14.9677582" LocationFloat="710.289063, 9.916687" StyleName="GrandTotalData1">
+              <Summary Ref="129" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="130" Expression="sumSum([February])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="131" UseTextAlignment="false" />
+            </Item5>
+            <Item6 Ref="132" ControlType="XRLabel" Name="label7" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="56.74695,14.9677544" LocationFloat="652.168335, 9.916687" StyleName="GrandTotalData1">
+              <Summary Ref="133" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="134" Expression="sumSum([March])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="135" UseTextAlignment="false" />
+            </Item6>
+            <Item7 Ref="136" ControlType="XRLabel" Name="label9" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="59.3247681,14.9677582" LocationFloat="592.8436, 9.916687" StyleName="GrandTotalData1">
+              <Summary Ref="137" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="138" Expression="sumSum([April])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="139" UseTextAlignment="false" />
+            </Item7>
+            <Item8 Ref="140" ControlType="XRLabel" Name="label11" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="49.00714,14.9677582" LocationFloat="543.8364, 10.0833254" StyleName="GrandTotalData1">
+              <Summary Ref="141" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="142" Expression="sumSum([May])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="143" UseTextAlignment="false" />
+            </Item8>
+            <Item9 Ref="144" ControlType="XRLabel" Name="label13" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="48.487793,14.9677582" LocationFloat="495.348572, 9.916687" StyleName="GrandTotalData1">
+              <Summary Ref="145" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="146" Expression="sumSum([June])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="147" UseTextAlignment="false" />
+            </Item9>
+            <Item10 Ref="148" ControlType="XRLabel" Name="label15" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="46.22235,14.9677582" LocationFloat="449.126282, 10.0833254" StyleName="GrandTotalData1">
+              <Summary Ref="149" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="150" Expression="sumSum([July])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="151" UseTextAlignment="false" />
+            </Item10>
+            <Item11 Ref="152" ControlType="XRLabel" Name="label17" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="47.2384949,14.9677591" LocationFloat="401.8878, 10.0833254" StyleName="GrandTotalData1">
+              <Summary Ref="153" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="154" Expression="sumSum([August])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="155" UseTextAlignment="false" />
+            </Item11>
+            <Item12 Ref="156" ControlType="XRLabel" Name="label19" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="53.3925476,14.9677591" LocationFloat="348.495239, 10.0000067" StyleName="GrandTotalData1">
+              <Summary Ref="157" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="158" Expression="sumSum([September])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="159" UseTextAlignment="false" />
+            </Item12>
+            <Item13 Ref="160" ControlType="XRLabel" Name="label21" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="51.2250824,14.9677591" LocationFloat="297.270142, 8.916664" StyleName="GrandTotalData1">
+              <Summary Ref="161" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="162" Expression="sumSum([October])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="163" UseTextAlignment="false" />
+            </Item13>
+            <Item14 Ref="164" ControlType="XRLabel" Name="label23" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="55.7310181,14.9677591" LocationFloat="241.539124, 8.916664" StyleName="GrandTotalData1">
+              <Summary Ref="165" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="166" Expression="sumSum([November])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="167" UseTextAlignment="false" />
+            </Item14>
+            <Item15 Ref="168" ControlType="XRLabel" Name="label25" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleRight" WordWrap="false" SizeF="65.60754,14.9677591" LocationFloat="118.964867, 9.000007" StyleName="GrandTotalData1">
+              <Summary Ref="169" Running="Report" />
+              <ExpressionBindings>
+                <Item1 Ref="170" Expression="sumSum([ActualTotal])" PropertyName="Text" EventName="BeforePrint" />
+              </ExpressionBindings>
+              <StylePriority Ref="171" UseTextAlignment="false" />
+            </Item15>
+          </Controls>
+        </Item1>
+      </Controls>
+    </Item5>
+  </Bands>
+  <StyleSheet>
+    <Item1 Ref="172" Name="Title" BorderStyle="Inset" Font="Arial, 14.25pt" ForeColor="255,64,70,80" BackColor="Transparent" BorderColor="Black" Sides="None" StringFormat="Near;Near;0;None;Character;Default" BorderWidthSerializable="1" />
+    <Item2 Ref="173" Name="DetailCaption1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="White" BackColor="255,151,144,144" BorderColor="White" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item3 Ref="174" Name="DetailData1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BorderColor="Transparent" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item4 Ref="175" Name="DetailData3_Odd" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BackColor="255,243,245,248" BorderColor="Transparent" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="1" />
+    <Item5 Ref="176" Name="GrandTotalCaption1" BorderStyle="Inset" Padding="6,2,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,147,147,147" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" />
+    <Item6 Ref="177" Name="GrandTotalData1" BorderStyle="Inset" Padding="2,6,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,75,75,75" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" />
+    <Item7 Ref="178" Name="GrandTotalBackground1" BorderStyle="Inset" BackColor="White" BorderColor="255,75,75,75" Sides="Bottom" StringFormat="Near;Near;0;None;Character;Default" BorderWidthSerializable="2" />
+    <Item8 Ref="179" Name="PageInfo" BorderStyle="Inset" Padding="2,2,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,64,70,80" StringFormat="Near;Near;0;None;Character;Default" />
+  </StyleSheet>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v19.1" Name="objectDataSource1" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RGF0YVNvdXJjZTEiPjxEYXRhU291cmNlIFR5cGU9IkFjYy5WaWV3TW9kZWxzLlRyaWFsQmFsYW5jZVZNLCBBY2MsIFZlcnNpb249MS4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsIiAvPjwvT2JqZWN0RGF0YVNvdXJjZT4=" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

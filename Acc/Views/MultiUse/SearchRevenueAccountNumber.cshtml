@@ -1,0 +1,173 @@
+﻿@model Acc.ViewModels.MutilUseSearchVM
+@{
+    ViewBag.Title = @Resources.Resource.SearchAccountNumber;
+
+
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.SearchAccountNumber</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <table id="tdataTableDetail" class="table table-bordered" style="width:100%;cursor:pointer">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.AccountNumber</th>
+                            <th>@Resources.Resource.AccountName</th>
+                            <th>@Resources.Resource.StopAccount</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="btnClose"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+        $(document).ready(function () {
+            var tabelMemRefDetail = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "400px",
+                "scrollX": true,
+                "scrollCollapse": true,
+                "paging": false,
+                "ordering": false,
+                "info": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+        dom: 'Bfrtip',
+
+				buttons: [
+
+
+				],
+
+
+				ajax: {
+                    url: "/MultiUse/GetDefinitionRevenue/",
+					"type": "POST",
+					"data": function (d) {
+						d.id = 0;
+
+
+					},
+					dataSrc: ""
+				},
+				columns: [
+
+
+
+
+					{
+						data: "AccountNumber"
+
+					},
+
+
+
+					{
+						data: "AccountName"
+
+                    },
+                    {
+                        data: "StoppedAccount"
+
+                    }
+				]
+
+			});
+
+
+        $('#tdataTableDetail tbody').on('click', 'tr', function () {
+            // alert('@(ViewBag.ID)');
+            if ('@(ViewBag.ID)' == "RevenueAccountNumber")
+            {
+                if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                    GetSelectedRevenueAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+            }
+            else if ('@(ViewBag.ID)' == "RevenueAccountNumberSearch")
+            {
+                GetSelectedRevenueAccountSearch(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+            }
+        });
+	});
+</script>
+
+

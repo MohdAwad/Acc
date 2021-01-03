@@ -1,0 +1,412 @@
+﻿@model  Acc.ViewModels.ChartOfAccountVM
+
+@{
+	ViewBag.Title = "CreateAccount";
+}
+
+<link href="~/Content/JsTreedist/themes/default/style.min.css" rel="stylesheet" />
+
+<h5>  @Resources.Resource.CreateNewAccount</h5>
+<br />
+
+<div class="col-md-4">
+
+
+	<div class="panel panel-info">
+		<div class="panel-heading">
+			<div class="form-group">
+
+
+				@Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "ArabicName"),
+				  Resources.Resource.AccountType, new { @id = "AccountTypeID", @class = "form-control input-sml" })
+			</div>
+			@*<label id="AccountName" style="color:white">@Resources.Resource.AccountsTree</label>*@
+		</div>
+		<div class="panel-body">
+			<div class="container">
+				<div class="row">
+
+					<div id="jstree-tree" style="height:400px;width:270px;border:1px solid #ccc;
+							  font:16px/26px Georgia, Garamond, Serif;overflow:auto;"></div>
+
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+<div class="col-md-8">
+
+
+	<div class="col-md-6">
+		<div class="form-group">
+			@Html.LabelFor(model => model.AccountKind)
+
+
+			@Html.DropDownListFor(m => m.AccountKind, new List<SelectListItem>
+											 {
+											  new SelectListItem{ Text=Resources.Resource.AnAccount, Value = "0",Selected=true },
+											  new SelectListItem{ Text=Resources.Resource. Client, Value = "1",Selected=false },
+
+											  new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false },
+											   new SelectListItem{ Text=Resources.Resource.Approval, Value = "3",Selected=false }
+
+
+
+
+
+												}, new { @id = "AccountKind", @class = "form-control input-sml" })
+			@Html.ValidationMessageFor(model => model.AccountKind, "", new { @class = "text-danger" })
+
+		</div>
+
+		<div class="form-group">
+			@Html.CheckBoxFor(m => m.IsFirstLevel, new { @id = "IsFirstLevel" })
+			@Html.ValidationMessageFor(m => m.IsFirstLevel)
+			@Html.Label(Resources.Resource.IsFirstLevel)
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(m => m.AccountFather)
+			@Html.TextBoxFor(m => m.AccountFather, new { @id = "AccountFather", @class = "form-control input-sml" })
+			@Html.ValidationMessageFor(m => m.AccountFather)
+		</div>
+		<div class="form-group">
+			@Html.LabelFor(m => m.AccountFatherName)
+			@Html.TextBoxFor(m => m.AccountFatherName, new { @id = "AccountFatherName", @class = "form-control input-sml", @disabled = "disabled" })
+			@Html.ValidationMessageFor(m => m.AccountFatherName)
+		</div>
+		<div class="form-group">
+			<button type="submit" class="btn btn-outline btn-success" id="save"> @Resources.Resource.Save</button>
+		</div>
+
+	</div>
+	<div class="col-md-6">
+		<div class="form-group">
+			@Html.LabelFor(m => m.AccountNumber)
+			@Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml" })
+			@Html.ValidationMessageFor(m => m.AccountNumber)
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(m => m.ArabicName)
+			@Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+			@Html.ValidationMessageFor(m => m.ArabicName)
+		</div>
+		<div class="form-group">
+			@Html.LabelFor(m => m.EnglishName)
+			@Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+			@Html.ValidationMessageFor(m => m.EnglishName)
+		</div>
+
+		<div class="form-group">
+			@Html.LabelFor(m => m.Note)
+			@Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+			@Html.ValidationMessageFor(m => m.Note)
+		</div>
+	</div>
+
+	<div class="col-md-12">
+		<ul class="nav nav-pills">
+			<li class="active">
+				<a href="#ClientInformation" data-toggle="tab">@Resources.Resource.ClientInformation</a>
+			</li>
+			<li>
+				<a href="#SupplierInformation" data-toggle="tab">@Resources.Resource.SupplierInformation</a>
+			</li>
+			<li>
+				<a href="#AccreditationInformation" data-toggle="tab">@Resources.Resource.AccreditationInformation</a>
+			</li>
+			<li>
+				<a href="#None" data-toggle="tab"> </a>
+			</li>
+
+		</ul>
+
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div class="tab-pane fade in active" id="ClientInformation">
+				1
+			</div>
+			<div class="tab-pane fade" id="SupplierInformation">
+				2
+
+			</div>
+			<div class="tab-pane fade" id="AccreditationInformation">
+				3
+
+			</div>
+			<div class="tab-pane fade" id="None">
+
+
+			</div>
+
+		</div>
+	</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+
+	<script>
+
+		$(document).ready(function () {
+			var c = '@Model.AccountChartZero';
+
+			$('input[name="AccountNumber"]').mask(c);
+			$('input[name="AccountFather"]').mask(c);
+
+				   $('jstree-tree').jstree({
+					"core" : {
+						   "data": [],
+							worker: false
+					},
+				});
+			var jsonData;
+			CallChart();
+
+
+
+
+			//disabled
+			  $('.nav-pills a[href="#None"]').tab('show');
+
+			$('#tab-content a').on('click', function(e) {
+					e.preventDefault();
+					$(this).tab('show');
+					var theThis = $(this);
+					$('#tab-content a').removeClass('active');
+					theThis.addClass('active');
+					});
+			//AccountKind
+			$(document).on('change', '#AccountKind', function () {
+
+				if ($("#AccountKind").val() == 1) {
+
+					$('.nav-pills a[href="#ClientInformation"]').tab('show');
+				}
+				else
+				if ($("#AccountKind").val() == 2) {
+
+					$('.nav-pills a[href="#SupplierInformation"]').tab('show');
+					}
+				 else
+				   if ($("#AccountKind").val() == 3) {
+
+					  $('.nav-pills a[href="#AccreditationInformation"]').tab('show');
+						}
+					else
+				   if ($("#AccountKind").val() == 0) {
+
+					  $('.nav-pills a[href="#None"]').tab('show');
+					}
+
+
+
+
+
+
+			  });
+
+			$(document).on('click', '#IsFirstLevel', function () {
+
+
+			 if(document.getElementById("IsFirstLevel").checked == true){
+				 document.getElementById("AccountFather").disabled = true;
+				  document.getElementById('AccountFatherName').value = '';
+				 document.getElementById('AccountFather').value = '';
+
+				}
+				else {
+					   document.getElementById("AccountFather").disabled = false;
+				}
+
+			});
+
+
+			function resfreshJSTree() {
+				$('#jstree-tree').jstree(true).settings.core.data = jsonData;
+				$('#jstree-tree').jstree(true).refresh();
+			};
+
+				$('#jstree-tree')
+					   .on('changed.jstree', function (e, data) {
+						   var objNode = data.instance.get_node(data.selected);
+						   var AccInfo =  jsonData.filter(function(hero) {
+									return hero.id == objNode.id;
+						   });
+						   console.log(AccInfo);
+
+						   document.getElementById('AccountFatherName').value = AccInfo[0].AccountName;
+						  document.getElementById('AccountFather').value = objNode.id;
+						   //document.getElementById('AccountNumber').value = objNode.id;
+						   // document.getElementById('AccountName').value = objNode.AccountName;
+
+
+						  // $('#jstree-result').html(' <strong>' + objNode.id + '</strong>');
+					   });
+
+			function CallChart() {
+			   $.ajax({
+					method: "GET",
+					url: "/ChartOfAccount/GetChartTree",
+			   success: function (data) {
+				   jsonData = data;
+
+					 $('#jstree-tree')
+					  .jstree({
+						  core: {
+
+							  data: jsonData,
+								  worker: false
+						}});
+				   resfreshJSTree();
+
+
+
+					},//success
+					error: function (xhr, AJAXOptions, thrownError) {
+
+						alert('Failed to retrieve .');
+					}//error
+				});
+
+
+			};
+
+
+
+
+			//-------Treee-----------//
+
+
+
+
+
+			//-----------------------//
+
+  //        var tdataTableAccountTypeRef = $("#tdataTableAccountType").DataTable({
+  //                    "scrollX": true,
+  //                    "paging": false,
+  //            "searching": false,
+  //              "bPaginate": false,
+  //      "bFilter": false,
+  //      "bInfo": false,
+  //                   scrollY:        '50vh',
+  //      scrollCollapse: true,
+  //                    dom: 'Bfrtip',
+  //                    buttons: [
+
+
+
+  //                    ],
+
+		//ajax: {
+		//	url: "/AccountType/GetAllAccountType",
+		//	dataSrc: ""
+		//},
+  //          columns: [
+
+		//	{
+		//		data: "AccountTypeID"
+
+		//	},
+
+		//	{
+
+		//		data: "ArabicName"
+		//	}
+
+
+		//],
+  //          initComplete: function (settings, json) {
+
+		//		        var api = new $.fn.dataTable.Api(settings);
+  //              api.columns([0]).visible(false);
+
+
+  //               }
+  //                });
+  //           $('#tdataTableAccountType tbody').on('click', 'tr', function () {
+
+  //              var data = tdataTableAccountTypeRef.row( this ).data();
+  //               document.getElementById("AccountTypeID").value = data.AccountTypeID;
+  //               document.getElementById("AccountTypeName").value = data.ArabicName;
+  //               document.getElementById("AccountTypeName").innerHTML=data.ArabicName;
+
+  //                    } );
+  //              $('#tdataTableAccountType tbody').on( 'click', 'tr', function () {
+  //                if ( $(this).hasClass('selected') ) {
+  //                   $(this).removeClass('selected');
+  //                  }
+  //                else {
+  //                     tdataTableAccountTypeRef.$('tr.selected').removeClass('selected');
+  //                    $(this).addClass('selected');
+  //                     }
+  //              });
+
+		$(document).on('click', '#save', function () {
+			 var dialog = bootbox.dialog({
+				  title: '@Resources.Resource.PleaseWait',
+				  message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+				  closeButton: false
+				});
+
+			var dataToSave = {
+				AccountNumber:$("#AccountNumber").val(),
+				ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), AccountFather: $("#AccountFather").val(),
+				AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), Note: $("#Note").val(),
+				IsFirstLevel: $("#IsFirstLevel:checked").val()
+
+
+
+			};
+
+				$.ajax({
+					type: "POST",
+					url: "/ChartOfAccount/Save",
+					data: JSON.stringify(dataToSave),
+					contentType: 'application/json',
+					success: function (data) {
+
+						dialog.modal('hide');
+						if (data.Code == 0) {
+							toastr.error(data.Msg);
+						}
+						else if (data.Code == 1) {
+							$('#modal-container').modal('hide');
+							toastr.success(data.Msg);
+							CallChart();
+							//  $('#jstree-tree').jstree("refresh");
+							//tabelMemRef.ajax.reload();
+							//ClearForm();
+						}
+
+					},
+					error: function (data) {
+						dialog.modal('hide');
+						toastr.error(data);
+					}
+
+				});
+			});
+
+
+
+
+		 });
+	</script>
+}
+
+
+

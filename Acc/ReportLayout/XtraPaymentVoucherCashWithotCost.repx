@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="19.1.5.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="XtraPaymentVoucherCashWithotCost" Landscape="true" Margins="100, 78, 312, 100" PageWidth="1100" PageHeight="850" Version="19.1" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="312.2083">
+      <Controls>
+        <Item1 Ref="3" ControlType="XRLabel" Name="LbTafqet" RightToLeft="Yes" Multiline="true" Text="LbTafqet" SizeF="262.6428,23" LocationFloat="28.4043789, 267.5417" Padding="2,2,0,0,100" Borders="None">
+          <StylePriority Ref="4" UseBorders="false" />
+        </Item1>
+        <Item2 Ref="5" ControlType="XRLabel" Name="xrLabel6" Multiline="true" Text="حساب الصندوق" TextAlignment="MiddleRight" SizeF="95.40338,23" LocationFloat="826.5966, 186.0418" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="6" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="7" ControlType="XRLabel" Name="FromAccountNumber" Multiline="true" TextAlignment="MiddleRight" SizeF="89.57005,23" LocationFloat="732.4432, 186.0419" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="8" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item3>
+        <Item4 Ref="9" ControlType="XRLabel" Name="xrLabel15" Multiline="true" Text="اسم الحساب" TextAlignment="MiddleRight" SizeF="90.14807,23" LocationFloat="635.5035, 186.0418" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="10" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item4>
+        <Item5 Ref="11" ControlType="XRLabel" Name="AccountCreditName" Multiline="true" TextAlignment="MiddleRight" SizeF="120.5159,23" LocationFloat="510.9876, 186.0418" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="12" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item5>
+        <Item6 Ref="13" ControlType="XRLabel" Name="xrLabel11" Multiline="true" Text="نوع الحركة" TextAlignment="MiddleRight" SizeF="64.0199,22.99999" LocationFloat="848.9801, 129.875" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="14" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item6>
+        <Item7 Ref="15" ControlType="XRLabel" Name="xrCompanyTransactionKindName" Multiline="true" TextAlignment="MiddleRight" SizeF="172.3463,22.99999" LocationFloat="671.6339, 129.875" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="16" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item7>
+        <Item8 Ref="17" ControlType="XRLabel" Name="xrLabel5" Multiline="true" Text="العملة" TextAlignment="MiddleRight" SizeF="66.59796,22.99999" LocationFloat="594.3276, 129.875" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="18" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item8>
+        <Item9 Ref="19" ControlType="XRLabel" Name="xrCurrencyID" Multiline="true" TextAlignment="MiddleRight" SizeF="64.58344,22.99999" LocationFloat="521.4451, 129.875" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="20" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item9>
+        <Item10 Ref="21" ControlType="XRLabel" Name="xrLabel1" Multiline="true" Text="معامل التحويل" TextAlignment="MiddleRight" SizeF="74.03156,22.99999" LocationFloat="431.367, 129.875" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="22" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item10>
+        <Item11 Ref="23" ControlType="XRLabel" Name="xrCurrencyNewValue" Multiline="true" TextAlignment="MiddleRight" SizeF="48.8027,22.99999" LocationFloat="369.4998, 129.875" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="24" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item11>
+        <Item12 Ref="25" ControlType="XRLabel" Name="xrLabel2" Multiline="true" Text="رقم القيد" TextAlignment="MiddleRight" SizeF="73.08322,22.99999" LocationFloat="280.7916, 129.875" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="26" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item12>
+        <Item13 Ref="27" ControlType="XRLabel" Name="LbVoucherNo" Multiline="true" TextAlignment="MiddleRight" SizeF="96.28583,22.99999" LocationFloat="173.2185, 129.875" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="28" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item13>
+        <Item14 Ref="29" ControlType="XRLabel" Name="xrLabel17" Multiline="true" Text="التاريخ" TextAlignment="MiddleRight" SizeF="72.12146,23" LocationFloat="93.65202, 129.875" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="30" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item14>
+        <Item15 Ref="31" ControlType="XRLabel" Name="LbVDate" TextFormatString="{0:dd/MM/yyyy}" Multiline="true" TextAlignment="MiddleRight" SizeF="89.65202,22.99999" LocationFloat="0, 129.875" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="32" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item15>
+        <Item16 Ref="33" ControlType="XRLabel" Name="LbNOte" Multiline="true" TextAlignment="MiddleRight" SizeF="552.8834,23.00002" LocationFloat="108.0421, 222.3751" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="34" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item16>
+        <Item17 Ref="35" ControlType="XRLabel" Name="xrLabel19" Multiline="true" Text="البيــــــــــــــــان" TextAlignment="MiddleCenter" SizeF="157.2126,23" LocationFloat="686.7676, 222.3751" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="36" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item17>
+        <Item18 Ref="37" ControlType="XRLabel" Name="AccountDebitName" Multiline="true" TextAlignment="MiddleRight" SizeF="167.2911,23" LocationFloat="10, 186.0419" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="38" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item18>
+        <Item19 Ref="39" ControlType="XRLabel" Name="xrLabel13" Multiline="true" Text="اسم الحساب" TextAlignment="MiddleRight" SizeF="103.81,23" LocationFloat="187.2372, 186.0419" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="40" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item19>
+        <Item20 Ref="41" ControlType="XRLabel" Name="ToAccountNumber" Multiline="true" TextAlignment="MiddleRight" SizeF="101.928,23" LocationFloat="299.5415, 186.0419" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="42" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item20>
+        <Item21 Ref="43" ControlType="XRLabel" Name="xrLabel4" Multiline="true" Text="حساب المدفوع له" TextAlignment="MiddleRight" SizeF="100.685,23" LocationFloat="407.3026, 186.0419" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="44" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item21>
+        <Item22 Ref="45" ControlType="XRLabel" Name="xrLabel18" TextFormatString="{0:n3}" Multiline="true" TextAlignment="MiddleRight" SizeF="140.4585,23" LocationFloat="306.9165, 267.5417" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="46" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item22>
+        <Item23 Ref="47" ControlType="XRLabel" Name="xrLabel9" Multiline="true" Text="الصافي الاجنبي" TextAlignment="MiddleRight" SizeF="136.0285,23" LocationFloat="459.375, 267.5417" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="48" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item23>
+        <Item24 Ref="49" ControlType="XRLabel" Name="LbNetTot" TextFormatString="{0:n3}" Multiline="true" TextAlignment="MiddleRight" SizeF="135.5598,23" LocationFloat="615.3801, 267.5417" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="50" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item24>
+        <Item25 Ref="51" ControlType="XRLabel" Name="xrLabel10" Multiline="true" Text="الصافي" TextAlignment="MiddleRight" SizeF="143.3933,23" LocationFloat="768.5215, 267.5417" Font="Arial, 9.75pt, style=Bold" BackColor="255,153,212,246" Padding="2,2,0,0,100">
+          <StylePriority Ref="52" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item25>
+        <Item26 Ref="53" ControlType="XRLabel" Name="LbReporttitle" Multiline="true" Text="سند صرف نقدي" TextAlignment="MiddleCenter" SizeF="393.9037,27.05564" LocationFloat="267.0219, 77.26399" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="54" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="55" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item26>
+        <Item27 Ref="56" ControlType="XRLabel" Name="LbCoName" Text="CO Name" TextAlignment="MiddleCenter" SizeF="865.8108,33.51399" LocationFloat="22.18922, 25" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="57" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="58" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item27>
+      </Controls>
+    </Item1>
+    <Item2 Ref="59" ControlType="BottomMarginBand" Name="BottomMargin">
+      <Controls>
+        <Item1 Ref="60" ControlType="XRPageInfo" Name="pageInfo1" PageInfo="DateTime" SizeF="438,23" LocationFloat="6, 6" StyleName="PageInfo" />
+        <Item2 Ref="61" ControlType="XRPageInfo" Name="pageInfo2" TextFormatString="Page {0} of {1}" TextAlignment="TopRight" SizeF="438,23" LocationFloat="456, 6" StyleName="PageInfo" />
+      </Controls>
+    </Item2>
+    <Item3 Ref="62" ControlType="DetailBand" Name="Detail" Expanded="false" HeightF="25" />
+  </Bands>
+  <StyleSheet>
+    <Item1 Ref="63" Name="Title" BorderStyle="Inset" Font="Arial, 14.25pt" ForeColor="255,64,70,80" BackColor="Transparent" BorderColor="Black" Sides="None" StringFormat="Near;Near;0;None;Character;Default" BorderWidthSerializable="1" />
+    <Item2 Ref="64" Name="DetailCaption1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,195,205,205" BorderColor="White" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item3 Ref="65" Name="DetailData1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BorderColor="Transparent" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item4 Ref="66" Name="DetailData3_Odd" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BackColor="255,243,245,248" BorderColor="Transparent" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="1" />
+    <Item5 Ref="67" Name="PageInfo" BorderStyle="Inset" Padding="2,2,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,64,70,80" StringFormat="Near;Near;0;None;Character;Default" />
+  </StyleSheet>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v19.1" Name="objectDataSource1" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RGF0YVNvdXJjZTEiPjxEYXRhU291cmNlIFR5cGU9IkFjYy5WaWV3TW9kZWxzLlRyYW5zYWN0aW9uRml4ZWRWTSwgQWNjLCBWZXJzaW9uPTEuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49bnVsbCIgLz48L09iamVjdERhdGFTb3VyY2U+" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

@@ -1,0 +1,549 @@
+﻿@model  Acc.ViewModels.ChartOfAccountSupplierVM
+@{
+    ViewBag.Title = @Resources.Resource.CreateSubAccount;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#AccountNumber").focus().select();
+        $("#AccountNumber").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+        });
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Note").focus().select();
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Email").focus().select();
+        });
+        $("#Email").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Telephone").focus().select();
+        });
+        $("#Telephone").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Mobile").focus().select();
+        });
+        $("#Mobile").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TeleFax").focus().select();
+        });
+        $("#TeleFax").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Website").focus().select();
+        });
+        $("#Website").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Address").focus().select();
+        });
+        $("#Address").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#NameOfPersonInCharge").focus().select();
+        });
+        $("#NameOfPersonInCharge").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#PhoneOfPersonInCharge").focus().select();
+        });
+        $("#PhoneOfPersonInCharge").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#BankAccountNumber").focus().select();
+        });
+        $("#BankAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#BeneficiaryName").focus().select();
+        });
+        $("#BeneficiaryName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#IBAN").focus().select();
+        });
+        $("#IBAN").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#SwiftCode").focus().select();
+        });
+        $("#SwiftCode").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#BankAdderss").focus().select();
+        });
+        $("#BankAdderss").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#AccountNumber").focus().select();
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg" style="width : 90%">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">
+                        @Resources.Resource.CreateSubAccount
+                        @Html.LabelFor(m => m.AccountFather) <span style="color:yellow; font-weight:bold"> @Html.DisplayTextFor(m => m.AccountFather)</span> / @Html.LabelFor(m => m.AccountFatherName)<span style="color:yellow; font-weight:bold"> @Html.DisplayTextFor(m => m.AccountFatherName)</span>
+                    </h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.AccountFatherName, new { @id = "AccountFatherName" })
+                @Html.HiddenFor(m => m.AccountFather, new { @id = "AccountFather" })
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountTypeID)
+
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "ArabicName"), new { @id = "AccountTypeID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "EnglishName"), new { @id = "AccountTypeID", @class = "form-control input-sml" })
+                        }
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountKind)
+                        @Html.DropDownListFor(m => m.AccountKind, new List<SelectListItem>
+                                                         {
+                                                          new SelectListItem{ Text=Resources.Resource.AnAccount, Value = "0",Selected=true },
+                                                          new SelectListItem{ Text=Resources.Resource. Client, Value = "1",Selected=false },
+
+                                                          new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false },
+                                                           new SelectListItem{ Text=Resources.Resource.Approval, Value = "3",Selected=false }
+                   }, new { @id = "AccountKind", @class = "form-control input-sml", @disabled = "disabled" })
+                        @Html.ValidationMessageFor(model => model.AccountKind, "", new { @class = "text-danger" })
+                        @Html.HiddenFor(m => m.AccountKind, new { @id = "AccountKind" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AccountNumber)<span style="color:red">*</span>
+                        @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.AccountNumber)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ArabicName)<span style="color:red">*</span>
+                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.ArabicName)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EnglishName)
+                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.EnglishName)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Note)
+                        @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Note)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CurrencyID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), new { @id = "CurrencyID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), new { @id = "CurrencyID", @class = "form-control input-sml" })
+                        }
+
+
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierCountryID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCountryID, new SelectList(Model.SupplierCountry, "SupplierCountryID", "ArabicName"),
+                                                        Resources.Resource.SupplierCountry, new { @id = "SupplierCountryID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCountryID, new SelectList(Model.SupplierCountry, "SupplierCountryID", "EnglishName"),
+                                                        Resources.Resource.SupplierCountry, new { @id = "SupplierCountryID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierCountryID)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierCityID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCityID, new SelectList(Model.SupplierCity, "SupplierCityID", "ArabicName"),
+                                                        Resources.Resource.SupplierCity, new { @id = "SupplierCityID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCityID, new SelectList(Model.SupplierCity, "SupplierCityID", "EnglishName"),
+                                                        Resources.Resource.SupplierCity, new { @id = "SupplierCityID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierCityID)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new { Email = "Email", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Email)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Telephone)
+                        @Html.TextBoxFor(m => m.Telephone, new { @id = "Telephone", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Telephone)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Mobile)
+                        @Html.TextBoxFor(m => m.Mobile, new { @id = "Mobile", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Mobile)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TeleFax)
+                        @Html.TextBoxFor(m => m.TeleFax, new { @id = "TeleFax", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.TeleFax)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Website)
+                        @Html.TextBoxFor(m => m.Website, new { @id = "Website", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Website)
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Address)
+                        @Html.TextBoxFor(m => m.Address, new { @id = "Address", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Address)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.NameOfPersonInCharge)
+                        @Html.TextBoxFor(m => m.NameOfPersonInCharge, new { @id = "NameOfPersonInCharge", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.NameOfPersonInCharge)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PhoneOfPersonInCharge)
+                        @Html.TextBoxFor(m => m.PhoneOfPersonInCharge, new { Email = "PhoneOfPersonInCharge", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.PhoneOfPersonInCharge)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.PaymnetMethodTypeID)
+                        @Html.DropDownListFor(m => m.PaymnetMethodTypeID, new List<SelectListItem>
+                                                         {
+                                                          new SelectListItem{ Text=Resources.Resource.Cash, Value = "0",Selected=true },
+                                                          new SelectListItem{ Text=Resources.Resource. Debt, Value = "1",Selected=false }
+                        }, new { @id = "PaymnetMethodTypeID", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(model => model.PaymnetMethodTypeID, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierTypeID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierTypeID, new SelectList(Model.SupplierType, "SupplierTypeID", "ArabicName"), new { @id = "SupplierTypeID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierTypeID, new SelectList(Model.SupplierCity, "SupplierTypeID", "EnglishName"), new { @id = "SupplierTypeID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierTypeID)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankAccountNumber)
+                        @Html.TextBoxFor(m => m.BankAccountNumber, new { @id = "BankAccountNumber", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.BankAccountNumber)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BeneficiaryName)
+                        @Html.TextBoxFor(m => m.BeneficiaryName, new { @id = "BeneficiaryName", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.BeneficiaryName)
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.IBAN)
+                        @Html.TextBoxFor(m => m.IBAN, new { @id = "IBAN", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.IBAN)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SwiftCode)
+                        @Html.TextBoxFor(m => m.SwiftCode, new { @id = "SwiftCode", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.SwiftCode)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierBankID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierBankID, new SelectList(Model.SupplierBank, "SupplierBankID", "ArabicName"),
+                                                        Resources.Resource.SupplierBank, new { @id = "SupplierBankID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierBankID, new SelectList(Model.SupplierBank, "SupplierBankID", "EnglishName"),
+                                                        Resources.Resource.SupplierBank, new { @id = "SupplierBankID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierBankID)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierBranchBankID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierBranchBankID, new SelectList(Model.SupplierBranchBank, "SupplierBranchBankID", "ArabicName"),
+                                                        Resources.Resource.SupplierBranchBank, new { @id = "SupplierBranchBankID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierBranchBankID, new SelectList(Model.SupplierBranchBank, "SupplierBranchBankID", "EnglishName"),
+                                                        Resources.Resource.SupplierBranchBank, new { @id = "SupplierBranchBankID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierBranchBankID)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankAdderss)
+                        @Html.TextBoxFor(m => m.BankAdderss, new { @id = "BankAdderss", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.BankAdderss)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierCountryBankID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCountryBankID, new SelectList(Model.SupplierCountryBank, "SupplierCountryBankID", "ArabicName"),
+                                                        Resources.Resource.SupplierCountryBank, new { @id = "SupplierCountryBankID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCountryBankID, new SelectList(Model.SupplierCountryBank, "SupplierCountryBankID", "EnglishName"),
+                                                        Resources.Resource.SupplierCountryBank, new { @id = "SupplierCountryBankID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierCityBankID)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SupplierCityBankID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCityBankID, new SelectList(Model.SupplierCityBank, "SupplierCityBankID", "ArabicName"),
+                                                        Resources.Resource.SupplierCityBank, new { @id = "SupplierCityBankID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.SupplierCityBankID, new SelectList(Model.SupplierCityBank, "SupplierCityBankID", "EnglishName"),
+                                                        Resources.Resource.SupplierCityBank, new { @id = "SupplierCityBankID", @class = "form-control input-sml" })
+                        }
+                        @Html.ValidationMessageFor(m => m.SupplierCityBankID)
+                    </div>
+                </div>
+
+                @Html.HiddenFor(m => m.LevelZero, new { @id = "LevelZero" })
+                @Html.HiddenFor(m => m.AccountLevel, new { @id = "AccountLevel" })
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary btn-anim" id="SaveChildAccountSupplier"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $("#AccountNumber").mask('@Model.LevelZero');
+        });
+        $('#SupplierCountryID').change(function () {
+            var SupplierCityID = $('#SupplierCityID');
+            SupplierCityID.empty();
+            if ('@Resources.Resource.CurLang' == 'Arb') {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetCityIDByCountryID/" + document.getElementById("SupplierCountryID").value,
+
+
+                    success: function (data) {
+                        SupplierCityID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.SupplierCity'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            SupplierCityID.append($('<option/>', {
+                                value: region.SupplierCityID,
+                                text: region.ArabicName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetCityIDByCountryID/" + document.getElementById("SupplierCountryID").value,
+
+
+                    success: function (data) {
+                        SupplierCityID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.SupplierCity'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            SupplierCityID.append($('<option/>', {
+                                value: region.SupplierCityID,
+                                text: region.EnglishName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+        });
+        $('#SupplierCountryBankID').change(function () {
+            var SupplierCityBankID = $('#SupplierCityBankID');
+            SupplierCityBankID.empty();
+            if ('@Resources.Resource.CurLang' == 'Arb') {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetBankCityIDByBankCountryID/" + document.getElementById("SupplierCountryBankID").value,
+
+
+                    success: function (data) {
+                        SupplierCityBankID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.SupplierCityBank'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            SupplierCityBankID.append($('<option/>', {
+                                value: region.SupplierCityBankID,
+                                text: region.ArabicName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetBankCityIDByBankCountryID/" + document.getElementById("SupplierCountryBankID").value,
+
+
+                    success: function (data) {
+                        SupplierCityBankID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.SupplierCityBank'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            SupplierCityBankID.append($('<option/>', {
+                                value: region.SupplierCityBankID,
+                                text: region.EnglishName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+        });
+        $('#SupplierBankID').change(function () {
+            var SupplierBranchBankID = $('#SupplierBranchBankID');
+            SupplierBranchBankID.empty();
+            if ('@Resources.Resource.CurLang' == 'Arb') {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetBranchBankIDByBankID/" + document.getElementById("SupplierBankID").value,
+
+
+                    success: function (data) {
+                        SupplierBranchBankID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.SupplierBranchBank'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            SupplierBranchBankID.append($('<option/>', {
+                                value: region.SupplierBranchBankID,
+                                text: region.ArabicName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetBranchBankIDByBankID/" + document.getElementById("SupplierBankID").value,
+
+
+                    success: function (data) {
+                        SupplierBranchBankID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.SupplierBranchBank'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            SupplierBranchBankID.append($('<option/>', {
+                                value: region.SupplierBranchBankID,
+                                text: region.EnglishName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+        });
+    });
+</script>
+

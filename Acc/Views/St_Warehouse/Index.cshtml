@@ -1,0 +1,764 @@
+﻿@model Acc.ViewModels.St_WarehouseVM
+@{
+    ViewBag.Title = @Resources.Resource.Warehouses;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Warehouses</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <a class="btn btn-primary btn-anim js-Pop" id="btnSave" href="/St_Warehouse/Add"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            <a class="btn btn-warning btn-anim" id="btnPrintExcel"> <i class="fa fa-file-excel-o"></i><span class="btn-text">@Resources.Resource.PrintExcel</span></a>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.StockCode</th>
+                        <th>@Resources.Resource.StockName</th>
+                        <th>@Resources.Resource.Telephone</th>
+                        @if (Model.InventoryType == 1 && Model.WorkWithCostCenter)
+                        {
+                            <th>@Resources.Resource.AccountName</th>
+                            <th>@Resources.Resource.CostCenterName</th>
+                        }
+                        @if (Model.InventoryType == 1 && !Model.WorkWithCostCenter)
+                        {
+                            <th>@Resources.Resource.AccountName</th>
+                        }
+                        <th>@Resources.Resource.Modify</th>
+                        <th>@Resources.Resource.Delete</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.InventoryType, new { @id = "InventoryType", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+<div id="modal-containerAccount" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+	$(document).ready(function () {
+		var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+		var InventoryType = document.getElementById("InventoryType").value;
+		$(document).on('click', '#CloseForm', function () {
+			window.location = "/St_CompanySetting/Index";
+		});
+		$(document).on('click', '#btnPrintExcel', function () {
+			$(".dt-button").click();
+		});
+		$(document).on('click', '#Save', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						var StockCode = $("#StockCode").val();
+						if (StockCode != null && StockCode != '') {
+							$.getJSON('@Url.Action("CheckIfStockCodeExisting", "St_Warehouse")', { id: StockCode }, function (Data) {
+								if (Data == '' || Data == null) {
+									if ($("#StockCode").val() == '') {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+									else if ($("#ArabicName").val() == '') {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+									else if (InventoryType == '1' && $("#AccountNumber").val() == '') {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+									else if (InventoryType == '1' && WorkWithCostCenter && $("#CostCenterNumber").val() == '') {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+									else {
+										var dialog = bootbox.dialog({
+											title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+											message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+											closeButton: false
+										});
+										var CostCenterNumber = "";
+										var AccountNumber = "";
+										if (WorkWithCostCenter) {
+											CostCenterNumber = $("#CostCenterNumber").val();
+										}
+										if (InventoryType == '1') {
+											AccountNumber = $("#AccountNumber").val();
+										}
+										var dataToSave = {
+											StockCode: $("#StockCode").val(),
+											ArabicName: $("#ArabicName").val(),
+											EnglishName: $("#EnglishName").val(),
+											Address: $("#Address").val(),
+											Telephone: $("#Telephone").val(),
+											AccountNumber: AccountNumber,
+											CostCenterNumber: CostCenterNumber
+										};
+										$.ajax({
+											type: "POST",
+											url: "/St_Warehouse/Save",
+											data: JSON.stringify(dataToSave),
+											contentType: 'application/json',
+											success: function (data) {
+
+												dialog.modal('hide');
+												if (data.Code == 0) {
+													toastr.error(data.Msg);
+												}
+												else if (data.Code == 1) {
+													toastr.success(data.Msg);
+													tabelMemRef.ajax.reload();
+													document.getElementById("StockCode").value = '';
+													document.getElementById("ArabicName").value = '';
+													document.getElementById("EnglishName").value = '';
+													document.getElementById("EnglishName").value = '';
+													document.getElementById("Address").value = '';
+													document.getElementById("Telephone").value = '';
+													if (InventoryType == '1') {
+														document.getElementById("AccountNumber").value = '';
+														document.getElementById("AccountName").value = '';
+													}
+													if (WorkWithCostCenter) {
+														document.getElementById("CostCenterNumber").value = '';
+														document.getElementById("CostCenterName").value = '';
+													}
+													$("#StockCode").focus().select();
+												}
+											},
+											error: function (data) {
+												dialog.modal('hide');
+												toastr.error(data);
+											}
+										});
+									}
+								}
+								else {
+									bootbox.alert({
+										message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisStockIsAlreadyEntered</h6>',
+										className: 'rubberBand animated',
+										buttons: {
+											ok: {
+												label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+												className: 'btn-primary'
+											}
+										}
+									});
+									$("#StockCode").focus().select();
+									document.getElementById("StockCode").value = '';
+								}
+							});
+						}
+						else {
+						}
+					}
+				}
+			});
+		});
+		$(document).on('click', '#Update', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						if ($("#StockCode").val() == '') {
+							bootbox.alert({
+								message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+								className: 'rubberBand animated',
+								buttons: {
+									ok: {
+										label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+										className: 'btn-primary'
+									}
+								}
+							});
+						}
+						else if ($("#ArabicName").val() == '') {
+							bootbox.alert({
+								message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+								className: 'rubberBand animated',
+								buttons: {
+									ok: {
+										label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+										className: 'btn-primary'
+									}
+								}
+							});
+						}
+						else if (InventoryType == '1' && $("#AccountNumber").val() == '') {
+							bootbox.alert({
+								message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+								className: 'rubberBand animated',
+								buttons: {
+									ok: {
+										label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+										className: 'btn-primary'
+									}
+								}
+							});
+						}
+						else if (InventoryType == '1' && WorkWithCostCenter && $("#CostCenterNumber").val() == '') {
+							bootbox.alert({
+								message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+								className: 'rubberBand animated',
+								buttons: {
+									ok: {
+										label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+										className: 'btn-primary'
+									}
+								}
+							});
+						}
+						else {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+								closeButton: false
+							});
+							var CostCenterNumber = "";
+							var AccountNumber = "";
+							if (WorkWithCostCenter) {
+								CostCenterNumber = $("#CostCenterNumber").val();
+							}
+							if (InventoryType == '1') {
+								AccountNumber = $("#AccountNumber").val();
+							}
+							var dataToSave = {
+								StockCode: $("#StockCode").val(),
+								ArabicName: $("#ArabicName").val(),
+								EnglishName: $("#EnglishName").val(),
+								Address: $("#Address").val(),
+								Telephone: $("#Telephone").val(),
+								AccountNumber: AccountNumber,
+								CostCenterNumber: CostCenterNumber
+							};
+							$.ajax({
+								type: "POST",
+								url: "/St_Warehouse/Update",
+								data: JSON.stringify(dataToSave),
+								contentType: 'application/json',
+								success: function (data) {
+
+									dialog.modal('hide');
+									if (data.Code == 0) {
+										toastr.error(data.Msg);
+									}
+									else if (data.Code == 1) {
+										toastr.success(data.Msg);
+										tabelMemRef.ajax.reload();
+										document.getElementById("Close").click();
+									}
+								},
+								error: function (data) {
+									dialog.modal('hide');
+									toastr.error(data);
+								}
+							});
+						}
+					}
+				}
+			});
+		});
+		$(document).on('click', '#Delete', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						var StockCode = $("#StockCode").val();
+						if (StockCode != null && StockCode != '') {
+							$.getJSON('@Url.Action("CheckWarehouseBeforDelete", "St_Warehouse")', { id: StockCode }, function (Data) {
+								if (Data != null) {
+									var checkItemCode = Data;
+									if (checkItemCode == "") {
+										var dialog = bootbox.dialog({
+											title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+											message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+											closeButton: false
+										});
+
+										var dataToSave = {
+
+											StockCode: $("#StockCode").val()
+
+										};
+
+										$.ajax({
+											type: "POST",
+											url: "/St_Warehouse/Delete",
+											data: JSON.stringify(dataToSave),
+											contentType: 'application/json',
+											success: function (data) {
+
+												dialog.modal('hide');
+												if (data.Code == 0) {
+													toastr.error(data.Msg);
+												}
+												else if (data.Code == 1) {
+													toastr.success(data.Msg);
+
+													tabelMemRef.ajax.reload();
+													$('#modal-container').modal('hide');
+													document.getElementById("Close").click();
+												}
+
+											},
+											error: function (data) {
+												dialog.modal('hide');
+												toastr.error(data);
+											}
+
+										});
+									}
+									else {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+								};
+							});
+						}
+						else {
+						}
+					}
+				}
+			});
+		});
+		if (InventoryType == '1' && WorkWithCostCenter) {
+			var tabelMemRef = $("#tdataTable").DataTable({
+				"language": {
+					"emptyTable": '@Resources.Resource.EmptyTable',
+					"search": '@Resources.Resource.Search',
+					"loadingRecords": '@Resources.Resource.LoadingRecords',
+					"processing": '@Resources.Resource.Processing',
+					"zeroRecords": '@Resources.Resource.ZeroRecords',
+					"info": '@Resources.Resource.Info',
+					"infoEmpty": '@Resources.Resource.InfoEmpty',
+					"lengthMenu": '@Resources.Resource.LengthMenu',
+					"infoFiltered": '@Resources.Resource.InfoFiltered',
+					"paginate": {
+						"previous": '@Resources.Resource.Previous',
+						"next": '@Resources.Resource.Next',
+						"first": '@Resources.Resource.First',
+						"last": '@Resources.Resource.Last',
+					},
+					"aria": {
+						"sortAscending": '@Resources.Resource.SortAscending',
+						"sortDescending": '@Resources.Resource.SortDescending'
+					}
+				},
+				"scrollX": true,
+				"ordering": false,
+				"autoWidth": false,
+				"paging": false,
+				"columnDefs": [
+					{ "width": "50px", "targets": 0, "className": "dt-center" },
+					{ "targets": 1, "className": "dt-center" },
+					{ "targets": 2, "className": "dt-center" },
+					{ "targets": 3, "className": "dt-center" },
+					{ "targets": 4, "className": "dt-center" },
+					{ "width": "50px", "targets": 5, "className": "dt-center" },
+					{ "width": "50px", "targets": 6, "className": "dt-center" }
+				],
+				buttons: [
+
+					{
+						messageTop: '@Resources.Resource.Warehouses',
+						extend: 'excelHtml5',
+						exportOptions: {
+							columns: [0, 1, 2, 3, 4]
+						}
+					}
+
+				],
+
+				ajax: {
+					url: "/St_Warehouse/GetAllSt_Warehouse",
+					dataSrc: ""
+				},
+				columns: [
+					{
+
+						data: "StockCode"
+					},
+
+					{
+						data: "StockName"
+
+					},
+					{
+						data: "Telephone"
+
+					},
+					{
+						data: "AccountName"
+
+					},
+					{
+						data: "CostCenterName"
+
+					},
+					{
+						data: "StockCode",
+						render: function (data) {
+							return "<a  class='btn btn-success btn-icon-anim btn-square btn-sm js-Pop' href='/St_Warehouse/Update/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+						}
+
+					},
+					{
+						data: "StockCode",
+						render: function (data) {
+							return "<a  class='btn btn-icon-anim btn-square btn-sm js-Pop btnDelete' href='/St_Warehouse/Delete/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i> </a>";
+
+						}
+
+					}
+
+				]
+
+
+			});
+		}
+		else if (InventoryType == '1' && !WorkWithCostCenter) {
+			var tabelMemRef = $("#tdataTable").DataTable({
+				"language": {
+					"emptyTable": '@Resources.Resource.EmptyTable',
+					"search": '@Resources.Resource.Search',
+					"loadingRecords": '@Resources.Resource.LoadingRecords',
+					"processing": '@Resources.Resource.Processing',
+					"zeroRecords": '@Resources.Resource.ZeroRecords',
+					"info": '@Resources.Resource.Info',
+					"infoEmpty": '@Resources.Resource.InfoEmpty',
+					"lengthMenu": '@Resources.Resource.LengthMenu',
+					"infoFiltered": '@Resources.Resource.InfoFiltered',
+					"paginate": {
+						"previous": '@Resources.Resource.Previous',
+						"next": '@Resources.Resource.Next',
+						"first": '@Resources.Resource.First',
+						"last": '@Resources.Resource.Last',
+					},
+					"aria": {
+						"sortAscending": '@Resources.Resource.SortAscending',
+						"sortDescending": '@Resources.Resource.SortDescending'
+					}
+				},
+				"scrollY": "500px",
+				"scrollX": true,
+				"ordering": false,
+				"autoWidth": false,
+				"paging": false,
+				"columnDefs": [
+					{ "width": "50px", "targets": 0, "className": "dt-center" },
+					{ "targets": 1, "className": "dt-center" },
+					{ "targets": 2, "className": "dt-center" },
+					{ "targets": 3, "className": "dt-center" },
+					{ "width": "50px", "targets": 4, "className": "dt-center" },
+					{ "width": "50px", "targets": 5, "className": "dt-center" }
+				],
+				buttons: [
+
+					{
+						messageTop: '@Resources.Resource.Warehouses',
+						extend: 'excelHtml5',
+						exportOptions: {
+							columns: [0, 1, 2, 3]
+						}
+					}
+
+				],
+
+				ajax: {
+					url: "/St_Warehouse/GetAllSt_Warehouse",
+					dataSrc: ""
+				},
+				columns: [
+					{
+
+						data: "StockCode"
+					},
+
+					{
+						data: "StockName"
+
+					},
+					{
+						data: "Telephone"
+
+					},
+					{
+						data: "AccountName"
+
+					},
+					{
+						data: "StockCode",
+						render: function (data) {
+							return "<a  class='btn btn-success btn-icon-anim btn-square btn-sm js-Pop' href='/St_Warehouse/Update/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+						}
+
+					},
+					{
+						data: "StockCode",
+						render: function (data) {
+							return "<a  class='btn btn-icon-anim btn-square btn-sm btnDelete js-Pop' href='/St_Warehouse/Delete/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i> </a>";
+
+						}
+
+					}
+
+				]
+
+
+			});
+		}
+		else {
+			var tabelMemRef = $("#tdataTable").DataTable({
+				"language": {
+					"emptyTable": '@Resources.Resource.EmptyTable',
+					"search": '@Resources.Resource.Search',
+					"loadingRecords": '@Resources.Resource.LoadingRecords',
+					"processing": '@Resources.Resource.Processing',
+					"zeroRecords": '@Resources.Resource.ZeroRecords',
+					"info": '@Resources.Resource.Info',
+					"infoEmpty": '@Resources.Resource.InfoEmpty',
+					"lengthMenu": '@Resources.Resource.LengthMenu',
+					"infoFiltered": '@Resources.Resource.InfoFiltered',
+					"paginate": {
+						"previous": '@Resources.Resource.Previous',
+						"next": '@Resources.Resource.Next',
+						"first": '@Resources.Resource.First',
+						"last": '@Resources.Resource.Last',
+					},
+					"aria": {
+						"sortAscending": '@Resources.Resource.SortAscending',
+						"sortDescending": '@Resources.Resource.SortDescending'
+					}
+				},
+				"scrollY": "500px",
+				"scrollX": true,
+				"ordering": false,
+				"autoWidth": false,
+				"paging": false,
+				"columnDefs": [
+					{ "width": "50px", "targets": 0, "className": "dt-center" },
+					{ "targets": 1, "className": "dt-center" },
+					{ "targets": 2, "className": "dt-center" },
+					{ "width": "50px", "targets": 3, "className": "dt-center" },
+					{ "width": "50px", "targets": 4, "className": "dt-center" }
+				],
+				buttons: [
+
+					{
+						messageTop: '@Resources.Resource.Warehouses',
+						extend: 'excelHtml5',
+						exportOptions: {
+							columns: [0, 1, 2]
+						}
+					}
+
+				],
+
+				ajax: {
+					url: "/St_Warehouse/GetAllSt_Warehouse",
+					dataSrc: ""
+				},
+				columns: [
+					{
+
+						data: "StockCode"
+					},
+
+					{
+						data: "StockName"
+
+					},
+					{
+						data: "Telephone"
+
+					},
+					{
+						data: "StockCode",
+						render: function (data) {
+							return "<a  class='btn btn-success btn-icon-anim btn-square btn-sm js-Pop' href='/St_Warehouse/Update/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+						}
+
+					},
+					{
+						data: "StockCode",
+						render: function (data) {
+							return "<a  class='btn btn-icon-anim btn-square btn-sm btnDelete js-Pop' href='/St_Warehouse/Delete/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i> </a>";
+
+						}
+
+					}
+
+				]
+
+
+			});
+		}
+		$('#tdataTable').on('click', '.modal-close-btn', function () {
+			$('#modal-container').modal('hide');
+			$('#modal-containerAccount').modal('hide');
+		});
+		$(document).on('click', '.js-Pop', function (e) {
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#modal-container').on('hidden.bs.modal', function () {
+			$(this).removeData('bs.modal');
+		});
+		$('#CancelModal').on('click', function () {
+
+			return false;
+		});
+		$(document).on('click', '#BtnAccountNumber', function () {
+			var dialog = bootbox.dialog({
+				title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+				message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+				closeButton: false
+			});
+			var url = '/MultiUse/SearchAcc/AccountNumber';
+			$.get(url, function (data) {
+				$('#modal-containerAccount').html(data);
+				$('#modal-containerAccount').modal('show');
+				dialog.modal('hide');
+			})
+		});
+		$(document).on('click', '#BtnCostCenter', function () {
+			var dialog = bootbox.dialog({
+				title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+				message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+				closeButton: false
+			});
+			var url = '/MultiUse/SearchCostCenter/FromCostCenter';
+			$.get(url, function (data) {
+				$('#modal-containerAccount').html(data);
+				$('#modal-containerAccount').modal('show');
+				dialog.modal('hide');
+			})
+		});
+		$('#modal-containerAccount').on('hidden.bs.modal', function () {
+			$(this).removeData('bs.modal');
+
+		});
+	});
+</script>
+}
+
+
+
+
+
+

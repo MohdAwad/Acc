@@ -1,0 +1,95 @@
+﻿@model Acc.ViewModels.St_MeasurementDetailVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+
+    $(document).ready(function () {
+        $("#ArabicName").focus().select();
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-sm ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+
+                <div class="col-lg-12">
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MeasurementDetailID)
+
+                        @Html.TextBoxFor(m => m.MeasurementDetailID, new { @id = "MeasurementDetailID", @class = "form-control input-sml input-sm", @readonly = "readonly" })
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ArabicName) <span style="color:red">*</span>
+
+                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sm" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EnglishName)
+
+                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sm" })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.Measurements)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.MeasurementID, new SelectList(Model.St_Measurement, "MeasurementID", "ArabicName"), new { @id = "MeasurementID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.MeasurementID, new SelectList(Model.St_Measurement, "MeasurementID", "EnglishName"), new { @id = "MeasurementID", @class = "form-control input-sml ", @disabled = "disabled" })
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-success btn-anim" id="UpdateSt_MeasurementDetail"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+

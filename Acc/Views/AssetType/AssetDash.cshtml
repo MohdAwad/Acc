@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.Assets;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Assets</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("ShowAssetType") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/AssetType/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.AssetType</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowCalculationOfConsumption") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Asset/CalculationOfConsumption" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9;font-size: 12px;"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.CalculationOfConsumptionAsset</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+
+                @if (User.IsInRole("ShowAsset") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Asset/index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.Assets</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowAssetToAcc") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Asset/AssetToAcc" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.PostConsumAsset</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowDefinitionAsset") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DefinitionAsset/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.DefinitionAssetSite</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowSaleAsset") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Asset/SaleAsset" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.SaleAsset</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowDeliveryAssetTrustee") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DeliveryAssetTrustee/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.DeliveryAssetTrustee</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowConsumAsset") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Asset/ConsumAsset" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.ConsumingAsset</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+
+
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowAssetMaintenance") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Asset/AssetMaintenance" class="btn btn-rounded btn-block btn-anim" style="background-color: #2980B9"><i class="fa fa-file-text"></i><span class="btn-text">@Resources.Resource.AssetMaintenance</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+            </div>
+            
+        </div>
+    </div>
+</div>

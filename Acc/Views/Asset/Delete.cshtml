@@ -1,0 +1,204 @@
+﻿@model Acc.ViewModels.AssetVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-lg {
+        width: 80%
+    }
+</style>
+
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Delete</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#AssetInfo" data-toggle="tab" aria-expanded="true">@Resources.Resource.AssetInfo</a>
+                    </li>
+                    <li class="">
+                        <a href="#SupplierInfo" data-toggle="tab" aria-expanded="false">@Resources.Resource.SupplierInfo</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="AssetInfo">
+                        <br />
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.FAssetTypeID)
+                                    @Html.DropDownListFor(m => m.FAssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType, new { @id = "FAssetTypeIDUpd", @class = "form-control input-sml", @disabled = "disabled" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AssetID)
+                                    @Html.TextBoxFor(m => m.AssetID, new { @id = "AssetID", @class = "form-control input-sml", autofocus = "autofocus", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AssetName)
+                                    @Html.TextBoxFor(m => m.AssetName, new { @id = "AssetName", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AssetBarCode)
+                                    @Html.TextBoxFor(m => m.AssetBarCode, new { @id = "AssetBarCode", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AssetCost)
+                                    @Html.TextBoxFor(m => m.AssetCost, new { @id = "AssetCost", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.Note)
+                                    @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AssetConsumRatio)
+                                    @Html.TextBoxFor(m => m.AssetConsumRatio, new { @id = "AssetConsumRatio", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.ConsStartDate)
+                                    @Html.TextBoxFor(model => model.ConsStartDate, new { @id = "ConsStartDate", @class = "form-control input-sml", @Value = Model.ConsStartDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.CombinedConsum)
+                                    @Html.TextBoxFor(m => m.CombinedConsum, new { @id = "CombinedConsum", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.CombinedtDate)
+                                    @Html.TextBoxFor(model => model.CombinedtDate, new { @id = "CombinedtDate", @class = "form-control input-sml", @Value = Model.CombinedtDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(m => m.CombinedtDate)
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BookValue)
+                                    @Html.TextBoxFor(m => m.BookValue, new { @id = "BookValue", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.ConsumptionComplexNo)
+                                    @Html.TextBoxFor(m => m.CreditAccountNo, new { @id = "CreditAccountNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.ConsumptionComplexName)
+                                    @Html.TextBoxFor(m => m.CreditAccountName, new { @id = "CreditAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.DepreciationExpenseNo)
+                                    @Html.TextBoxFor(m => m.DebitAccountNo, new { @id = "DebitAccountNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.DepreciationExpenseName)
+                                    @Html.TextBoxFor(m => m.DebitAccountName, new { @id = "DebitAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            @if (Model.WorkWithCostCenter)
+                            {
+                                <div class="col-lg-3">
+
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.ConsumptionComplexCostNo)
+                                        @Html.TextBoxFor(m => m.CreditCostNo, new { @id = "CreditCostNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.ConsumptionComplexCostName)
+                                        @Html.TextBoxFor(m => m.CreditCostName, new { @id = "CreditCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.DepreciationExpenseCostNo)
+                                        @Html.TextBoxFor(m => m.DebitCostNo, new { @id = "DebitCostNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.Label(Resources.Resource.DepreciationExpenseCostName)
+                                        @Html.TextBoxFor(m => m.DebitCostName, new { @id = "DebitCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="SupplierInfo">
+                        <br />
+                        <div class="col-lg-12">
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.SupplierAccountNo)
+                                    @Html.TextBoxFor(m => m.SupplierAccountNo, new { @id = "SupplierAccountNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.SupplierAccountName)
+                                    @Html.TextBoxFor(m => m.SupplierAccountName, new { @id = "SupplierAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.PurchaseOrderNo)
+                                    @Html.TextBoxFor(m => m.PurchaseOrderNo, new { @id = "PurchaseOrderNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.PurchaseinvoiceNo)
+                                    @Html.TextBoxFor(m => m.PurchaseinvoiceNo, new { @id = "PurchaseinvoiceNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AssetSerialNo)
+                                    @Html.TextBoxFor(m => m.AssetSerialNo, new { @id = "AssetSerialNo", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.PurchaseInvDate)
+                                    @Html.TextBoxFor(model => model.PurchaseInvDate, new { @id = "PurchaseInvDate", @class = "form-control input-sml", @Value = Model.PurchaseInvDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(m => m.PurchaseInvDate)
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.GuaranteedDate)
+                                    @Html.TextBoxFor(model => model.GuaranteedDate, new { @id = "GuaranteedDate", @class = "form-control input-sml", @Value = Model.GuaranteedDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(m => m.GuaranteedDate)
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.LastMaintenanceDate)
+                                    @Html.TextBoxFor(model => model.LastMaintenanceDate, new { @id = "LastMaintenanceDate", @class = "form-control input-sml", @Value = Model.LastMaintenanceDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                                    @Html.ValidationMessageFor(m => m.LastMaintenanceDate)
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.SupplierNote)
+                                    @Html.TextBoxFor(m => m.SupplierNote, new { @id = "SupplierNote", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-anim btnDelete-lg" id="Delete"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+    @Html.TextBoxFor(m => m.CompanyYear, new { @id = "CompanyYear", @style = "visibility : hidden;" })
+</div>
+
+
+
+
+
+

@@ -1,0 +1,489 @@
+﻿@model Acc.ViewModels.AccountLevelRepVM
+@{
+    ViewBag.Title = @Resources.Resource.CompareAccountMonths;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CompareAccountMonths</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AccountLevelDropVMID)<span style="color:red">*</span>
+                    @Html.DropDownListFor(m => m.AccountLevelDropVMID, new SelectList(Model.AccountLevelDropVM, "AccountLevel", "LevelName"), Resources.Resource.Level, new { @id = "AccountLevelID", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Month)
+                    @Html.DropDownListFor(m => m.Month, new List<SelectListItem>
+                                                     {
+                                                      new SelectListItem{ Text=Resources.Resource.January, Value = "1",Selected=true },
+                                                      new SelectListItem{ Text=Resources.Resource. February, Value = "2",Selected=false },
+                                                       new SelectListItem{ Text=Resources.Resource. March, Value = "3",Selected=false },
+                                                        new SelectListItem{ Text=Resources.Resource. April, Value = "4",Selected=false },
+                                                         new SelectListItem{ Text=Resources.Resource. May, Value = "5",Selected=false },
+                                                          new SelectListItem{ Text=Resources.Resource. June, Value = "6",Selected=false },
+                                                           new SelectListItem{ Text=Resources.Resource. July, Value = "7",Selected=false },
+                                                            new SelectListItem{ Text=Resources.Resource. August, Value = "8",Selected=false },
+                                                             new SelectListItem{ Text=Resources.Resource. September, Value = "9",Selected=false },
+                                                              new SelectListItem{ Text=Resources.Resource. October, Value = "10",Selected=false },
+                                                               new SelectListItem{ Text=Resources.Resource. November, Value = "11",Selected=false },
+                                                                new SelectListItem{ Text=Resources.Resource. December, Value = "12",Selected=false }
+                                                                }, new { @id = "Month", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowEstimatedZero, new { @id = "ShowEstimatedZero" })
+                    @Html.Label(Resources.Resource.ShowEstimatedZero)
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowMainAccountValue, new { @id = "ShowMainAccountValue" })
+                    @Html.Label(Resources.Resource.ShowMainAccountValue)
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn  btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            @if (User.IsInRole("PrintRepEstimatedBudgetForAccount") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="submit" class="btn btn-anim btnFav" id="AddToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTableTransAction" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>*</th>
+                        <th>@Resources.Resource.AccountNumber</th>
+                        <th>@Resources.Resource.AccountName</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th style="color:black !important">*</th>
+                        <th style="color:black !important">@Resources.Resource.AccountNumber</th>
+                        <th style="color:black !important">@Resources.Resource.AccountName</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+    <script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
+        $(document).on('click', '#AddToFav', function () {
+
+				bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+								closeButton: false
+							});
+
+							var dataToSave = {
+
+								ScreenName: '@Resources.Resource.CompareAccountMonths',
+                                ScreenUrl: "/Report/EstimatedBudgetForAccount",
+								ScreenType: 1
+
+							};
+
+							$.ajax({
+								type: "POST",
+								url: "/FavScreen/AddToFave",
+								data: JSON.stringify(dataToSave),
+								contentType: 'application/json',
+								success: function (data) {
+
+									dialog.modal('hide');
+									if (data.Code == 0) {
+										toastr.error(data.Msg);
+									}
+									else if (data.Code == 1) {
+										toastr.success(data.Msg);
+									}
+
+								},
+								error: function (data) {
+									dialog.modal('hide');
+									toastr.error(data);
+								}
+
+							});
+						}
+					}
+				});
+
+
+        });
+
+
+        $(document).on('click', '#PrintPDF', function () {
+
+            var AccountLevelDropVMID = $("#AccountLevelID").val();
+            var Month = $("#Month").val();
+            var ShowMainAccountValue = $("#ShowMainAccountValue:checked").val();
+            var ShowEstimatedZero = $("#ShowEstimatedZero:checked").val();
+
+            if (ShowMainAccountValue) {
+                ShowMainAccountValue = 1
+            }
+            else {
+                ShowMainAccountValue = 0
+            }
+
+            if (ShowEstimatedZero) {
+                ShowEstimatedZero = 1
+
+            }
+            else {
+                ShowEstimatedZero = 0
+
+            }
+
+
+
+            if (AccountLevelDropVMID == '' || AccountLevelDropVMID == null) {
+                AccountLevelDropVMID = "0";
+            }
+
+            if (Month == '' || Month == null) {
+                Month = 0;
+            }
+
+
+
+            window.open('/PDFReport/EstimatedBudgetForAccountPDF/'+ AccountLevelDropVMID + "/"+ Month + "/" + ShowMainAccountValue + "/" + ShowEstimatedZero + "/0", '_blank');
+
+        });
+
+
+        $(document).on('click', '#reload', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            tdataTableTransActionRef.ajax.reload();
+            dialog.modal('hide');
+        });
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/Report/ReportDash";
+        });
+        var tdataTableTransActionRef = $("#tdataTableTransAction").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            buttons: [
+            ],
+            "columnDefs": [
+                    {
+                        "targets": [0],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [3],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [4],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [5],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [6],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [7, 8, 9, 10],
+                        "visible": false
+                    }
+                ],
+                "decimal": ",",
+                "thousands": ".",
+                fixedHeader: {
+                    header: true,
+                    footer: true
+                },
+                ajax: {
+                    "type": "POST",
+                    url: "/Report/EstimatedBudgetForAccount",
+                    "data": function (d) {
+
+                        d.AccountLevelDropVMID = $("#AccountLevelID").val();
+                        d.Month = $("#Month").val();
+                        d.ShowMainAccountValue = $("#ShowMainAccountValue:checked").val();
+                        d.ShowEstimatedZero = $("#ShowEstimatedZero:checked").val();
+
+                    },
+                    dataSrc: ""
+                },
+
+
+
+                columns: [
+                    {
+                        data: "MainAccount"
+
+                    },
+                    {
+
+                        data: "AccountNumber",
+                        render: function (data, type, r) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                            }
+                            else {
+                                return "<i class='text-primary'><strong>" + data + "</strong></i>";
+
+                            }
+
+                        }
+                    },
+                    {
+                        data: "Name"
+
+                    },
+                    {
+                        data: "MonthTransaction",
+                        render: function (data, type, r) {
+
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+
+                        }
+                    }
+                    , {
+                        data: "Expected",
+                        render: function (data, type, r) {
+
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+
+                        }
+                    }
+                    ,
+                    {
+                        data: "ChangeVaule",
+                        render: function (data, type, r) {
+
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+
+                        }
+                    }
+                    ,
+                    {
+                        data: "ChangePrec",
+                        render: function (data, type, r) {
+
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+
+                        }
+                    },
+
+                    {
+                        data: "nMonthTransaction",
+                       
+
+                    },
+                    {
+                        data: "nExpected",
+                       
+                    }
+                    ,
+                    {
+                        data: "nChangeVaule",
+                       
+                    },
+                    {
+                        data: "nChangePrec",
+                       
+                    }
+
+
+                ],
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[, Rs]|(\.\d{2})/g, "") * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    },
+                        total3 = api
+                            .column(7)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0),
+                        total4 = api
+                            .column(8)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0),
+                        total5 = api
+                            .column(9)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0),
+                        total6 = api
+                            .column(10)
+                            .data()
+                            .reduce(function (a, b) {
+                                return intVal(a) + intVal(b);
+                            }, 0);
+                    $(api.column(0).footer()).html('');
+                    $(api.column(1).footer()).html('');
+                    $(api.column(2).footer()).html('');
+                    $(api.column(3).footer()).html(formatMoney(total3, TheDecimalPointForTheLocalCurrency));
+                    $(api.column(4).footer()).html(formatMoney(total4, TheDecimalPointForTheLocalCurrency));
+                    $(api.column(5).footer()).html(formatMoney(total5, TheDecimalPointForTheLocalCurrency));
+                    $(api.column(6).footer()).html(formatMoney(total6, TheDecimalPointForTheLocalCurrency));
+
+                }
+
+              });
+    });
+    </script>
+
+}
+
+
+

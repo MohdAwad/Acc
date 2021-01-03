@@ -1,0 +1,283 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.FinancialTransActions;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.FinancialTransActions</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("ShowTransActionTrans") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/TransAction/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C;font-size:12px;padding-right: 15px;"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.TransActions</span></a>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+                @if (User.IsInRole("ShowReceiptVoucherBank") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/ReceiptVoucherBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.ReceiptVoucherBank</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+                @if (User.IsInRole("ShowTempPrepaid") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/TempPrepaid/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.PrepaidExpenses</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+                @if (User.IsInRole("ShowDebitNote") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DebitNote/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.DebitNote </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowServiceBill") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/ServiceBill/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.Bills</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/ReceiptVoucherBank/ReceivedCheque" class="btn btn-rounded btn-block btn-anim" style="background-color:#5D6D7E;font-size: 12px;"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.ReceivedChequeTransactions</span></a>
+                </div>
+
+
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowOpeningBalance") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/OpeningBalance/Update" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.OpeningBalance</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+                @if (User.IsInRole("ShowReceiptVoucherCash") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/ReceiptVoucherCash/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.ReceiptVoucherCash</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+
+
+                @if (User.IsInRole("ShowTempRevenueReceived") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/TempRevenueReceived/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.RevenueReceived</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+
+
+                @if (User.IsInRole("ShowCreditNote") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/CreditNote/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.CreditNote </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/PaymentVoucherBank/PaymentCheque" class="btn btn-rounded btn-block btn-anim" style="background-color:#5D6D7E;font-size: 12px;"><i class="fa fa-file"></i><span class="btn-text">@Resources.Resource.PaymentChequeTransactions</span></a>
+                </div>
+
+
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowReceiptVoucherCashMultiAccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/ReceiptVoucherCashMultiAccount/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9;font-size:12px;padding-right: 15px;"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.ReceiptVoucherCashMultiAccount</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowPaymentVoucherBank") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/PaymentVoucherBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.PaymentVoucherBank</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowPaymentVoucherCash") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/PaymentVoucherCash/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.PaymentVoucherCash</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowPaymentVoucherCashMultiAccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/PaymentVoucherCashMultiAccount/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9;font-size:12px;padding-right: 15px;"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.PaymentVoucherCashMultiAccount</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowDepositInTheBank") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DepositInTheBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-dollar"></i><span class="btn-text">@Resources.Resource.DepositInTheBank</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

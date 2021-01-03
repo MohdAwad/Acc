@@ -1,0 +1,99 @@
+
+@{
+    var treeList = Html.DevExpress().TreeList(settings =>
+    {
+
+        settings.Name = "ChartOfAccountList";
+        settings.CallbackRouteValues = new { Controller = "ChartOfAccount", Action = "TreeListPartialLoad" };
+
+
+        settings.Theme = "iOS";
+
+
+        settings.SettingsBehavior.AutoExpandAllNodes = true;
+
+        settings.Settings.ShowFilterRow = true;
+        settings.Settings.ShowFilterRowMenu = false;
+        settings.SettingsSearchPanel.Visible = false;
+        settings.Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+        settings.Toolbars.Add(t =>
+        {
+            t.SettingsAdaptivity.Enabled = false;
+            t.SettingsAdaptivity.EnableCollapseRootItemsToIcons = false;
+            //t.Items.Add(TreeListToolbarCommand.ExportToPdf);
+            //t.Items.Add(TreeListToolbarCommand.ExportToXls);
+            //t.Items.Add(TreeListToolbarCommand.ExportToXlsx);
+            //t.Items.Add(TreeListToolbarCommand.ExportToDocx);
+            //t.Items.Add(TreeListToolbarCommand.ExportToRtf);
+        });
+
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+        }
+        else
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+        }
+        settings.KeyFieldName = "AccountNumber";
+        settings.ParentFieldName = "AccountFather";
+
+        settings.Columns.Add(
+    column =>
+    {
+        column.FieldName = "AccountNumber";
+        column.CellStyle.CssClass = "CellStyle";
+        column.HeaderStyle.CssClass = "HeaderStyle";
+    }
+    );
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Columns.Add(
+        column =>
+        {
+            column.FieldName = "ArabicName";
+            column.CellStyle.CssClass = "CellStyle";
+            column.HeaderStyle.CssClass = "HeaderStyle";
+        }
+    );
+        }
+        else
+        {
+            settings.Columns.Add(
+ column =>
+ {
+     column.FieldName = "EnglishName";
+     column.CellStyle.CssClass = "CellStyle";
+     column.HeaderStyle.CssClass = "HeaderStyle";
+ }
+);
+        }
+
+        settings.Columns.Add(
+    column =>
+    {
+        column.FieldName = "Note";
+        column.CellStyle.CssClass = "CellStyle";
+        column.HeaderStyle.CssClass = "HeaderStyle";
+    }
+
+
+);
+        settings.Settings.VerticalScrollBarMode = ScrollBarMode.Visible;
+        settings.Settings.ScrollableHeight = 350;
+        settings.SettingsPager.Visible = true;
+        settings.SettingsBehavior.AllowFocusedNode = true;
+        settings.SettingsBehavior.FocusNodeOnLoad = false;
+        settings.SettingsBehavior.AllowDragDrop = false;
+        settings.ClientSideEvents.FocusedNodeChanged = "OnFocusedNodeChange";
+        settings.Settings.ShowFooter = true;
+        settings.ClientSideEvents.NodeDblClick = "OnNodeDblClick";
+        settings.SettingsBehavior.ExpandCollapseAction = TreeListExpandCollapseAction.NodeDblClick;
+        settings.SettingsExport.EnableClientSideExportAPI = true;
+        //settings.SettingsBehavior.AllowDragDrop = false;
+        //settings.SettingsBehavior.AllowSort = false;
+    });
+}
+@treeList.Bind(Model).GetHtml()
+
+ 

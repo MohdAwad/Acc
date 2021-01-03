@@ -1,0 +1,183 @@
+﻿
+@{
+    ViewBag.Title = @Resources.Resource.FavScreen;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light">@Resources.Resource.FavScreen</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead id="HeadStyle">
+                    <tr>
+                        <th>@Resources.Resource.Screens</th>
+                        <th>@Resources.Resource.Delete</th>
+
+
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+    <script>
+
+	$(document).ready(function () {
+	 
+		$(document).on('click', '#CloseForm', function () {
+			window.location = "/Home/Index";
+		});
+		var tabelMemRef = $("#tdataTable").DataTable({
+			"language": {
+				"emptyTable": '@Resources.Resource.EmptyTable',
+				"search": '@Resources.Resource.Search',
+				"loadingRecords": '@Resources.Resource.LoadingRecords',
+				"processing": '@Resources.Resource.Processing',
+				"zeroRecords": '@Resources.Resource.ZeroRecords',
+				"info": '@Resources.Resource.Info',
+				"infoEmpty": '@Resources.Resource.InfoEmpty',
+				"lengthMenu": '@Resources.Resource.LengthMenu',
+				"infoFiltered": '@Resources.Resource.InfoFiltered',
+				"paginate": {
+					"previous": '@Resources.Resource.Previous',
+					"next": '@Resources.Resource.Next',
+					"first": '@Resources.Resource.First',
+					"last": '@Resources.Resource.Last',
+				},
+				"aria": {
+					"sortAscending": '@Resources.Resource.SortAscending',
+					"sortDescending": '@Resources.Resource.SortDescending'
+				}
+			},
+			"scrollY": "500px",
+			"scrollX": true,
+			"ordering": false,
+			"autoWidth": false,
+			"paging": false ,
+            "columnDefs": [
+                { "targets": 0, "className": "dt-center" },
+                { "width": "50px", "targets": 1, "className": "dt-center" }
+            ],
+			ajax: {
+				url: "/FavScreen/GetAllFave",
+				dataSrc: ""
+			},
+			columns: [
+				{
+					data: "ScreenName"
+
+				},
+				{
+					data: "Id",
+					render: function (data, type, r) {
+                        return "<a  class='btn btn-icon-anim btn-square js-Pop btnDelete btn-sm' href='/FavScreen/Delete/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i></a>";
+					 
+					}
+				},
+				 
+			]
+		});
+		$('#tdataTable').on('click', '.js-delete', function (e) {
+
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#tdataTable').on('click', '.js-modify', function (e) {
+
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#js-addnew').on('click', function (e) {
+
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#tdataTable').on('click', '.modal-close-btn', function () {
+			$('#modal-container').modal('hide');
+		});
+		$('#modal-container').on('hidden.bs.modal', function () {
+			$(this).removeData('bs.modal');
+
+		});
+		$('#CancelModal').on('click', function () {
+			return false;
+		});
+	 
+		$(document).on('click', '#DeleteFav', function () {
+			var dialog = bootbox.dialog({
+				title: '@Resources.Resource.PleaseWait',
+				message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+				closeButton: false
+			});
+
+
+			var dataToSave = {
+				Id: $("#Id").val()
+			};
+			$.ajax({
+				type: "POST",
+				url: "/FavScreen/Remove",
+				data: JSON.stringify(dataToSave),
+				contentType: 'application/json',
+				success: function (data) {
+					$('#modal-container').modal('hide');
+					dialog.modal('hide');
+					toastr.success("@Resources.Resource.OperationCompletedSuccessfully");
+
+					tabelMemRef.ajax.reload();
+
+				},
+				error: function (data) {
+					dialog.modal('hide');
+					toastr.error("@Resources.Resource.SomthingWentWrong");
+				}
+
+			});
+		});
+	 
+	});
+    </script>
+
+
+}
+

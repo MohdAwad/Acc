@@ -1,0 +1,683 @@
+﻿@model Acc.ViewModels.AssetVM
+@{
+    ViewBag.Title = @Resources.Resource.Assets;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    table.dataTable th.dt-center {
+        font-size: 8pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 8pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Assets</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.LabelFor(m => m.FAssetTypeID)
+                @Html.DropDownListFor(m => m.FAssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType, new { @id = "FAssetTypeID", @class = "form-control input-sml" })
+            </div>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <button type="button" class="btn btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            @if (User.IsInRole("AddAsset") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-primary btn-anim" id="btnSave" href="/Asset/New"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            }
+            @if (User.IsInRole("PrintAsset") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="button" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.AssetType</th>
+                        <th>@Resources.Resource.AssetID</th>
+                        <th>@Resources.Resource.AssetName</th>
+                        <th>@Resources.Resource.AssetSerialNo</th>
+                        <th>@Resources.Resource.Modify</th>
+                        <th>@Resources.Resource.Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="Bodystyle"></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+<div id="modal-containerAccount" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+             $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.Assets',
+                            ScreenUrl: "/Asset/index",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+        $(document).on('click', '#PrintPDF', function () {
+           var FAssetTypeID = $("#FAssetTypeID").val();
+
+
+
+
+
+            if (FAssetTypeID == '' || FAssetTypeID == null) {
+                FAssetTypeID = 0;
+            }
+
+
+
+
+
+            window.open('/PDFReport/GetAllAssetPDF/' + FAssetTypeID + "/0", '_blank');
+
+        });
+
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/AssetType/AssetDash";
+        });
+        $(document).on('click', '#Update', function () {
+            var dConsStartDate = document.getElementById("ConsStartDate").value;
+            var dCombinedtDate = document.getElementById("CombinedtDate").value;
+            var dPurchaseInvDate = document.getElementById("PurchaseInvDate").value;
+            var dGuaranteedDate = document.getElementById("GuaranteedDate").value;
+            var dLastMaintenanceDate = document.getElementById("LastMaintenanceDate").value;
+            if (!validatedate(dConsStartDate) && dConsStartDate != null && dConsStartDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dCombinedtDate) && dCombinedtDate != null && dCombinedtDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dPurchaseInvDate) && dPurchaseInvDate != null && dPurchaseInvDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dGuaranteedDate) && dGuaranteedDate != null && dGuaranteedDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dLastMaintenanceDate) && dLastMaintenanceDate != null && dLastMaintenanceDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else
+            if ($("#FAssetTypeIDUpd").val() == 0) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else
+                if ($("#AssetID").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+
+                }
+                else
+                    if ($("#AssetName").val() == '') {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+
+                    }
+                    else {
+                        bootbox.confirm({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                confirm: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function (result) {
+                                if (result) {
+                                    var dialog = bootbox.dialog({
+                                        title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                        message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                        closeButton: false
+                                    });
+                                    var dataToSave = {
+                                        FAssetTypeID: $("#FAssetTypeIDUpd").val(), AssetID: $("#AssetID").val(),
+                                        AssetName: $("#AssetName").val(), AssetBarCode: $("#AssetBarCode").val(), AssetCost: $("#AssetCost").val(),
+                                        AssetConsumRatio: $("#AssetConsumRatio").val(), ConsStartDate: $("#ConsStartDate").val(), CombinedConsum: $("#CombinedConsum").val(),
+                                        CombinedtDate: $("#CombinedtDate").val(), BookValue: $("#BookValue").val(), Note: $("#Note").val(),
+                                        DebitAccountNo: $("#DebitAccountNo").val(), CreditAccountNo: $("#CreditAccountNo").val(),
+                                        DebitAccountName: $("#DebitAccountName:checked").val(), CreditAccountName: $("#CreditAccountName").val(),
+                                        DebitCostNo: $("#DebitCostNo").val(), CreditCostNo: $("#CreditCostNo").val(), DebitCostName: $("#DebitCostName").val(),
+                                        CreditCostName: $("#CreditCostName").val(), SupplierAccountNo: $("#SupplierAccountNo").val(), SupplierAccountName: $("#SupplierAccountName").val(),
+                                        PurchaseOrderNo: $("#PurchaseOrderNo").val(), PurchaseinvoiceNo: $("#PurchaseinvoiceNo").val(), PurchaseInvDate: $("#PurchaseInvDate").val(),
+                                        GuaranteedDate: $("#GuaranteedDate").val(), LastMaintenanceDate: $("#LastMaintenanceDate").val(), AssetSerialNo: $("#AssetSerialNo").val(),
+                                        SupplierNote: $("#SupplierNote").val(), UpdateFinancialInfo: $("#UpdateFinancialInfo:checked").val()
+
+                                    };
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/Asset/UpdateAsset",
+                                        data: JSON.stringify(dataToSave),
+                                        contentType: 'application/json',
+                                        success: function (data) {
+
+                                            dialog.modal('hide');
+                                            if (data.Code == 0) {
+                                                toastr.error(data.Msg);
+                                            }
+                                            else if (data.Code == 1) {
+                                                $('#modal-container').modal('hide');
+                                                toastr.success(data.Msg);
+                                                document.getElementById("Close").click();
+                                                tabelMemRef.ajax.reload();
+
+                                            }
+
+                                        },
+                                        error: function (data) {
+                                            dialog.modal('hide');
+                                            toastr.error(data);
+                                        }
+
+                                    });
+
+                                }
+                            }
+                        });
+
+
+                    }
+
+        });
+        $(document).on('click', '#Delete', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var Asset = $("#AssetID").val();
+                        if (Asset != null && Asset != '') {
+                            $.getJSON('@Url.Action("CheckAssetBeforDelete", "Asset")', { id: Asset }, function (Data) {
+                                if (Data != null) {
+                                    var checkAsset = Data;
+                                    if (checkAsset == 0) {
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                                            closeButton: false
+                                        });
+                                        var dataToSave = {
+                                            FAssetTypeID: $("#FAssetTypeIDUpd").val(), AssetID: $("#AssetID").val(),
+                                            AssetName: $("#AssetName").val(), AssetBarCode: $("#AssetBarCode").val(), AssetCost: $("#AssetCost").val(),
+                                            AssetConsumRatio: $("#AssetConsumRatio").val(), ConsStartDate: $("#ConsStartDate").val(), CombinedConsum: $("#CombinedConsum").val(),
+                                            CombinedtDate: $("#CombinedtDate").val(), BookValue: $("#BookValue").val(), Note: $("#Note").val(),
+                                            DebitAccountNo: $("#DebitAccountNo").val(), CreditAccountNo: $("#CreditAccountNo").val(),
+                                            DebitAccountName: $("#DebitAccountName:checked").val(), CreditAccountName: $("#CreditAccountName").val(),
+                                            DebitCostNo: $("#DebitCostNo").val(), CreditCostNo: $("#CreditCostNo").val(), DebitCostName: $("#DebitCostName").val(),
+                                            CreditCostName: $("#CreditCostName").val(), SupplierAccountNo: $("#SupplierAccountNo").val(), SupplierAccountName: $("#SupplierAccountName").val(),
+                                            PurchaseOrderNo: $("#PurchaseOrderNo").val(), PurchaseinvoiceNo: $("#PurchaseinvoiceNo").val(), PurchaseInvDate: $("#PurchaseInvDate").val(),
+                                            GuaranteedDate: $("#GuaranteedDate").val(), LastMaintenanceDate: $("#LastMaintenanceDate").val(), AssetSerialNo: $("#AssetSerialNo").val(),
+                                            SupplierNote: $("#SupplierNote").val()
+
+                                        };
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/Asset/DeleteAsset",
+                                            data: JSON.stringify(dataToSave),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    $('#modal-container').modal('hide');
+                                                    toastr.success(data.Msg);
+                                                    tabelMemRef.ajax.reload();
+                                                    document.getElementById("Close").click();
+
+                                                }
+
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+
+                                        });
+                                    }
+                                    else {
+                                        bootbox.alert({
+                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+                                            className: 'rubberBand animated',
+                                            buttons: {
+                                                ok: {
+                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                    className: 'btn-primary'
+                                                }
+                                            }
+                                        });
+                                    }
+                                };
+                            });
+                        }
+                        else {
+                        }
+                    }
+                }
+            });
+        });
+        $(document).on('click', '#BtnDebitAccountNo', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchExpenseAccountNumber/DepreciationExpenseNo';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $(document).on('click', '#BtnCreditAccountNo', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ConsumptionComplexNo';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $(document).on('click', '#BtnDebitCostNo', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/DebitCostAccNo';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $(document).on('click', '#BtnCreditCostNo', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/CreditCostAccNo';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $(document).on('click', '#BtnSupplierAccountNo', function () {
+             var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchClientAccount/SupplierAccountNo';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "columnDefs": [
+                {
+                    "className": "dt-center",
+                    "targets": "_all",
+                    "orderable": false,
+
+                }],
+
+            dom: 'Bfrtip',
+            buttons: [
+
+                {
+                    messageTop: '@Resources.Resource.AssetType',
+                    extend: 'excelHtml5',
+                    exportOptions: {
+                        columns: [0, 1, 2, 3]
+                    }
+                }
+
+            ],
+
+            ajax: {
+                "type": "Post",
+                url: "/Asset/GetAllAsset/",
+                "data": function (d) {
+                    d.FAssetTypeID = $("#FAssetTypeID").val();
+
+
+                },
+                dataSrc: ""
+            },
+            columns: [
+                {
+
+                    data: "AssetTypeName"
+                },
+
+                {
+                    data: "AssetID"
+
+                },
+                {
+                    data: "AssetName"
+
+                },
+                {
+                    data: "AssetSerialNo"
+
+                },
+                {
+                    data: "AssetID",
+                    render: function (data) {
+                 		 if ("@(User.IsInRole("UpdateAsset") || User.IsInRole("CoOwner"))" == "True")
+                        {
+                          return "<a  class='btn btn-success btn-icon-anim btn-square js-Pop btn-sm' href='/Asset/Update/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+
+                        }
+                        else {
+                          return "";
+                        }
+
+
+
+                    }
+
+                },
+
+                {
+                    data: "AssetID",
+                    render: function (data) {
+                        if ("@(User.IsInRole("DeleteAsset") || User.IsInRole("CoOwner"))" == "True")
+                        {
+                       return "<a  class='btn btn-icon-anim btn-square js-Pop btnDelete btn-sm ' href='/Asset/Delete/" + data + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i></a>";
+                        }
+                        else {
+                          return "";
+                        }
+
+
+                    }
+
+                }
+
+            ]
+
+
+        });
+        $(document).on('click', '#reload', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            tabelMemRef.ajax.reload();
+            dialog.modal('hide');
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-containerAccount').modal('hide');
+        });
+        $('#modal-containerAccount').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+
+        if ("@(User.IsInRole("UpdateAsset") || User.IsInRole("CoOwner"))" == "False") {
+
+            var column = tabelMemRef.column(4);
+
+            // Toggle the visibility
+            column.visible(!column.visible());
+        }
+
+
+          if ("@(User.IsInRole("DeleteAsset") || User.IsInRole("CoOwner"))" == "False") {
+
+            var column = tabelMemRef.column(5);
+
+            // Toggle the visibility
+            column.visible(!column.visible());
+        }
+
+
+
+
+    });
+</script>
+}
+
+
+

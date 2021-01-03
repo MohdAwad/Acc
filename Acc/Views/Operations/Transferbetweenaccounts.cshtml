@@ -1,0 +1,414 @@
+﻿@model Acc.ViewModels.TransferAccountVM
+@{
+    ViewBag.Title = @Resources.Resource.Transferbetweenaccounts;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedTransferFromAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("FromAccountNumber").value = data.AccountNumber;
+            document.getElementById("FromAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("FromAccountNumber").value = '';
+            document.getElementById("FromAccountName").value = '';
+        }
+
+    }
+    function GetSelectedTransToAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ToAccountNumber").value = data.AccountNumber;
+            document.getElementById("ToAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ToAccountNumber").value = '';
+            document.getElementById("ToAccountName").value = '';
+        }
+    }
+    var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#FromAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("FromAccountNumber").value = ui.item.value;
+                document.getElementById("FromAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#ToAccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("ToAccountNumber").value = ui.item.value;
+                document.getElementById("ToAccountName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Transferbetweenaccounts</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.LabelFor(m => m.FromAccountNumber) <span style="color:red">*</span>
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.FromAccountNumber, new { @id = "FromAccountNumber", @class = "form-control input-sml" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnFromAccount">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    @Html.ValidationMessageFor(m => m.FromAccountNumber)
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @Html.Label(Resources.Resource.AccountName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.FromAccountName, new { @id = "FromAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearFromAccount">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.LabelFor(m => m.ToAccountNumber) <span style="color:red">*</span>
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.ToAccountNumber, new { @id = "ToAccountNumber", @class = "form-control input-sml" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnToAccount">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    @Html.ValidationMessageFor(m => m.ToAccountNumber)
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @Html.Label(Resources.Resource.AccountName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.ToAccountName, new { @id = "ToAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearToAccount">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="form-group">
+            @if (User.IsInRole("TransferTransferbetweenaccounts") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-anim btnDelete-lg" id="save"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.TransferAccount</span> </button>
+            }
+            <button type="button" class="btn btn-anim btnFav"  id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.Transferbetweenaccounts',
+                            ScreenUrl: "/Operations/Transferbetweenaccounts",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/Operations/OperationDash";
+        });
+        $('#BtnFromAccount').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/TransferFromAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnToAccount').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+
+
+            var url = '/MultiUse/SearchAcc/TransferToAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $(document).on('click', '#save', function () {
+            if (($("#FromAccountName").val() == '') || ($("#ToAccountName").val() == '')) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Transferring...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+                                FromAccountNumber: $("#FromAccountNumber").val(),
+                                ToAccountNumber: $("#ToAccountNumber").val(),
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/Operations/TransferAccounts",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        toastr.success(data.Msg);
+                                        document.getElementById("FromAccountNumber").value = '';
+                                        document.getElementById("ToAccountNumber").value = '';
+                                        document.getElementById("FromAccountName").value = '';
+                                        document.getElementById("ToAccountName").value = '';
+                                        $("#FromAccountNumber").focus().select();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        $("#FromAccountNumber").focus().select();
+        $("#FromAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/TransferFromAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#ToAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/TransferToAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+
+        $('#BtnClearFromAccount').on('click', function () {
+            document.getElementById("FromAccountNumber").value = '';
+            document.getElementById("FromAccountName").value = '';
+        });
+        $('#BtnClearToAccount').on('click', function () {
+            document.getElementById("ToAccountNumber").value = '';
+            document.getElementById("ToAccountName").value = '';
+        });
+
+        $("#FromAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("FromAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("FromAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("FromAccountNumber").value = '';
+                            document.getElementById("FromAccountName").value = '';
+                            $("#FromAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("FromAccountName").value = Data.AccountName;
+                        }
+                    });
+                }
+            }
+        });
+        $("#ToAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("ToAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("ToAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ToAccountNumber").value = '';
+                            document.getElementById("ToAccountName").value = '';
+                            $("#ToAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("ToAccountName").value = Data.AccountName;
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}

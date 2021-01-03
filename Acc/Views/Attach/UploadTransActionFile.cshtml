@@ -1,0 +1,64 @@
+﻿@model Acc.ViewModels.TransActionFileVM
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!DOCTYPE html>
+<style>
+    #dropZone {
+        background: gray;
+        border: black dashed 3px;
+        width: 200px;
+        padding: 50px;
+        text-align: center;
+        color: white;
+    }
+</style>
+<link href="~/Content/dropzone.css" rel="stylesheet" />
+<link href="~/Content/dropzone.min.css" rel="stylesheet" />
+<link href="~/Content/basic.css" rel="stylesheet" />
+<link href="~/Content/basic.min.css" rel="stylesheet" />
+
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.AddNewFiles</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <form action="~/Attach/SaveTransActionFile/@Model.Year/@Model.VoucherNumber/@Model.CompanyTransactionKindNo/@Model.TransactionKindNo" method="post" class="dropzone" id="dropzoneForm" enctype="multipart/form-data">
+                <div id="dropzone-previews">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="panel-footer">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+        $(document).ready(function () {
+            //File Upload response from the server
+            Dropzone.options.dropzoneForm = {
+                init: function () {
+                    this.on("complete", function (data) {
+                        //var res = eval('('+data.xhr.responseText+')');
+                        var res = JSON.parse(data.xhr.responseText);
+                         toastr.success('@Resources.Resource.TheFilesHaveBeenUploadedSuccessfully');
+                       //tabelMemRefDoc.ajax.reload();
+                    });
+                }
+            };
+        });
+</script>
+}
+
+
+
+

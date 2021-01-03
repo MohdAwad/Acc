@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="19.1.5.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="XtraTrankingChequesPayVou" Margins="100, 100, 4, 100" PageWidth="850" PageHeight="1100" Version="19.1" RightToLeft="Yes" RightToLeftLayout="Yes" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="4" />
+    <Item2 Ref="3" ControlType="BottomMarginBand" Name="BottomMargin">
+      <Controls>
+        <Item1 Ref="4" ControlType="XRLabel" Name="LbPrintTime" Multiline="true" TextAlignment="MiddleCenter" SizeF="194.0007,22.99999" LocationFloat="445.9993, 43.08335" ForeColor="255,147,147,147" Padding="2,2,0,0,100">
+          <StylePriority Ref="5" UseForeColor="false" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="6" ControlType="XRPageInfo" Name="pageInfo1" PageInfo="DateTime" SizeF="313,23" LocationFloat="6, 6" StyleName="PageInfo" />
+        <Item3 Ref="7" ControlType="XRPageInfo" Name="pageInfo2" TextFormatString="Page {0} of {1}" TextAlignment="TopRight" SizeF="313,23" LocationFloat="331, 6" StyleName="PageInfo" />
+      </Controls>
+    </Item2>
+    <Item3 Ref="8" ControlType="GroupHeaderBand" Name="GroupHeader1" GroupUnion="WithFirstDetail" HeightF="28">
+      <Controls>
+        <Item1 Ref="9" ControlType="XRTable" Name="table1" SizeF="650,28" LocationFloat="0, 0">
+          <Rows>
+            <Item1 Ref="10" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+              <Cells>
+                <Item1 Ref="11" ControlType="XRTableCell" Name="tableCell1" Weight="0.29687644494130944" Text="رقم الشيك&#x9;" StyleName="DetailCaption1" Borders="None">
+                  <StylePriority Ref="12" UseBorders="false" />
+                </Item1>
+                <Item2 Ref="13" ControlType="XRTableCell" Name="tableCell2" Weight="0.26163879733154627" Text="تاريخ الحق&#x9;" StyleName="DetailCaption1" />
+                <Item3 Ref="14" ControlType="XRTableCell" Name="xrTableCell1" Weight="0.24398935480823622" Multiline="true" Text="قيمة الشيك&#x9;" StyleName="DetailCaption1" />
+                <Item4 Ref="15" ControlType="XRTableCell" Name="tableCell3" Weight="0.41443050139458004" Text="حساب المدفوع لة" StyleName="DetailCaption1" />
+                <Item5 Ref="16" ControlType="XRTableCell" Name="xrTableCell3" Weight="0.4712442697635108" Multiline="true" Text="اسم الساحب&#x9;" StyleName="DetailCaption1" />
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item3>
+    <Item4 Ref="17" ControlType="DetailBand" Name="Detail" HeightF="25">
+      <Controls>
+        <Item1 Ref="18" ControlType="XRTable" Name="table2" SizeF="650,25" LocationFloat="0, 0" OddStyleName="DetailData3_Odd">
+          <Rows>
+            <Item1 Ref="19" ControlType="XRTableRow" Name="tableRow2" Weight="11.5">
+              <Cells>
+                <Item1 Ref="20" ControlType="XRTableCell" Name="tableCell4" Weight="0.29687646409004" StyleName="DetailData1" Borders="None">
+                  <ExpressionBindings>
+                    <Item1 Ref="21" Expression="[ChequeNumber]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="22" UseBorders="false" />
+                </Item1>
+                <Item2 Ref="23" ControlType="XRTableCell" Name="tableCell5" Weight="0.26163881836128122" TextFormatString="{0:dd/MM/yyyy}" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="24" Expression="[ChequeDate]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                </Item2>
+                <Item3 Ref="25" ControlType="XRTableCell" Name="xrTableCell2" Weight="0.24398937132354476" TextFormatString="{0:n3}" Multiline="true" Text="xrTableCell2" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="26" Expression="[ChequeAmount]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                </Item3>
+                <Item4 Ref="27" ControlType="XRTableCell" Name="tableCell6" Weight="0.41443052976027672" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="28" Expression="[PaidToAccountName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                </Item4>
+                <Item5 Ref="29" ControlType="XRTableCell" Name="xrTableCell4" Weight="0.47124430207934054" Multiline="true" Text="xrTableCell4" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="30" Expression="[DrawerName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                </Item5>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item4>
+    <Item5 Ref="31" ControlType="ReportFooterBand" Name="ReportFooter" HeightF="31.95833">
+      <Controls>
+        <Item1 Ref="32" ControlType="XRLabel" Name="label5" TextFormatString="{0:n3}" CanGrow="false" TextAlignment="MiddleCenter" WordWrap="false" SizeF="93.9433,29.38443" LocationFloat="215.0452, 0">
+          <Summary Ref="33" Running="Page" />
+          <ExpressionBindings>
+            <Item1 Ref="34" Expression="sumSum([ChequeAmount])" PropertyName="Text" EventName="BeforePrint" />
+          </ExpressionBindings>
+          <StylePriority Ref="35" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="36" ControlType="XRLabel" Name="label2" Text="المجموع" TextAlignment="MiddleCenter" SizeF="215.0452,29.38443" LocationFloat="0, 0">
+          <StylePriority Ref="37" UseTextAlignment="false" />
+        </Item2>
+      </Controls>
+    </Item5>
+    <Item6 Ref="38" ControlType="PageHeaderBand" Name="PageHeader" HeightF="110.2083">
+      <Controls>
+        <Item1 Ref="39" ControlType="XRLabel" Name="xrLabel11" Text="ضمن الفترة من" TextAlignment="MiddleCenter" SizeF="98.6181,23.21777" LocationFloat="129.6243, 82.02798" Font="Arial, 10pt, style=Bold">
+          <StylePriority Ref="40" UseFont="false" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="41" ControlType="XRLabel" Name="LbReporttitle" Multiline="true" Text="تقرير تتبع حركات شيكات اجلة الدفع&#xD;&#xA;" TextAlignment="MiddleCenter" SizeF="393.9037,33.51398" LocationFloat="129.6242, 48.51402" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="42" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="43" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="44" ControlType="XRLabel" Name="LbTODate" Text="من تاريخ" TextAlignment="MiddleCenter" SizeF="111.2394,23.21777" LocationFloat="412.2886, 82.02798" Font="Arial, 10pt, style=Bold">
+          <StylePriority Ref="45" UseFont="false" UseTextAlignment="false" />
+        </Item3>
+        <Item4 Ref="46" ControlType="XRLabel" Name="xrLabel13" Text="الي " TextAlignment="MiddleCenter" SizeF="51.91257,23.21777" LocationFloat="360.376, 82.02798" Font="Arial, 10pt, style=Bold">
+          <StylePriority Ref="47" UseFont="false" UseTextAlignment="false" />
+        </Item4>
+        <Item5 Ref="48" ControlType="XRLabel" Name="LbFromDate" Text="من تاريخ" TextAlignment="MiddleCenter" SizeF="132.1335,23.21778" LocationFloat="228.2426, 82.02798" Font="Arial, 10pt, style=Bold">
+          <StylePriority Ref="49" UseFont="false" UseTextAlignment="false" />
+        </Item5>
+        <Item6 Ref="50" ControlType="XRLabel" Name="LbCoName" Text="CO Name" TextAlignment="MiddleCenter" SizeF="559.9584,33.51399" LocationFloat="34.37502, 10.00001" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="51" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="52" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item6>
+      </Controls>
+    </Item6>
+  </Bands>
+  <StyleSheet>
+    <Item1 Ref="53" Name="Title" BorderStyle="Inset" Font="Arial, 14.25pt" ForeColor="255,75,75,75" BackColor="Transparent" BorderColor="Black" Sides="None" StringFormat="Near;Near;0;None;Character;Default" BorderWidthSerializable="1" />
+    <Item2 Ref="54" Name="DetailCaption1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="White" BackColor="255,75,75,75" BorderColor="White" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item3 Ref="55" Name="DetailData1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BorderColor="Transparent" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item4 Ref="56" Name="DetailData3_Odd" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BackColor="255,231,231,231" BorderColor="Transparent" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="1" />
+    <Item5 Ref="57" Name="PageInfo" BorderStyle="Inset" Padding="2,2,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,75,75,75" StringFormat="Near;Near;0;None;Character;Default" />
+  </StyleSheet>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v19.1" Name="objectDataSource1" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RGF0YVNvdXJjZTEiPjxEYXRhU291cmNlIFR5cGU9IkFjYy5WaWV3TW9kZWxzLlBhcGVyRmlsdGVyVk0sIEFjYywgVmVyc2lvbj0xLjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPW51bGwiIC8+PC9PYmplY3REYXRhU291cmNlPg==" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

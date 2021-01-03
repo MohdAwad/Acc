@@ -1,0 +1,329 @@
+﻿@model Acc.ViewModels.St_WarehouseSearchHVM
+@{
+    ViewBag.Title = @Resources.Resource.SearchItemCard;
+
+
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.SearchItemCard</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        @Html.Label(Resources.Resource.ItemCode)
+                        <div class="form-group ">
+                            @Html.TextBoxFor(m => m.SearchItemCode, new { @id = "SearchItemCode", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        @Html.Label(Resources.Resource.ItemName)
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.SearchItemName, new { @id = "SearchItemName", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(@Resources.Resource.Group)
+                            @if (Resources.Resource.CurLang == "Arb")
+                            {
+                                @Html.DropDownListFor(m => m.SearchGroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "ArabicName"), Resources.Resource.ItemGroups, new { @id = "SearchGroupCode", @class = "form-control input-sml" })
+
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(m => m.SearchGroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "EnglishName"), Resources.Resource.ItemGroups, new { @id = "SearchGroupCode", @class = "form-control input-sml" })
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <table id="tdataTableDetail" class="table table-bordered" style="width:100%;cursor:pointer">
+                        <thead>
+                            <tr>
+                                <th>@Resources.Resource.ItemCode</th>
+                                <th>@Resources.Resource.ItemName</th>
+                                <th>@Resources.Resource.GroupName</th>
+                                <th>@Resources.Resource.SalePrice</th>
+                                <th>@Resources.Resource.StopItem</th>
+                                <th>@Resources.Resource.CostRate</th>
+                                <th>@Resources.Resource.LocalCost</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <a class="btn btn btn-anim btnSearch" id="btnSearch"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="btnClose"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+<script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        if (TheDecimalPointForTheLocalCurrency == '' || TheDecimalPointForTheLocalCurrency == null) {
+            TheDecimalPointForTheLocalCurrency = 3;
+        }
+        function formatMoneyLocalCurrencyFraction(number, decPlaces, decSep, thouSep) {
+            decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? TheDecimalPointForTheLocalCurrency : decPlaces,
+                decSep = typeof decSep === "undefined" ? "." : decSep;
+            thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+            var sign = number < 0 ? "-" : "";
+            var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+            var j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return sign +
+                (j ? i.substr(0, j) + thouSep : "") +
+                i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+                (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+        }
+        var tabelMemRefDetail = $("#tdataTableDetail").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "400px",
+            "scrollX": true,
+            "scrollCollapse": true,
+            "paging": false,
+            "ordering": false,
+            "info": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [5],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [6],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+
+            dom: 'Bfrtip',
+
+            buttons: [
+
+
+            ],
+
+
+            ajax: {
+                url: "/MultiUse/GetAllSt_ItemCardH/",
+                "type": "POST",
+                "data": function (d) {
+                    d.id = 0;
+                    d.SearchItemCode = $("#SearchItemCode").val();
+                    d.SearchItemName = $("#SearchItemName").val();
+                    d.SearchGroupCode = $("#SearchGroupCode").val();
+
+                },
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "SearchItemCode"
+
+                },
+                {
+                    data: "SearchItemName"
+
+                },
+                {
+                    data: "SearchGroupName"
+
+                },
+                {
+                    data: "SearchSalePrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "SearchStopItem"
+
+                },
+                {
+                    data: "SearchCostRate",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "SearchLocalCost",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+
+            ]
+        });
+        $(document).on('click', '#btnSearch', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            $('#tdataTableDetail').DataTable().clear().draw();
+            $('#tdataTableDetail').DataTable().ajax.reload();
+            dialog.modal('hide');
+        });
+        $('#tdataTableDetail tbody').on('click', 'tr', function () {
+            // alert('@(ViewBag.ID)');
+            if ('@(ViewBag.ID)' == "ItemCode") {
+                if (tabelMemRefDetail.row(this).data().StopItem == '0') {
+                    GetSelectedItemCard(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+            }
+            else if ('@(ViewBag.ID)' == "RelatedItemCard") {
+                if (tabelMemRefDetail.row(this).data().StopItem == '0') {
+                    GetSelectedRelatedItemCard(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+            }
+            else if ('@(ViewBag.ID)' == "SimilarItemCard") {
+                if (tabelMemRefDetail.row(this).data().StopItem == '0') {
+                    GetSelectedSimilarItemCard(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+            }
+            else if ('@(ViewBag.ID)' == "RawMateriaItemCard") {
+                if (tabelMemRefDetail.row(this).data().StopItem == '0') {
+                    GetSelectedRawMaterial(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+            }
+            else if ('@(ViewBag.ID)' == "SearchItemCode") {
+                GetSelectedItemCard(tabelMemRefDetail.row(this).data());
+                $('#btnClose').trigger('click');
+            }
+        });
+    });
+
+
+</script>
+
+
+
+
+

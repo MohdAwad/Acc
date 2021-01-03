@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.Operations;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Operations</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("ShowTransferbetweenaccounts") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/Operations/Transferbetweenaccounts" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-gears"></i><span class="btn-text">@Resources.Resource.Transferbetweenaccounts </span></a>
+                    </div>
+                }
+                @if (User.IsInRole("ShowFreezunfreezmonthtransaction") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/FreezeTransaction/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-gears"></i><span class="btn-text">@Resources.Resource.FreezeTransaction</span></a>
+                    </div>
+
+                }
+                @if (User.IsInRole("ShowEstimatedbudget") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-3 col-xs-12 mt-15">
+                        <a href="/EstimatedBudget/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-gears"></i><span class="btn-text">@Resources.Resource.EstimatedBudget</span></a>
+                    </div>
+                }
+
+
+
+            </div>
+        </div>
+    </div>
+</div>

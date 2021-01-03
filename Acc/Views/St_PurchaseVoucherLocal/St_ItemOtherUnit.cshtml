@@ -1,0 +1,295 @@
+﻿@model Acc.ViewModels.St_ItemOtherUnitVM
+@{
+    ViewBag.Title = @Resources.Resource.ItemUnits;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        document.getElementById("OtherUnitChooseQuantity").value = 1;
+        $("#OtherUnitChooseQuantity").focus().select();
+        $("#OtherUnitChooseQuantity").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#OtherUnitPurchasePrice").focus().select();
+
+        });
+        $("#OtherUnitPurchasePrice").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#OtherUnitChooseQuantity").focus().select();
+
+        });
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        var ItemCode = $("#ItemCode").val();
+        var SelectedOtherUnitNumber = $("#OtherUnitNumber").val();
+        if (SelectedOtherUnitNumber != null && SelectedOtherUnitNumber != '') {
+            $.getJSON('@Url.Action("GetSt_ItemOtherUnit", "St_PurchaseVoucherLocal")', { id: ItemCode, id2: SelectedOtherUnitNumber }, function (Data) {
+                if (Data == null || Data == "") {
+                    document.getElementById("OtherUnitBarcode").value = '';
+                    document.getElementById("OtherUnitSalePrice").value = 0;
+                    document.getElementById("OtherUnitPurchasePrice").value = 0;
+                    document.getElementById("OtherUnitQuantity").value = 0;
+                    document.getElementById("OtherUnitQuantityTotal").value = 0;
+                    document.getElementById("OtherUnitChooseQuantity").value = 1;
+                    document.getElementById("OtherUnitPrice").value = 0;
+                }
+                else {
+                    document.getElementById("OtherUnitBarcode").value = Data.OtherUnitBarcode;
+                    document.getElementById("OtherUnitSalePrice").value = formatMoney(Data.OtherUnitSalePrice, TheDecimalPointForTheLocalCurrency)
+                    document.getElementById("OtherUnitPurchasePrice").value = Data.OtherUnitPurchasePrice;
+                    document.getElementById("OtherUnitQuantity").value = Data.OtherUnitQuantity;
+                    var OtherUnitQuantity = Data.OtherUnitQuantity;
+                    var OtherUnitChooseQuantity = document.getElementById("OtherUnitChooseQuantity").value;
+                    var OtherUnitPurchasePrice = Data.OtherUnitQuantity;
+                    if (OtherUnitChooseQuantity == '' || OtherUnitChooseQuantity == null) {
+                        OtherUnitChooseQuantity = 1;
+                        document.getElementById("OtherUnitChooseQuantity").value = 1;
+                    }
+                    else if (OtherUnitChooseQuantity <= 0){
+                        OtherUnitChooseQuantity = 1;
+                        document.getElementById("OtherUnitChooseQuantity").value = 1;
+                    }
+                    if (OtherUnitQuantity == '' || OtherUnitQuantity == null) {
+                        OtherUnitQuantity = 0;
+                    }
+                    var Total = 0;
+                    var UnitPrice = 0;
+                    Total = OtherUnitChooseQuantity * OtherUnitQuantity;
+                    document.getElementById("OtherUnitQuantityTotal").value = (Total).toFixed(TheDecimalPointForTheLocalCurrency);
+                    if (Total == '' || Total == null) {
+                        Total = 0;
+                    }
+                    if (OtherUnitPurchasePrice == '' || OtherUnitPurchasePrice == null) {
+                        OtherUnitPurchasePrice = 0;
+                    }
+                    if (Total > 0) {
+                        UnitPrice = (OtherUnitPurchasePrice * OtherUnitChooseQuantity) / Total
+                    }
+                    else {
+                        UnitPrice = 0;
+                    }
+                    document.getElementById("OtherUnitPrice").value = (UnitPrice).toFixed(TheDecimalPointForTheLocalCurrency);
+
+                }
+            });
+        }
+        else {
+        }
+        $('#OtherUnitNumber').change(function () {
+            var ItemCode = $("#ItemCode").val();
+            var SelectedOtherUnitNumber = $("#OtherUnitNumber").val();
+            if (SelectedOtherUnitNumber != null && SelectedOtherUnitNumber != '') {
+                $.getJSON('@Url.Action("GetSt_ItemOtherUnit", "St_PurchaseVoucherLocal")', { id: ItemCode, id2: SelectedOtherUnitNumber }, function (Data) {
+                    if (Data == null || Data == "") {
+                        document.getElementById("OtherUnitBarcode").value = '';
+                        document.getElementById("OtherUnitSalePrice").value = 0;
+                        document.getElementById("OtherUnitPurchasePrice").value = 0;
+                        document.getElementById("OtherUnitQuantity").value = 0;
+                        document.getElementById("OtherUnitQuantityTotal").value = 0;
+                        document.getElementById("OtherUnitChooseQuantity").value = 1;
+                        document.getElementById("OtherUnitPrice").value = 0;
+                    }
+                    else {
+                        document.getElementById("OtherUnitBarcode").value = Data.OtherUnitBarcode;
+                        document.getElementById("OtherUnitSalePrice").value = formatMoney(Data.OtherUnitSalePrice, TheDecimalPointForTheLocalCurrency)
+                        document.getElementById("OtherUnitPurchasePrice").value = Data.OtherUnitPurchasePrice;
+                        document.getElementById("OtherUnitQuantity").value = Data.OtherUnitQuantity;
+                        var OtherUnitQuantity = Data.OtherUnitQuantity;
+                        var OtherUnitChooseQuantity = document.getElementById("OtherUnitChooseQuantity").value;
+                        var OtherUnitPurchasePrice = Data.OtherUnitQuantity;
+                        if (OtherUnitChooseQuantity == '' || OtherUnitChooseQuantity == null) {
+                            OtherUnitChooseQuantity = 1;
+                            document.getElementById("OtherUnitChooseQuantity").value = 1;
+                        }
+                        else if (OtherUnitChooseQuantity <= 0) {
+                            OtherUnitChooseQuantity = 1;
+                            document.getElementById("OtherUnitChooseQuantity").value = 1;
+                        }
+                        if (OtherUnitQuantity == '' || OtherUnitQuantity == null) {
+                            OtherUnitQuantity = 0;
+                        }
+                        var Total = 0;
+                        var UnitPrice = 0;
+                        Total = OtherUnitChooseQuantity * OtherUnitQuantity;
+                        document.getElementById("OtherUnitQuantityTotal").value = (Total).toFixed(TheDecimalPointForTheLocalCurrency);
+                        if (Total == '' || Total == null) {
+                            Total = 0;
+                        }
+                        if (OtherUnitPurchasePrice == '' || OtherUnitPurchasePrice == null) {
+                            OtherUnitPurchasePrice = 0;
+                        }
+                        if (Total > 0) {
+                            UnitPrice = (OtherUnitPurchasePrice * OtherUnitChooseQuantity) / Total
+                        }
+                        else {
+                            UnitPrice = 0;
+                        }
+                        document.getElementById("OtherUnitPrice").value = (UnitPrice).toFixed(TheDecimalPointForTheLocalCurrency);
+
+                    }
+                });
+            }
+            else {
+            }
+        });
+        $("#OtherUnitChooseQuantity").blur(function () {
+            var OtherUnitChooseQuantity = document.getElementById("OtherUnitChooseQuantity").value;
+            var OtherUnitQuantity = document.getElementById("OtherUnitQuantity").value;
+            var OtherUnitPurchasePrice = document.getElementById("OtherUnitPurchasePrice").value;
+            if (OtherUnitChooseQuantity == '' || OtherUnitChooseQuantity == null) {
+                OtherUnitChooseQuantity = 1;
+                document.getElementById("OtherUnitChooseQuantity").value = 1;
+            }
+            else if (OtherUnitChooseQuantity <= 0) {
+                OtherUnitChooseQuantity = 1;
+                document.getElementById("OtherUnitChooseQuantity").value = 1;
+            }
+            if (OtherUnitQuantity == '' || OtherUnitQuantity == null) {
+                OtherUnitQuantity = 0;
+            }
+            var Total = 0;
+            Total = OtherUnitChooseQuantity * OtherUnitQuantity;
+            document.getElementById("OtherUnitQuantityTotal").value = (Total).toFixed(OtherUnitQuantityTotal);
+            if (Total == '' || Total == null) {
+                Total = 0;
+            }
+            if (OtherUnitPurchasePrice == '' || OtherUnitPurchasePrice == null) {
+                OtherUnitPurchasePrice = 0;
+            }
+            if (Total > 0) {
+                UnitPrice = (OtherUnitPurchasePrice * OtherUnitChooseQuantity) / Total
+            }
+            else {
+                UnitPrice = 0;
+            }
+            document.getElementById("OtherUnitPrice").value = (UnitPrice).toFixed(TheDecimalPointForTheLocalCurrency);
+        });
+        $("#OtherUnitPurchasePrice").blur(function () {
+            var OtherUnitChooseQuantity = document.getElementById("OtherUnitChooseQuantity").value;
+            var OtherUnitQuantity = document.getElementById("OtherUnitQuantity").value;
+            var OtherUnitPurchasePrice = document.getElementById("OtherUnitPurchasePrice").value;
+            if (OtherUnitChooseQuantity == '' || OtherUnitChooseQuantity == null) {
+                OtherUnitChooseQuantity = 1;
+                document.getElementById("OtherUnitChooseQuantity").value = 1;
+            }
+            else if (OtherUnitChooseQuantity <= 0) {
+                OtherUnitChooseQuantity = 1;
+                document.getElementById("OtherUnitChooseQuantity").value = 1;
+            }
+            if (OtherUnitQuantity == '' || OtherUnitQuantity == null) {
+                OtherUnitQuantity = 0;
+            }
+            var Total = 0;
+            Total = OtherUnitChooseQuantity * OtherUnitQuantity;
+            document.getElementById("OtherUnitQuantityTotal").value = (Total).toFixed(OtherUnitQuantityTotal);
+            if (Total == '' || Total == null) {
+                Total = 0;
+            }
+            if (OtherUnitPurchasePrice == '' || OtherUnitPurchasePrice == null) {
+                OtherUnitPurchasePrice = 0;
+            }
+            if (Total > 0) {
+                UnitPrice = (OtherUnitPurchasePrice * OtherUnitChooseQuantity) / Total
+            }
+            else {
+                UnitPrice = 0;
+            }
+            document.getElementById("OtherUnitPrice").value = (UnitPrice).toFixed(TheDecimalPointForTheLocalCurrency);
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-sm ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.ItemUnits</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.ItemUnits)
+                        @Html.DropDownListFor(m => m.OtherUnitNumber, new SelectList(Model.St_ItemUnit, "OtherItemUnitNumber", "OtherItemUnitName"), new { @id = "OtherUnitNumber", @class = "form-control input-sml" })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.Quantity)
+
+                        @Html.TextBoxFor(m => m.OtherUnitChooseQuantity, new { @id = "OtherUnitChooseQuantity", @class = "form-control input-sml", @type = "number", @min = 1 })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.Price)
+
+                        @Html.TextBoxFor(m => m.OtherUnitPurchasePrice, new { @id = "OtherUnitPurchasePrice", @class = "form-control input-sml", @type = "number", @min = 0 })
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary btn-anim" id="btnChoose"> <i class="fa fa-check"></i><span class="btn-text">@Resources.Resource.Choose</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.ItemCode, new { @id = "ItemCode", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OtherUnitQuantity, new { @id = "OtherUnitQuantity", @class = "form-control input-sml", @type = "number", @min = 0, @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OtherUnitQuantityTotal, new { @id = "OtherUnitQuantityTotal", @class = "form-control input-sml", @type = "number", @min = 0, @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OtherUnitPrice, new { @id = "OtherUnitPrice", @class = "form-control input-sml", @type = "number", @min = 0, @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OtherUnitBarcode, new { @id = "OtherUnitBarcode", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OtherUnitSalePrice, new { @id = "OtherUnitSalePrice", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#btnChoose', function () {
+            var data = {
+                OtherUnitBarcode: $("#OtherUnitBarcode").val(),
+                OtherUnitQuantityTotal: $("#OtherUnitQuantityTotal").val(),
+                OtherUnitPrice: $("#OtherUnitPrice").val()
+            };
+            GetSelectedItemUnit(data);
+            $('#Close').trigger('click');
+        });
+    });
+</script>
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="19.1.5.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="DebitNoteReport" Landscape="true" Margins="100, 72, 205, 100" PageWidth="1100" PageHeight="850" Version="19.1" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="205.208328">
+      <Controls>
+        <Item1 Ref="3" ControlType="XRLabel" Name="LbTODate" TextFormatString="{0:dd/MM/yyyy}" Multiline="true" TextAlignment="MiddleRight" SizeF="89.65202,22.99999" LocationFloat="26.86909, 104.1667" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="4" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item1>
+        <Item2 Ref="5" ControlType="XRLabel" Name="xrLabel1" Multiline="true" Text="الى" TextAlignment="MiddleRight" SizeF="37.74643,22.99998" LocationFloat="116.5211, 104.1667" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="6" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item2>
+        <Item3 Ref="7" ControlType="XRLabel" Name="LbFromDate" TextFormatString="{0:dd/MM/yyyy}" Multiline="true" TextAlignment="MiddleRight" SizeF="89.65202,22.99999" LocationFloat="154.2675, 104.1667" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="8" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item3>
+        <Item4 Ref="9" ControlType="XRLabel" Name="xrLabel17" Multiline="true" Text="التاريخ" TextAlignment="MiddleRight" SizeF="72.12146,23" LocationFloat="247.9195, 104.1667" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="10" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item4>
+        <Item5 Ref="11" ControlType="XRLabel" Name="LbVoucherNo" Multiline="true" TextAlignment="MiddleRight" SizeF="107.5731,22.99999" LocationFloat="330.6111, 104.1667" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="12" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item5>
+        <Item6 Ref="13" ControlType="XRLabel" Name="xrLabel2" Multiline="true" Text="رقم القيد" TextAlignment="MiddleRight" SizeF="73.08322,22.99999" LocationFloat="438.1841, 104.1667" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="14" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item6>
+        <Item7 Ref="15" ControlType="XRLabel" Name="xrCurrencyID" Multiline="true" TextAlignment="MiddleRight" SizeF="64.58344,22.99999" LocationFloat="528.8376, 104.1667" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="16" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item7>
+        <Item8 Ref="17" ControlType="XRLabel" Name="xrLabel5" Multiline="true" Text="العملة" TextAlignment="MiddleRight" SizeF="66.59796,22.99999" LocationFloat="601.7201, 104.1667" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="18" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item8>
+        <Item9 Ref="19" ControlType="XRLabel" Name="xrCompanyTransactionKindName" Multiline="true" TextAlignment="MiddleRight" SizeF="152.3256,22.99999" LocationFloat="679.0265, 104.1667" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="20" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item9>
+        <Item10 Ref="21" ControlType="XRLabel" Name="xrLabel11" Multiline="true" Text="نوع الحركة" TextAlignment="MiddleRight" SizeF="64.0199,22.99999" LocationFloat="832.3727, 104.1667" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="22" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item10>
+        <Item11 Ref="23" ControlType="XRLabel" Name="ToAccountNumber" Multiline="true" TextAlignment="MiddleRight" SizeF="125.928,23" LocationFloat="679.1964, 146.5833" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="24" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item11>
+        <Item12 Ref="25" ControlType="XRLabel" Name="xrLabel4" Multiline="true" Text="حساب مدين " TextAlignment="MiddleRight" SizeF="100.685,23" LocationFloat="805.1243, 146.5833" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="26" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item12>
+        <Item13 Ref="27" ControlType="XRLabel" Name="AccountName" Multiline="true" TextAlignment="MiddleRight" SizeF="151.2916,23" LocationFloat="391.4029, 146.5832" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="28" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item13>
+        <Item14 Ref="29" ControlType="XRLabel" Name="xrLabel13" Multiline="true" Text="اسم الحساب" TextAlignment="MiddleRight" SizeF="117.3517,23" LocationFloat="546.7727, 146.5833" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="30" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item14>
+        <Item15 Ref="31" ControlType="XRLabel" Name="LbSaleMan" Multiline="true" TextAlignment="MiddleRight" SizeF="247.3151,23.00002" LocationFloat="19.00001, 146.5833" Font="Arial, 9.75pt, style=Bold" Padding="2,2,0,0,100" Borders="Bottom" BorderDashStyle="Dot">
+          <StylePriority Ref="32" UseFont="false" UseBorders="false" UseBorderDashStyle="false" UseTextAlignment="false" />
+        </Item15>
+        <Item16 Ref="33" ControlType="XRLabel" Name="xrLabel8" Multiline="true" Text="المندوب" TextAlignment="MiddleRight" SizeF="113.389,23" LocationFloat="270.2207, 146.5833" Font="Arial, 9.75pt, style=Bold" BackColor="DarkGray" Padding="2,2,0,0,100">
+          <StylePriority Ref="34" UseFont="false" UseBackColor="false" UseTextAlignment="false" />
+        </Item16>
+        <Item17 Ref="35" ControlType="XRLabel" Name="LbReporttitle" Multiline="true" Text="اشعار مدين" TextAlignment="MiddleCenter" SizeF="393.9037,29.611" LocationFloat="270.2207, 49.764" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="36" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="37" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item17>
+        <Item18 Ref="38" ControlType="XRLabel" Name="LbCoName" Text="CO Name" TextAlignment="MiddleCenter" SizeF="865.8108,33.51399" LocationFloat="34.18921, 4.791673" StyleName="Title" Font="Arial, 14.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,255,209,107" BorderColor="Black">
+          <Scripts Ref="39" OnTextChanged="LbCoName_TextChanged" />
+          <StylePriority Ref="40" UseFont="false" UseForeColor="false" UseBackColor="false" UseBorderColor="false" UseTextAlignment="false" />
+        </Item18>
+      </Controls>
+    </Item1>
+    <Item2 Ref="41" ControlType="BottomMarginBand" Name="BottomMargin">
+      <Controls>
+        <Item1 Ref="42" ControlType="XRPageInfo" Name="pageInfo1" PageInfo="DateTime" SizeF="438,23" LocationFloat="6, 6" StyleName="PageInfo" />
+        <Item2 Ref="43" ControlType="XRPageInfo" Name="pageInfo2" TextFormatString="Page {0} of {1}" TextAlignment="TopRight" SizeF="438,23" LocationFloat="456, 6" StyleName="PageInfo" />
+      </Controls>
+    </Item2>
+    <Item3 Ref="44" ControlType="GroupHeaderBand" Name="GroupHeader1" GroupUnion="WithFirstDetail" HeightF="28">
+      <Controls>
+        <Item1 Ref="45" ControlType="XRTable" Name="table1" SizeF="928,28" LocationFloat="0, 0">
+          <Rows>
+            <Item1 Ref="46" ControlType="XRTableRow" Name="tableRow1" Weight="1">
+              <Cells>
+                <Item1 Ref="47" ControlType="XRTableCell" Name="tableCell1" Weight="0.10014956419143027" Text="ترحيل " TextAlignment="MiddleCenter" StyleName="DetailCaption1" Borders="None">
+                  <StylePriority Ref="48" UseBorders="false" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="49" ControlType="XRTableCell" Name="tableCell2" Weight="0.1903741179790141" Text="اسم المستخدم " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="50" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="51" ControlType="XRTableCell" Name="xrTableCell3" Weight="0.12213840982989613" Multiline="true" Text="المندوب" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="52" UseTextAlignment="false" />
+                </Item3>
+                <Item4 Ref="53" ControlType="XRTableCell" Name="tableCell3" Weight="0.15993115668486083" Text="قيمة السند بالعملة الاجنبية" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="54" UseTextAlignment="false" />
+                </Item4>
+                <Item5 Ref="55" ControlType="XRTableCell" Name="tableCell4" Weight="0.14782012038760686" Text="قيمة السند بالعملة المحلية " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="56" UseTextAlignment="false" />
+                </Item5>
+                <Item6 Ref="57" ControlType="XRTableCell" Name="tableCell5" Weight="0.11652560763888889" Text="العملة " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="58" UseTextAlignment="false" />
+                </Item6>
+                <Item7 Ref="59" ControlType="XRTableCell" Name="xrTableCell1" Weight="0.1351995494444754" Multiline="true" Text="حساب مدين " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="60" UseTextAlignment="false" />
+                </Item7>
+                <Item8 Ref="61" ControlType="XRTableCell" Name="tableCell6" Weight="0.094499733731522872" Text="تاريخ القيد " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="62" UseTextAlignment="false" />
+                </Item8>
+                <Item9 Ref="63" ControlType="XRTableCell" Name="tableCell7" Weight="0.11929239185636081" Text="رقم القيد " TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="64" UseTextAlignment="false" />
+                </Item9>
+                <Item10 Ref="65" ControlType="XRTableCell" Name="tableCell8" Weight="0.10902571550372552" Text="نوع الحركة" TextAlignment="MiddleCenter" StyleName="DetailCaption1">
+                  <StylePriority Ref="66" UseTextAlignment="false" />
+                </Item10>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item3>
+    <Item4 Ref="67" ControlType="DetailBand" Name="Detail" HeightF="25">
+      <Controls>
+        <Item1 Ref="68" ControlType="XRTable" Name="table2" SizeF="928,25" LocationFloat="0, 0" OddStyleName="DetailData3_Odd">
+          <Rows>
+            <Item1 Ref="69" ControlType="XRTableRow" Name="tableRow2" Weight="11.5">
+              <Cells>
+                <Item1 Ref="70" ControlType="XRTableCell" Name="tableCell9" Weight="0.10014956316122652" TextAlignment="MiddleCenter" StyleName="DetailData1" Borders="None">
+                  <ExpressionBindings>
+                    <Item1 Ref="71" Expression="[Export]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="72" UseBorders="false" UseTextAlignment="false" />
+                </Item1>
+                <Item2 Ref="73" ControlType="XRTableCell" Name="tableCell10" Weight="0.19037411874430818" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="74" Expression="[UserName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="75" UseTextAlignment="false" />
+                </Item2>
+                <Item3 Ref="76" ControlType="XRTableCell" Name="xrTableCell4" Weight="0.12213840970234732" Multiline="true" Text="xrTableCell4" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="77" Expression="[SaleName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="78" UseTextAlignment="false" />
+                </Item3>
+                <Item4 Ref="79" ControlType="XRTableCell" Name="tableCell11" Weight="0.15993115681240963" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="80" Expression="[ForeignTotal]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="81" UseTextAlignment="false" />
+                </Item4>
+                <Item5 Ref="82" ControlType="XRTableCell" Name="tableCell12" Weight="0.14782012065251654" TextFormatString="{0:n3}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="83" Expression="[TotalAmount]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="84" UseTextAlignment="false" />
+                </Item5>
+                <Item6 Ref="85" ControlType="XRTableCell" Name="tableCell13" Weight="0.11652560763888889" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="86" Expression="[CurrencyName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="87" UseTextAlignment="false" />
+                </Item6>
+                <Item7 Ref="88" ControlType="XRTableCell" Name="xrTableCell2" Weight="0.13519954958183542" Multiline="true" Text="xrTableCell2" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="89" Expression="[PaidAccountName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="90" UseTextAlignment="false" />
+                </Item7>
+                <Item8 Ref="91" ControlType="XRTableCell" Name="tableCell14" Weight="0.09449973359416286" TextFormatString="{0:dd/MM/yyyy}" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="92" Expression="[VoucherDate]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="93" UseTextAlignment="false" />
+                </Item8>
+                <Item9 Ref="94" ControlType="XRTableCell" Name="tableCell15" Weight="0.11929239195447507" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="95" Expression="[VoucherNumber]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="96" UseTextAlignment="false" />
+                </Item9>
+                <Item10 Ref="97" ControlType="XRTableCell" Name="tableCell16" Weight="0.10902572414644846" TextAlignment="MiddleCenter" StyleName="DetailData1">
+                  <ExpressionBindings>
+                    <Item1 Ref="98" Expression="[CompanyTransactionName]" PropertyName="Text" EventName="BeforePrint" />
+                  </ExpressionBindings>
+                  <StylePriority Ref="99" UseTextAlignment="false" />
+                </Item10>
+              </Cells>
+            </Item1>
+          </Rows>
+        </Item1>
+      </Controls>
+    </Item4>
+  </Bands>
+  <StyleSheet>
+    <Item1 Ref="100" Name="Title" BorderStyle="Inset" Font="Arial, 14.25pt" ForeColor="255,64,70,80" BackColor="Transparent" BorderColor="Black" Sides="None" StringFormat="Near;Near;0;None;Character;Default" BorderWidthSerializable="1" />
+    <Item2 Ref="101" Name="DetailCaption1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="White" BackColor="255,140,151,151" BorderColor="White" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item3 Ref="102" Name="DetailData1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BorderColor="Transparent" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item4 Ref="103" Name="DetailData3_Odd" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BackColor="255,243,245,248" BorderColor="Transparent" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="1" />
+    <Item5 Ref="104" Name="PageInfo" BorderStyle="Inset" Padding="2,2,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,64,70,80" StringFormat="Near;Near;0;None;Character;Default" />
+  </StyleSheet>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v19.1" Name="objectDataSource1" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RGF0YVNvdXJjZTEiPjxEYXRhU291cmNlIFR5cGU9IkFjYy5WaWV3TW9kZWxzLlRyYW5zQWN0aW9uRmlsdGVyLCBBY2MsIFZlcnNpb249MS4wLjAuMCwgQ3VsdHVyZT1uZXV0cmFsLCBQdWJsaWNLZXlUb2tlbj1udWxsIiAvPjwvT2JqZWN0RGF0YVNvdXJjZT4=" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

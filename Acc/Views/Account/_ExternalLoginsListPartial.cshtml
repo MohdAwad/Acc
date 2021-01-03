@@ -1,0 +1,28 @@
+﻿@model Acc.Models.ExternalLoginListViewModel
+@using Microsoft.Owin.Security
+
+    <h4>@Resources.Resource.UseAnotherServiceToLogIn</h4>
+<hr />
+@{
+    var loginProviders = Context.GetOwinContext().Authentication.GetExternalAuthenticationTypes();
+    if (loginProviders.Count() == 0) {
+        <div>
+            <p style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+                @Resources.Resource.ThereAreNoExternalAuthentication <a href="https://go.microsoft.com/fwlink/?LinkId=403804">@Resources.Resource.ThisArticle</a>
+                @Resources.Resource.ForDetailsOnSettingUpThis
+            </p>
+        </div>
+    }
+    else {
+        using (Html.BeginForm("ExternalLogin", "Account", new { ReturnUrl = Model.ReturnUrl })) {
+            @Html.AntiForgeryToken()
+            <div id="socialLoginList">
+                <p style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+                    @foreach (AuthenticationDescription p in loginProviders) {
+                        <button type="submit" class="btn btn-default" id="@p.AuthenticationType" name="provider" value="@p.AuthenticationType" title="Log in using your @p.Caption account">@p.AuthenticationType</button>
+                    }
+                </p>
+            </div>
+        }
+    }
+}

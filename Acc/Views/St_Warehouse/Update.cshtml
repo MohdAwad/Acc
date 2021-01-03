@@ -1,0 +1,380 @@
+﻿@model Acc.ViewModels.St_WarehouseVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+
+<script>
+   var InventoryType = document.getElementById("InventoryType").value;
+    $("#ArabicName").focus().select();
+    $("#ArabicName").keyup(function (event) {
+        if (event.keyCode == 13)
+            $("#EnglishName").focus().select();
+
+    });
+    $("#EnglishName").keyup(function (event) {
+        if (event.keyCode == 13)
+            $("#Telephone").focus().select();
+
+    });
+    $("#Telephone").keyup(function (event) {
+        if (event.keyCode == 13)
+            $("#Address").focus().select();
+
+    });
+    $("#Address").keyup(function (event) {
+        if (event.keyCode == 13)
+            if (InventoryType == 1) {
+                $("#AccountNumber").focus().select();
+            }
+            else {
+                $("#ArabicName").focus().select();
+            }
+    });
+    $("#AccountNumber").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#CostCenterNumber").focus().select();
+        }
+        else if (event.keyCode == 17) {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/AccountNumber';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        }
+
+    });
+    $("#CostCenterNumber").keyup(function (event) {
+        if (event.keyCode == 13) {
+            $("#ArabicName").focus().select();
+        }
+        else if (event.keyCode == 17) {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/FromCostCenter';
+            $.get(url, function (data) {
+                $('#modal-containerAccount').html(data);
+                $('#modal-containerAccount').modal('show');
+                dialog.modal('hide');
+            })
+        }
+    });
+    function GetSelectedAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("AccountNumber").value = data.AccountNumber;
+            document.getElementById("AccountName").value = data.AccountName;
+
+        }
+        else {
+            document.getElementById("AccountNumber").value = '';
+            document.getElementById("AccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataFromCostCenter(data) {
+
+        if (data.CostNumber != null && data.AccNo != '') {
+            document.getElementById("CostCenterNumber").value = data.CostNumber;
+            document.getElementById("CostCenterName").value = data.CostName;
+        }
+        else {
+            document.getElementById("CostCenterNumber").value = '';
+            document.getElementById("CostCenterName").value = '';
+        }
+
+    }
+    $('#BtnClearAccountNumber').on('click', function () {
+        document.getElementById("AccountNumber").value = '';
+        document.getElementById("AccountName").value = '';
+    });
+    $('#BtnClearCostCenter').on('click', function () {
+        document.getElementById("CostCenterNumber").value = '';
+        document.getElementById("CostCenterName").value = '';
+    });
+    $("#AccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("AccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("AccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccountNumber").value = '';
+                            document.getElementById("AccountName").value = '';
+                            $("#AccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("AccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("AccountNumber").value = "";
+                                document.getElementById("AccountName").value = "";
+                                $("#AccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+    });
+    $("#CostCenterNumber").blur(function () {
+        var CostNumber = document.getElementById("CostCenterNumber").value;
+            if (CostNumber == '') {
+                document.getElementById("CostCenterName").value = '';
+            }
+            else {
+                if (CostNumber != null && CostNumber != '') {
+                    $.getJSON('@Url.Action("CheckCostCenter", "MultiUse")', { id: CostNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("CostCenterNumber").value = '';
+                            document.getElementById("CostCenterName").value = '';
+                            $("#CostCenterNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedCost) {
+                                document.getElementById("CostCenterName").value = Data.CostName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("CostCenterNumber").value = "";
+                                document.getElementById("CostCenterName").value = "";
+                                $("#CostCenterNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+</script>
+@if (Model.InventoryType == 1)
+{
+    <div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #34495E">
+                    <div class="pull-left">
+                        <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-body">
+                    @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+
+                    <div class="col-lg-12">
+                        <div class="col-lg-5">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.StockCode)
+
+                                @Html.TextBoxFor(m => m.StockCode, new { @id = "StockCode", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ArabicName)  <span style="color:red">*</span>
+
+                                @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.EnglishName)
+
+                                @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Telephone)
+
+                                @Html.TextBoxFor(m => m.Telephone, new { @id = "Telephone", @class = "form-control input-sml" })
+                            </div>
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Address)
+                                @Html.TextBoxFor(m => m.Address, new { @id = "Address", @class = "form-control input-sml" })
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.AccountNumber)<span style="color:red">*</span>
+                                <div class="form-group  input-group">
+                                    @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml"})
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccountNumber">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                    @Html.ValidationMessageFor(m => m.AccountNumber)
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.AccountName)
+                                <div class="form-group  input-group">
+                                    @Html.TextBoxFor(m => m.AccountName, new { @id = "AccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccountNumber">
+                                            <i class="fa fa-minus-square"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            @if (Model.WorkWithCostCenter)
+                            {
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.CostCenter)<span style="color:red">*</span>
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.CostCenterNumber, new { @id = "CostCenterNumber", @class = "form-control input-sml"})
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnCostCenter">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.CostCenterNumber)
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.Label(Resources.Resource.CostCenterName)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.CostCenterName, new { @id = "CostCenterName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearCostCenter">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-success btn-anim" id="Update"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                        <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+        <div class="modal-dialog modal-sm ">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #34495E">
+                    <div class="pull-left">
+                        <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-body">
+                    @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.StockCode)
+
+                            @Html.TextBoxFor(m => m.StockCode, new { @id = "StockCode", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ArabicName)  <span style="color:red">*</span>
+
+                            @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EnglishName)
+
+                            @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Telephone)
+
+                            @Html.TextBoxFor(m => m.Telephone, new { @id = "Telephone", @class = "form-control input-sml" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Address)
+                            @Html.TextBoxFor(m => m.Address, new { @id = "Address", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-success btn-anim" id="Update"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                        <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.InventoryType, new { @id = "InventoryType", @style = "visibility : hidden;" })
+
+
+
+
+
+
+
+
+
+
+

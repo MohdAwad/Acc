@@ -1,0 +1,1654 @@
+﻿@model Acc.ViewModels.MutilUseSearchVM
+@{
+    ViewBag.Title = @Resources.Resource.SearchAccountNumber;
+}
+    <style>
+        .modal-body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .modal-footer {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .modal-title {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .dt-button {
+            display: none !important;
+        }
+    </style>
+    <div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #34495E">
+                    <div class="pull-left">
+                        <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.SearchAccountNumber</h6>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-body">
+                    <table id="tdataTableDetail" class="table table-bordered" style="width:100%;cursor:pointer">
+                        <thead>
+                            <tr>
+                                <th>@Resources.Resource.AccountNumber</th>
+                                <th>@Resources.Resource.AccountName</th>
+                                <th>@Resources.Resource.StopAccount</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="btnClose"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+
+    <script>
+        $(document).ready(function () {
+            var tabelMemRefDetail = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "400px",
+                "scrollX": true,
+                "scrollCollapse": true,
+                "paging": false,
+                "ordering": false,
+                "info": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+
+                dom: 'Bfrtip',
+
+                buttons: [
+
+
+                ],
+
+
+                ajax: {
+                    url: "/MultiUse/GetAcountAcc/",
+                    "type": "POST",
+                    "data": function (d) {
+                        d.id = 0;
+
+
+                    },
+                    dataSrc: ""
+                },
+                columns: [
+
+
+
+
+                    {
+                        data: "AccountNumber"
+
+                    },
+
+
+
+                    {
+                        data: "AccountName"
+
+                    },
+                    {
+                        data: "StoppedAccount"
+
+                    }
+                ]
+
+            });
+
+
+
+            $('#tdataTableDetail tbody').on('click', 'tr', function () {
+
+                if ('@(ViewBag.ID)' == "AccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ToAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedAccountTo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "BankAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataBankAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "ChequeUnderCollectionAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataChequeUnderCollectionAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "PostdatedChequeAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPostdatedChequeAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "BillsOfExchangeAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataBillsOfExchangeAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "FromAccAccount") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedPrepaidFromAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ToAccAccount") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedRevenueReceivedToAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ToAccount") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedRevenueReceivedToAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "DeibtNoteAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDebitNote(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "CreditNoteAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedCreditNote(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PaymentVoucherAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPaymentVoucher(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ReceiptVoucherAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataReceiptVoucher(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ReceiptChequeVoucherAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataReceiptChequeVoucher(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PaymentChequeVoucherAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPaymentChequeVoucher(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "AccountNumberSecond") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetTransferChequeToUnderCollection(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "DAccountNumberSecond") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetTransferChequeToClearingDeposit(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "EAccountNumberSecond") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetTransferChequeToChequeEndorsement(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "ChequeEndorsementAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedChequeEndorsement(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "AccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetPaymentUnderCollectionCheque(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "PEAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetPaymentEndorsementCheque(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "CEAccountNumberSecond") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetChequeEndorsementAccount(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "DUAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetDrawingChequeUnderCollection(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "RUAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetReturnChequeUnderCollection(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "RCDAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetReturnChequeClearingDeposit(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "REAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetReturnEndorsementCheque(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "DCUAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetDrawnChequeUnderCollection(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "RCFAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetReturnedChequeFund(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "CFAccountNumberFourth") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetCourtFundCheque(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "PaidInAccountNumber") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSearchPaidInAccount(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "BankOrEndorsementAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSearchBankOrEndorsementAccount(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "TaxCostAccNo") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedTaxCostAccNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "TaxAccNo") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedTaxAccNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "CreditCostAccNo") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedCreditCostAccNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "CreditAccNo") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedCreditAccNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "DebitCostAccNo") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDebitCostAccNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "DebitAccNo") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDebitAccNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ConsumptionComplexNo") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetConsumptionComplexNo(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "PurchasingDifferencesAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchasingDifferencesAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "CommissionAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetCommissionAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "SalesTaxAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataSalesTaxAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "PurchasesTaxAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchasesTaxAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "ReturnSalesTaxAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataReturnSalesTaxAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "ReturnPurchasesTaxAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataReturnPurchasesTaxAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+                else if ('@(ViewBag.ID)' == "CommissionAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetCommissionAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "SalesAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataSalesAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "SalesFundAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataSalesFundAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "CostOfGoodsAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataCostOfGoodsAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "SalesReturnAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataSalesReturnAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "SalesRefundFundAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataSalesRefundFundAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "SalesTaxReturnAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataSalesTaxReturnAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ReturnCostOfGoodsAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataReturnCostOfGoodsAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PurchaseFundAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchaseFundAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PurchaseAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchaseAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PurchaseTaxAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchaseTaxAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PurchaseFundReturnAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchaseFundReturnAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PurchaseReturnAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchaseReturnAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "PurchaseTaxReturnAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataPurchaseTaxReturnAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ForeignPurchaseAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataForeignPurchaseAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "DifferenceAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataDifferenceAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "FundAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataFundAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "MaintenanceCardAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataMaintenanceCardAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ReturnCardAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataReturnCardAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "TransferFeesAndInstallationAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataTransferFeesAndInstallationAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ChequeFundAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataChequeFundAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "RelocationAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataRelocationAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "VisaAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataVisaAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "MasterAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataMasterAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "AmericanAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataAmericanAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ArabiCashAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedDataArabiCashAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "ExpenseAccountNumber") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedExpenseAccountNumber(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                else if ('@(ViewBag.ID)' == "SupplierAccountNo") {
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+
+                }
+                //-------------- Search
+                else if ('@(ViewBag.ID)' == "TransferFromAccountNumber") {
+                    GetSelectedTransferFromAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "TransferToAccountNumber") {
+                    GetSelectedTransToAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "SearchFromAccountNumber") {
+                    GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+               else if ('@(ViewBag.ID)' == "SearchToAccountNumber") {
+                    GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "SearchSupplierAccountNo") {
+                    GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "SearchCustomerAccountNo") {
+                    GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "PaidInAccountNumberSearch") {
+                    GetSearchPaidInAccountSearch(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "BankOrEndorsementAccountNumberSearch") {
+                    GetSearchBankOrEndorsementAccountSearch(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "PaymentChequeVoucherAccountNumberSearch") {
+                    GetSelectedDataPaymentChequeVoucherSearch(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+
+                }
+                else if ('@(ViewBag.ID)' == "ConsumptionComplexNoSearch") {
+                    GetConsumptionComplexNoSearch(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "DepreciationExpenseNoSearch") {
+                    GetDepreciationExpenseNoSearch(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "ReceiptChequeVoucherAccountNumberSearch") {
+                    GetSelectedDataReceiptChequeVoucher(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "ReceiptVoucherAccountNumberSearch") {
+                    GetSelectedDataReceiptVoucher(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+
+                }
+                else if ('@(ViewBag.ID)' == "PaymentVoucherAccountNumberSearch") {
+                    GetSelectedDataPaymentVoucher(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+
+                }
+                else if ('@(ViewBag.ID)' == "AccountNumberSecondSearch") {
+                    GetTransferChequeToUnderCollection(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "DAccountNumberSecondSearch") {
+                    GetTransferChequeToClearingDeposit(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "DUAccountNumberFourthSearch") {
+                    GetDrawingChequeUnderCollection(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "RUAccountNumberFourthSearch") {
+                    GetReturnChequeUnderCollection(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "RCDAccountNumberFourthSearch") {
+                    GetReturnChequeClearingDeposit(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "PEAccountNumberFourthSearch") {
+                    GetPaymentEndorsementCheque(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "CEAccountNumberSecondSearch") {
+                    GetChequeEndorsementAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "REAccountNumberFourthSearch") {
+                    GetReturnEndorsementCheque(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "DCUAccountNumberFourthSearch") {
+                    GetDrawnChequeUnderCollection(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "RCFAccountNumberFourthSearch") {
+                    GetReturnedChequeFund(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "EAccountNumberSecondSearch") {
+                    GetTransferChequeToChequeEndorsement(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "CFAccountNumberFourthSearch") {
+                    GetCourtFundCheque(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else if ('@(ViewBag.ID)' == "AccountNumberSearch") {
+                    GetSelectedAccount(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+
+                }
+                else if ('@(ViewBag.ID)' == "PUCAccountNumberFourthSearch") {
+
+                    if (tabelMemRefDetail.row(this).data().StoppedAccount == '0') {
+                        GetPaymentUnderCollectionCheque(tabelMemRefDetail.row(this).data());
+                        $('#btnClose').trigger('click');
+                    }
+                    else {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+

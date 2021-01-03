@@ -1,0 +1,1134 @@
+﻿@model Acc.ViewModels.AccountLevelRepVM
+@{
+    ViewBag.Title = @Resources.Resource.DetailedYearlyTrial;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedCostCenter(data) {
+        if (data.CostNumber != null && data.AccNo != '') {
+            document.getElementById("CostCenterNumber").value = data.CostNumber;
+            document.getElementById("CostCenterName").value = data.CostName;
+        }
+        else {
+            document.getElementById("CostCenterNumber").value = '';
+            document.getElementById("CostCenterName").value = '';
+        }
+    }
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.DetailedYearlyTrial</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AccountLevelDropVMID)<span style="color:red">*</span>
+                        @Html.DropDownListFor(m => m.AccountLevelDropVMID, new SelectList(Model.AccountLevelDropVM, "AccountLevel", "LevelName"), Resources.Resource.Level, new { @id = "AccountLevelID", @class = "form-control input-sml" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group " style="margin-top:25px">
+                        @Html.CheckBoxFor(m => m.ShowZeroBalance, new { @id = "ShowZeroBalance" })
+                        @Html.Label(Resources.Resource.ShowZeroBalance)
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.WorkWithCostCenter)
+        {
+            <div class="col-lg-12">
+                <div class="form-group">
+                    <div class="col-lg-3">
+                        @Html.CheckBoxFor(m => m.ByCostCenter, new { @id = "ByCostCenter", @class = "text-danger" })
+                        @Html.Label(Resources.Resource.ByCostCenter, new { @class = "text-danger" })
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.CostCenterNumber, new { @id = "CostCenterNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnCostCenter">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        @Html.LabelFor(m => m.CostCenterName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.CostCenterName, new { @id = "CostCenterName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearCostCenter">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.CheckBoxFor(m => m.Partofthenumber, new { @id = "Partofthenumber", @class = "text-danger" })
+                            @Html.LabelFor(m => m.Partofthenumber)
+                            @Html.DropDownListFor(m => m.CostSearchType, new List<SelectListItem>
+                                                             {
+
+                                                          new SelectListItem{ Text=Resources.Resource. StartWith, Value = "1",Selected=false },
+                                                               new SelectListItem{ Text=Resources.Resource. EndWith, Value = "2",Selected=false },
+                                                              new SelectListItem{ Text=Resources.Resource.Contain, Value = "3",Selected=false }
+                       }, new { @id = "CostSearchType", @class = "form-control input-sml" })
+                            @Html.ValidationMessageFor(model => model.CostSearchType, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="col-lg-12">
+            <button type="submit" class="btn btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+
+            @if (User.IsInRole("PrintRepTrialBalanceYearly") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="submit" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top : 10px">
+            <div class="form-group">
+                <table id="tdataTableTransAction" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>*</th>
+                            <th>@Resources.Resource.AccountNumber</th>
+                            <th>@Resources.Resource.AccountName</th>
+                            <th>@Resources.Resource.OpeningBalance</th>
+                            <th>@Resources.Resource.January</th>
+                            <th>@Resources.Resource.February</th>
+                            <th>@Resources.Resource.March</th>
+                            <th>@Resources.Resource.April</th>
+                            <th>@Resources.Resource.May</th>
+                            <th>@Resources.Resource.June</th>
+                            <th>@Resources.Resource.July</th>
+                            <th>@Resources.Resource.August</th>
+                            <th>@Resources.Resource.September</th>
+                            <th>@Resources.Resource.October</th>
+                            <th>@Resources.Resource.November</th>
+                            <th>@Resources.Resource.December</th>
+                            <th>@Resources.Resource.NetTotal</th>
+                            <th>@Resources.Resource.OpeningBalance</th>
+                            <th>@Resources.Resource.January</th>
+                            <th>@Resources.Resource.February</th>
+                            <th>@Resources.Resource.March</th>
+                            <th>@Resources.Resource.April</th>
+                            <th>@Resources.Resource.May</th>
+                            <th>@Resources.Resource.June</th>
+                            <th>@Resources.Resource.July</th>
+                            <th>@Resources.Resource.August</th>
+                            <th>@Resources.Resource.September</th>
+                            <th>@Resources.Resource.October</th>
+                            <th>@Resources.Resource.November</th>
+                            <th>@Resources.Resource.December</th>
+                            <th>@Resources.Resource.NetTotal</th>
+
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <th style="color:black !important">*</th>
+                            <th style="color:black !important">@Resources.Resource.AccountNumber</th>
+                            <th style="color:black !important">@Resources.Resource.AccountName</th>
+                            <th style="color:black !important">@Resources.Resource.OpeningBalance</th>
+                            <th style="color:black !important">@Resources.Resource.January</th>
+                            <th style="color:black !important">@Resources.Resource.February</th>
+                            <th style="color:black !important">@Resources.Resource.March</th>
+                            <th style="color:black !important">@Resources.Resource.April</th>
+                            <th style="color:black !important">@Resources.Resource.May</th>
+                            <th style="color:black !important">@Resources.Resource.June</th>
+                            <th style="color:black !important">@Resources.Resource.July</th>
+                            <th style="color:black !important">@Resources.Resource.August</th>
+                            <th style="color:black !important">@Resources.Resource.September</th>
+                            <th style="color:black !important">@Resources.Resource.October</th>
+                            <th style="color:black !important">@Resources.Resource.November</th>
+                            <th style="color:black !important">@Resources.Resource.December</th>
+                            <th style="color:black !important">@Resources.Resource.NetTotal</th>
+                            <th style="color:black !important">@Resources.Resource.OpeningBalance</th>
+                            <th style="color:black !important">@Resources.Resource.January</th>
+                            <th style="color:black !important">@Resources.Resource.February</th>
+                            <th style="color:black !important">@Resources.Resource.March</th>
+                            <th style="color:black !important">@Resources.Resource.April</th>
+                            <th style="color:black !important">@Resources.Resource.May</th>
+                            <th style="color:black !important">@Resources.Resource.June</th>
+                            <th style="color:black !important">@Resources.Resource.July</th>
+                            <th style="color:black !important">@Resources.Resource.August</th>
+                            <th style="color:black !important">@Resources.Resource.September</th>
+                            <th style="color:black !important">@Resources.Resource.October</th>
+                            <th style="color:black !important">@Resources.Resource.November</th>
+                            <th style="color:black !important">@Resources.Resource.December</th>
+                            <th style="color:black !important">@Resources.Resource.NetTotal</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+    $(document).ready(function () {
+
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
+        $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.DetailedYearlyTrial    ',
+                            ScreenUrl: "/Report/TrialBalanceYearly",
+                            ScreenType: 1
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+
+
+        });
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/Report/ReportDash";
+        });
+        $(document).on('click', '#PrintPDF', function () {
+            if ($("#AccountLevelID").val() == '' || $("#AccountLevelID").val() == "0") {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseSelectLevel</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+
+            else {
+
+                var AccountLevelDropVMID = $("#AccountLevelID").val();
+                var ShowZeroBalance = $("#ShowZeroBalance:checked").val();
+                var CostCenterNumber = $("#CostCenterNumber").val();
+                var ByCostCenter = $("#ByCostCenter:checked").val();
+                var CostSearchType = $("#CostSearchType").val();
+                var Partofthenumber = $("#Partofthenumber:checked").val();
+
+
+
+                if (ShowZeroBalance) {
+                    ShowZeroBalance = 1
+                }
+                else {
+                    ShowZeroBalance = 0
+                }
+
+                if (ByCostCenter) {
+                    ByCostCenter = 1
+
+                }
+                else {
+                    ByCostCenter = 0
+
+                }
+
+                if (Partofthenumber) {
+                    Partofthenumber = 1
+
+                }
+                else {
+                    Partofthenumber = 0
+
+                }
+
+
+                if (AccountLevelDropVMID == '' || AccountLevelDropVMID == null) {
+                    AccountLevelDropVMID = "0";
+                }
+
+                if (CostCenterNumber == '' || CostCenterNumber == null) {
+                    CostCenterNumber = "0";
+                }
+
+                if (CostSearchType == '' || CostSearchType == null) {
+                    CostSearchType = "0";
+                }
+
+
+
+                window.open('/PDFReport/GetTrialBalanceYearlyPDF/' + AccountLevelDropVMID + "/" + ShowZeroBalance + "/" + CostCenterNumber + "/" + ByCostCenter + "/" + CostSearchType + "/" + Partofthenumber + "/0", '_blank');
+
+            }      
+
+    });
+        $(document).on('click', '#reload', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            tdataTableTransActionRef.ajax.reload();
+            dialog.modal('hide');
+        });
+        var tdataTableTransActionRef = $("#tdataTableTransAction").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "columnDefs": [
+                { "width": "3px", "targets": 0, "className": "dt-center" },
+                { "width": "70px", "targets": 1, "className": "dt-center" },
+                { "targets": 2, "className": "dt-center" },
+                { "width": "70px", "targets": 3, "className": "dt-center" },
+                { "width": "100px", "targets": 4, "className": "dt-center" },
+                { "width": "100px", "targets": 5, "className": "dt-center" },
+                { "width": "100px", "targets": 6, "className": "dt-center" },
+                { "width": "100px", "targets": 7, "className": "dt-center" },
+                { "width": "100px", "targets": 8, "className": "dt-center" },
+                { "width": "100px", "targets": 9, "className": "dt-center" },
+                { "width": "100px", "targets": 10, "className": "dt-center" },
+                { "width": "100px", "targets": 11, "className": "dt-center" },
+                { "width": "100px", "targets": 12, "className": "dt-center" },
+                { "width": "100px", "targets": 13, "className": "dt-center" },
+                { "width": "100px", "targets": 14, "className": "dt-center" },
+                { "width": "100px", "targets": 15, "className": "dt-center" },
+                { "width": "100px", "targets": 16, "className": "dt-center" },
+                {
+                    "targets": [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+                    "visible": false
+                }
+
+            ],
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/Report/GetTrialBalanceYearly",
+                "data": function (d) {
+                    d.AccountLevelDropVMID = $("#AccountLevelID").val();
+                    d.ShowZeroBalance = $("#ShowZeroBalance:checked").val();
+                    d.CostCenterNumber = $("#CostCenterNumber").val();
+                    d.ByCostCenter = $("#ByCostCenter:checked").val();
+                    d.CostSearchType = $("#CostSearchType").val();
+                    d.Partofthenumber = $("#Partofthenumber:checked").val();
+                },
+                dataSrc: ""
+            },
+
+
+
+            columns: [
+                {
+                    data: "MainAccount"
+
+                },
+                {
+
+                    data: "AccountNumber",
+                    render: function (data, type, r) {
+                        if (r.IsMainAccount == 1) {
+                            return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                        }
+                        else {
+                            return "<a   class='text-primary' target='_blank'  href='/Report/AccountStatementTrial/" + data + "/" + r.TempCostID + "/" + r.TempCostType + " '><strong>" + data + "</strong></a>";
+                            //return "<a   class='text-primary' target='_blank'  href='/Report/AccountStatementTrial/" + data + " '><strong>" + data + "</strong></a>";
+                        }
+
+                    }
+                },
+                {
+                    data: "Name",
+                    render: function (data, type, r) {
+                        if (r.IsMainAccount == 1) {
+                            return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                        }
+                        else {
+
+                            return data;
+                        }
+                    }
+                },
+                {
+                    data: "OpenBalance",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'><strong>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</strong></i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'><strong>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</strong></i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "January",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency))+ "</strong></i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "February",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "March",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency))+ "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "April",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "May",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "June",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "July",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "August",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "September",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency))+ "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "October",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "November",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "December",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+                {
+                    data: "NetTot",
+                    render: function (data, type, r) {
+                        if (data != 0) {
+                            if (r.IsMainAccount == 1) {
+                                return "<i class='text-danger'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+                            }
+                            else {
+                                if (r.NetTot < 0) {
+                                    return "<i style='color:red'>" + (formatMoney(data, TheDecimalPointForTheLocalCurrency)) + "</i>";
+
+                                }
+                                else {
+                                    return (formatMoney(data, TheDecimalPointForTheLocalCurrency));
+                                }
+
+
+                            }
+                        }
+                        else {
+                            return '';
+                        }
+
+                    }
+
+                },
+
+
+                {
+                    data: "nOpenBalance",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nJanuary",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nFebruary",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nMarch",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nApril",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nMay",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nJune",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nJuly",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nAugust",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nSeptember",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nOctober",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nNovember",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nDecember",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+                ,
+                {
+                    data: "nNetTot",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+
+
+            ],
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[, Rs]|(\.\d{2})/g, "") * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                },
+                    total3 = api
+                        .column(17)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+                    total4 = api
+                        .column(18)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total5 = api
+                        .column(19)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total6 = api
+                        .column(20)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total7 = api
+                        .column(21)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total8 = api
+                        .column(22)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total9 = api
+                        .column(23)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total10 = api
+                        .column(24)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total11 = api
+                        .column(25)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total12 = api
+                        .column(26)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total13 = api
+                        .column(27)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total14 = api
+                        .column(28)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total15 = api
+                        .column(29)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total16 = api
+                        .column(30)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+                $(api.column(0).footer()).html('');
+                $(api.column(1).footer()).html('');
+                $(api.column(2).footer()).html('');
+                $(api.column(3).footer()).html(formatMoney(total3, TheDecimalPointForTheLocalCurrency));
+                $(api.column(4).footer()).html(formatMoney(total4, TheDecimalPointForTheLocalCurrency));
+                $(api.column(5).footer()).html(formatMoney(total5, TheDecimalPointForTheLocalCurrency));
+                $(api.column(6).footer()).html(formatMoney(total6, TheDecimalPointForTheLocalCurrency));
+                $(api.column(7).footer()).html(formatMoney(total7, TheDecimalPointForTheLocalCurrency));
+                $(api.column(8).footer()).html(formatMoney(total8, TheDecimalPointForTheLocalCurrency));
+                $(api.column(9).footer()).html(formatMoney(total9, TheDecimalPointForTheLocalCurrency));
+                $(api.column(10).footer()).html(formatMoney(total10, TheDecimalPointForTheLocalCurrency));
+                $(api.column(11).footer()).html(formatMoney(total11, TheDecimalPointForTheLocalCurrency));
+                $(api.column(12).footer()).html(formatMoney(total12, TheDecimalPointForTheLocalCurrency));
+                $(api.column(13).footer()).html(formatMoney(total13, TheDecimalPointForTheLocalCurrency));
+                $(api.column(14).footer()).html(formatMoney(total14, TheDecimalPointForTheLocalCurrency));
+                $(api.column(15).footer()).html(formatMoney(total15, TheDecimalPointForTheLocalCurrency));
+                $(api.column(16).footer()).html(formatMoney(total16, TheDecimalPointForTheLocalCurrency));
+            }
+
+        });
+        $('#tdataTableAccount').on('click', '.js-delete', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).removeData('bs.modal');
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#tdataTableAccount').on('click', '.js-modify', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#tdataTableAccount').on('click', '.js-reason', function (e) {
+            var d = e.target.getAttribute("data-content");
+            bootbox.alert(d);
+        });
+        $('#js-addnew').on('click', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#tdataTableAccount').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+            console.log('modal-containe');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        $('#BtnCostCenter').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/SearchFromCostCenter';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            });
+
+        });
+        $('#BtnClearCostCenter').on('click', function () {
+            document.getElementById("CostCenterNumber").value = '';
+            document.getElementById("CostCenterName").value = '';
+        });
+    });
+
+
+</script>
+
+}
+
+
+

@@ -1,0 +1,383 @@
+﻿@model Acc.ViewModels.St_ItemCardHVM
+@{
+    ViewBag.Title = @Resources.Resource.ItemCard;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    table.dataTable th.dt-center {
+        font-size: 8pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 8pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after {
+        display: none !important;
+    }
+</style>
+<script>
+    function GetSupplierAccountNo(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SupplierAccountNumber").value = data.AccountNumber;
+            document.getElementById("SupplierAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SupplierAccountNumber").value = '';
+            document.getElementById("SupplierAccountName").value = '';
+        }
+    }
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ItemCard</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.Label(Resources.Resource.ItemCode)
+                <div class="form-group ">
+                    @Html.TextBoxFor(m => m.ItemCode, new { @id = "ItemCode", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-6">
+                @Html.Label(Resources.Resource.ItemName)
+                <div class="form-group">
+                    @Html.TextBoxFor(m => m.ItemName, new { @id = "ItemName", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(@Resources.Resource.Group)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.GroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "ArabicName"), Resources.Resource.ItemGroups, new { @id = "GroupCode", @class = "form-control input-sml" })
+
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.GroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "EnglishName"), Resources.Resource.ItemGroups, new { @id = "GroupCode", @class = "form-control input-sml" })
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.ItemType)
+                    @Html.DropDownListFor(m => m.ItemTypeNo, new List<SelectListItem>
+                        {
+                        new SelectListItem{ Text=Resources.Resource.ItemType, Value = "0",Selected=true },
+                        new SelectListItem{ Text=Resources.Resource.ForeignImport, Value = "1",Selected=false },
+                        new SelectListItem{ Text=Resources.Resource. LocalImport, Value = "2",Selected=false },
+                        new SelectListItem{ Text=Resources.Resource. Manufacturing, Value = "3",Selected=false },
+                        new SelectListItem{ Text=Resources.Resource. Investment, Value = "4",Selected=false }
+                    }, new { @id = "ItemTypeNo", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ItemCaseInt)
+                    @Html.DropDownListFor(m => m.ItemCaseInt, new List<SelectListItem>
+                        {
+                        new SelectListItem{ Text=Resources.Resource.ItemCase, Value = "0",Selected=true },
+                        new SelectListItem{ Text=Resources.Resource.Active, Value = "1",Selected=false },
+                        new SelectListItem{ Text=Resources.Resource. Stopped, Value = "2",Selected=false }
+                    }, new { @id = "ItemCaseInt", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.SupplierAccountNo)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.SupplierAccountNumber, new { @id = "SupplierAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSupplier">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.SupplierAccountNumber)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.SupplierAccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.SupplierAccountName, new { @id = "SupplierAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSupplier">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <a class="btn btn btn-anim btnSearch" id="btnSearch"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+            <a class="btn btn-primary btn-anim" id="btnSave"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            <button type="button" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;" width="100%">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.ItemCode</th>
+                        <th>@Resources.Resource.ItemName</th>
+                        <th>@Resources.Resource.SupplierAccountName</th>
+                        <th>@Resources.Resource.GroupName</th>
+                        <th>@Resources.Resource.SalePrice</th>
+                        <th>@Resources.Resource.ItemType</th>
+                        <th>@Resources.Resource.ItemCase</th>
+                        <th>@Resources.Resource.UserName</th>
+                        <th>@Resources.Resource.Update</th>
+                        <th>@Resources.Resource.Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        if (TheDecimalPointForTheLocalCurrency == '' || TheDecimalPointForTheLocalCurrency == null) {
+            TheDecimalPointForTheLocalCurrency = 3;
+        }
+        function formatMoneyLocalCurrencyFraction(number, decPlaces, decSep, thouSep) {
+            decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? TheDecimalPointForTheLocalCurrency : decPlaces,
+                decSep = typeof decSep === "undefined" ? "." : decSep;
+            thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+            var sign = number < 0 ? "-" : "";
+            var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+            var j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return sign +
+                (j ? i.substr(0, j) + thouSep : "") +
+                i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+                (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+        }
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/St_CompanySettingH/Index";
+        });
+        $(document).on('click', '#btnSave', function () {
+            window.location = "/St_ItemCardH/Add";
+        });
+        $(document).on('click', '#btnSearch', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            $('#tdataTable').DataTable().clear().draw();
+            $('#tdataTable').DataTable().ajax.reload();
+            dialog.modal('hide');
+        });
+        $('#BtnItemCode').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchSt_ItemCardH/SearchItemCode';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearItemCode').on('click', function () {
+            document.getElementById("ItemCode").value = '';
+            document.getElementById("ItemName").value = '';
+        });
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $($.fn.dataTable.tables(true)).DataTable()
+                .columns.adjust();
+        });
+        $('#BtnSupplier').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchClientAccount/SearchSupplierAccountNo';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearSupplier').on('click', function () {
+            document.getElementById("SupplierAccountNumber").value = '';
+            document.getElementById("SupplierAccountName").value = '';
+        });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "paging": false,
+            "ordering": true,
+            "order": [[0, "asc"]],
+            "scrollCollapse": true,
+            "fixedColumns": true,
+            "columnDefs": [
+                { "width": "10%", "targets": 0, "className": "dt-center" },
+                { "width": "20%", "targets": 1, "className": "dt-center" },
+                { "width": "20%", "targets": 2, "className": "dt-center" },
+                { "width": "8%", "targets": 3, "className": "dt-center" },
+                { "width": "8%", "targets": 4, "className": "dt-center" },
+                { "width": "8%", "targets": 5, "className": "dt-center" },
+                { "width": "8%", "targets": 6, "className": "dt-center" },
+                { "width": "8%", "targets": 7, "className": "dt-center" },
+                { "width": "5%", "targets": 8, "className": "dt-center", "orderable": false },
+                { "width": "5%", "targets": 9, "className": "dt-center", "orderable": false }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/St_ItemCardH/GetAllSt_ItemCardH",
+                "data": function (d) {
+                    d.ItemCode = $("#ItemCode").val();
+                    d.ItemName = $("#ItemName").val();
+                    d.GroupCode = $("#GroupCode").val();
+                    d.ItemCaseInt = $("#ItemCaseInt").val();
+                    d.ItemTypeNo = $("#ItemTypeNo").val();
+                    d.SupplierAccountNumber = $("#SupplierAccountNumber").val();
+                },
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+
+                    data: "ItemCode"
+                },
+                {
+                    data: "ItemName"
+
+                },
+                {
+                    data: "SupplierAccountName"
+
+                },
+                {
+                    data: "GroupName"
+
+                },
+                {
+                    data: "SalePrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "ItemTypeName"
+                },
+                {
+                    data: "ItemCase"
+                },
+                {
+                    data: "UserName"
+
+                },
+                {
+                    data: "ItemCode",
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-success btn-icon-anim btn-square  btn-sm' href='/St_ItemCardH/Update/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+                    }
+
+                },
+                {
+                    data: "ItemCode",
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-icon-anim btn-square btnDelete  btn-sm' href='/St_ItemCardH/Delete/" + data + " '><i class='fa fa-trash-o' style='margin-top: 4px;'></i> </a>";
+                    }
+
+                }
+            ]
+
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+    });
+</script>
+}
+
+

@@ -1,0 +1,788 @@
+﻿@model Acc.ViewModels.AccountLevelRepVM
+@{
+    ViewBag.Title = @Resources.Resource.Profitlossreport;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("AccNo").value = data.AccountNumber;
+            document.getElementById("AccName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("AccNo").value = '';
+            document.getElementById("AccName").value = '';
+        }
+
+    }
+       var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#AccNo").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("AccNo").value = ui.item.value;
+                document.getElementById("AccName").value = ui.item.label;
+            }
+        });
+    });
+
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Profitlossreport</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FromDate)
+                    @Html.TextBoxFor(model => model.FromDate, new { @id = "FromDate", @class = "form-control input-sml", @Value = Model.FromDate.ToString("dd/MM/yyyy") })
+                    @Html.ValidationMessageFor(m => m.FromDate)
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                    @Html.ValidationMessageFor(m => m.ToDate)
+                </div>
+            </div>
+            <div class="col-lg-3">
+                @Html.Label(@Resources.Resource.AccountNumber + "/" + @Resources.Resource.GOODSSTART)
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.AccNo, new { @id = "AccNo", @class = "form-control  input-sm" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccNo">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                @Html.Label(@Resources.Resource.AccountName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.AccName, new { @id = "AccName", @class = "form-control  input-sm", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccNo">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(@Resources.Resource.GOODSSTART)
+                    @Html.TextBoxFor(m => m.GoodsFirst, new { @id = "GoodsFirst", @class = "form-control input-sml", @type = "number", @min = "0" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(@Resources.Resource.GOODSEND)
+                    @Html.TextBoxFor(m => m.GoodsEnd, new { @id = "GoodsEnd", @class = "form-control  input-sm", @type = "number", @min = "0" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AccountLevelDropVMID)<span style="color:red">*</span>
+                    @Html.DropDownListFor(m => m.AccountLevelDropVMID, new SelectList(Model.AccountLevelDropVM, "AccountLevel", "LevelName"), Resources.Resource.Level, new { @id = "AccountLevelID", @class = "form-control input-sml" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn  btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            @if (User.IsInRole("PrintRepProfitlossPrintReport") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="submit" class="btn btn-anim btnFav" id="AddToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:30px">
+            <div class="col-lg-4">
+                <div class="panel card-view">
+                    <div class="panel-heading" style="background-color: #34495E">
+                        <div class="pull-left">
+                            <h6 class="panel-title txt-light">@Resources.Resource.IncomeStatement </h6>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item " style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i>  @Resources.Resource.Saless
+                                <span class="@Resources.Resource.PullDir small">
+                                    <em id="SALES">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i> @Resources.Resource.Purchases
+                                <span class="@Resources.Resource.PullDir    small">
+                                    <em id="PURCHASES">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i> @Resources.Resource.GOODSSTART
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em id="GOODSSTART">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i> @Resources.Resource.GOODSEND
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em id="GOODSEND">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw text-danger"></i><i class="text-danger">@Resources.Resource.SALESCOST</i>
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em class="text-danger" id="SALESCOST">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item   text-danger" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw  text-danger"></i><i class=" text-danger"> @Resources.Resource.SALESEXPENSES</i>
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em class=" text-danger" id="SALESEXPENSES">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item   text-danger" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw  text-danger"></i><i class=" text-danger"> @Resources.Resource.GrossProfit</i>
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em class=" text-danger" id="GrossProfit">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item " style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i> @Resources.Resource.OTHEREARNING
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em id="OTHEREARNING">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i> @Resources.Resource.ADMINISTRATIONEXPENSES
+                                <span class="@Resources.Resource.PullDir    small">
+                                    <em id="ADMINISTRATIONEXPENSES">0</em>
+                                </span>
+                            </a>
+                            <a href="#" class="list-group-item" style="font-weight:bold">
+                                <i class="fa fa-bookmark-o fa-fw"></i> @Resources.Resource.FINANCIALEXPENSES
+                                <span class="@Resources.Resource.PullDir   small">
+                                    <em id="FINANCIALEXPENSES">0</em>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="panel-footer text-danger">
+                        <a href="#" class="list-group-item text-danger" style="font-weight:bold">
+                            <i class="fa fa-bookmark-o fa-fw text-danger"></i> <i class="text-danger">@Resources.Resource.NetProfitLoss</i>
+                            <span class="@Resources.Resource.PullDir   small">
+                                <em class="text-danger" id="NetTotal">0</em>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="panel card-view">
+                    <div class="panel-heading" style="background-color: #34495E">
+                        <div class="pull-left">
+                            <h6 class="panel-title txt-light">
+                                @Resources.Resource.BalanceSheet
+                            </h6>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <table id="tdataTableBalanceSheet" class="table table-hover table-bordered mb-0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>@Resources.Resource.AccountName</th>
+                                        <th>@Resources.Resource.NetTotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+
+    $(document).ready(function () {
+
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+            var End = 0;
+            var ProfitLostNetTotal = 0;
+        GetProfitLosse();
+
+        $(document).on('click', '#AddToFav', function () {
+
+				bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+								closeButton: false
+							});
+
+							var dataToSave = {
+
+								ScreenName: '@Resources.Resource.Profitlossreport',
+                                ScreenUrl: "/Report/Profitlossreport",
+								ScreenType: 1
+
+							};
+
+							$.ajax({
+								type: "POST",
+								url: "/FavScreen/AddToFave",
+								data: JSON.stringify(dataToSave),
+								contentType: 'application/json',
+								success: function (data) {
+
+									dialog.modal('hide');
+									if (data.Code == 0) {
+										toastr.error(data.Msg);
+									}
+									else if (data.Code == 1) {
+										toastr.success(data.Msg);
+									}
+
+								},
+								error: function (data) {
+									dialog.modal('hide');
+									toastr.error(data);
+								}
+
+							});
+						}
+					}
+				});
+
+
+        });
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+
+       $(document).on('click', '#CloseForm', function () {
+                window.location = "/Report/ReportDash";
+            });
+        $("#FromDate").blur(function () {
+            var dDate = document.getElementById("FromDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToDate").blur(function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+
+            $("#FromDate").mask("99/99/9999");
+            $("#ToDate").mask("99/99/9999");
+            $("#FromDate").focus().select();
+            $("#FromDate").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#ToDate").focus().select();
+            });
+            $("#ToDate").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#AccNo").focus().select();
+            });
+  
+        $("#GoodsFirst").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#GoodsEnd").focus().select();
+            });
+        $("#GoodsEnd").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#FromDate").focus().select();
+            });
+        $("#AccNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#GoodsFirst").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/SearchFromAccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+
+            $(document).on('click', '#reload', function () {
+
+            var dDate = document.getElementById("FromDate").value;
+            var dToDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dToDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                GetProfitLosse();
+                dialog.modal('hide');
+
+            }
+        });
+
+             function GetProfitLosse() {
+                  var dataToSave = {
+                    FromDate : $("#FromDate").val(),
+                    ToDate: $("#ToDate").val(),
+                    GoodsFirst: $("#GoodsFirst").val(),
+                    GoodsEnd: $("#GoodsEnd").val(),
+                    AccNo: $("#AccNo").val()
+					};
+                $.ajax({
+                  type: "POST",
+					 url: "/Report/GetProfitlossreport",
+					data: JSON.stringify(dataToSave),
+					contentType: 'application/json',
+					success: function (Data) {
+
+                        $("#SALES").html('0');
+                        $("#PURCHASES").html('0');
+                        $("#GOODSSTART").html('0');
+                        $("#GOODSEND").html('0');
+                        $("#SALESCOST").html('0');
+                        $("#SALESEXPENSES").html('0');
+                        $("#GrossProfit").html('0');
+                        $("#OTHEREARNING").html('0');
+                        $("#ADMINISTRATIONEXPENSES").html('0');
+                        $("#FINANCIALEXPENSES").html('0');
+                        $("#NetTotal").html('0');
+                        document.getElementById("GoodsFirst").value = '0';
+                        document.getElementById("GoodsEnd").value = '0';
+
+
+
+
+                        $("#SALES").html(formatMoney(Data.SALES, TheDecimalPointForTheLocalCurrency));
+                        $("#PURCHASES").html(formatMoney(Data.PURCHASES, TheDecimalPointForTheLocalCurrency));
+                        $("#GOODSSTART").html(formatMoney(Data.GOODSSTART, TheDecimalPointForTheLocalCurrency));
+                        $("#GOODSEND").html(formatMoney(Data.GOODSEND, TheDecimalPointForTheLocalCurrency));
+
+
+
+                         document.getElementById("GoodsFirst").value = Data.GOODSSTART  ;
+                        document.getElementById("GoodsEnd").value = Data.GOODSEND  ;
+
+                        $("#SALESCOST").html(formatMoney(Data.SALESCOST, TheDecimalPointForTheLocalCurrency));
+                        $("#SALESEXPENSES").html(formatMoney(Data.SALESEXPENSES, TheDecimalPointForTheLocalCurrency));
+                        $("#GrossProfit").html(formatMoney(Data.GrossProfit, TheDecimalPointForTheLocalCurrency));
+                        $("#OTHEREARNING").html(formatMoney(Data.OTHEREARNING, TheDecimalPointForTheLocalCurrency));
+
+                        $("#ADMINISTRATIONEXPENSES").html(formatMoney(Data.ADMINISTRATIONEXPENSES, TheDecimalPointForTheLocalCurrency));
+
+                        $("#FINANCIALEXPENSES").html(formatMoney(Data.FINANCIALEXPENSES, TheDecimalPointForTheLocalCurrency));
+                        $("#GrossProfit").html(formatMoney(Data.GrossProfit, TheDecimalPointForTheLocalCurrency));
+                        $("#NetTotal").html(formatMoney(Data.NetTotal, TheDecimalPointForTheLocalCurrency));
+
+
+                        End = Data.GOODSEND;
+                        ProfitLostNetTotal =  Data.NetTotal;
+
+                         tdataTableBalanceSheetRef.ajax.reload();
+
+                    },//success
+                    error: function (xhr, AJAXOptions, thrownError) {
+
+                        alert('Failed to retrieve .');
+                    }//error
+                });
+
+            };
+
+            //-------For PopUp-----------//
+         var tdataTableBalanceSheetRef = $("#tdataTableBalanceSheet").DataTable({
+                          "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                          buttons: [
+                                     ],
+                               "columnDefs": [
+                                   { "targets":0, "className": "dt-center" },
+                                   { "width": "150px", "targets": 1, "className": "dt-center" }
+
+
+                              ],
+                               "decimal": ",",
+                               "thousands": ".",
+                                 "scrollY":  "400px",
+                               "scrollX": true,
+                               searching: false,
+                               paging: false,
+                              "ordering": false,
+                              fixedHeader: {
+                              header: true,
+                              footer: true
+                             },
+                        ajax: {
+                            "type": "POST",
+                            url: "/Report/GetBalanceSheet",
+                            "data": function (d) {
+
+
+                                d.FromDate = $("#FromDate").val();
+                                d.ToDate = $("#ToDate").val();
+                                d.AccountLevelDropVMID = $("#AccountLevelID").val();
+                                d.AccNo = $("#AccNo").val();
+                                d.ShowZeroBalance = $("#ShowZeroBalance:checked").val();
+                                d.Detail = $("#Detail:checked").val();
+                                d.CostCenterNumber = $("#CostCenterNumber").val();
+                                d.ByCostCenter = $("#ByCostCenter:checked").val();
+                                d.CostSearchType = $("#CostSearchType").val();
+                                d.Partofthenumber = $("#Partofthenumber:checked").val();
+
+
+                                d.ProfitLostNetTotal =ProfitLostNetTotal;
+                                d.GoodsEnd = End;
+                            },
+                           dataSrc: ""
+                        },
+
+
+
+                        columns: [
+
+                                  {
+
+                                   data: "Name",
+                                        render: function (data, type, r) {
+                                            if (r.AccountNumber == "*") {
+                                                 return "<i class='text-primary'><strong>" + data + "</strong></i>";
+                                            }
+                                            else   if (r.AccountNumber == "**") {
+                                                 return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                                            }
+                                            else {
+                                                return data;
+                                              }
+
+                                          }
+                                    } ,
+
+                                   {
+                                        data: "AccountNumber",
+                                          render: function (data, type, r) {
+                                              if (data == "*") {
+                                                  return '';
+
+
+                                              }
+                                              else {
+                                                  return (formatMoney(data, TheDecimalPointForTheLocalCurrency))                                              }
+
+						                }
+
+                                  }
+
+
+
+
+                  ]
+
+
+              });
+
+
+            $(document).on('click', '.js-Pop', function (e) {
+                //$('#modal-container').removeData('bs.modal');
+                e.preventDefault();
+                //$(this).attr('data-target', '#modal-container');
+                //$(this).attr('data-toggle', 'modal');
+
+            });
+
+            $('#modal-container').on('hidden.bs.modal', function () {
+                $(this).removeData('bs.modal');
+
+            });
+
+
+            $('#CancelModal').on('click', function () {
+
+                return false;
+            });
+            $('#BtnAccNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+                var url = '/MultiUse/SearchAcc/SearchFromAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+            });
+            $('#BtnClearAccNo').on('click', function () {
+                document.getElementById("AccNo").value = '';
+                document.getElementById("AccName").value = '';
+            });
+            $("#AccNo").blur(function () {
+            var AccountNumber = document.getElementById("AccNo").value;
+            if (AccountNumber == '') {
+                document.getElementById("AccName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccNo").value = '';
+                            document.getElementById("AccName").value = '';
+                            $("#AccNo").focus();
+                        }
+                        else {
+                            document.getElementById("AccName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+
+        });
+</script>
+}
+
+
+
+
+

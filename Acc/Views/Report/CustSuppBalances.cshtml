@@ -1,0 +1,264 @@
+﻿@model Acc.ViewModels.ClientSuplierFilterVM
+@{
+    ViewBag.Title = @Resources.Resource.BalancesCustSup;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    #GridView_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #GridView_DXFilterRow {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvDataRow_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+
+    .dxgvFooter_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+</style>
+<script>
+    $(document).on('click', '#reload', function () {
+        GridView.Refresh();
+    });
+    function OnBeginCallback(s, e) {
+        e.customArgs['ToDate'] = $("#ToDate").val();
+        e.customArgs['ClientSup'] = $("#ClientSup").val();
+    }
+
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.BalancesCustSup</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control  input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.Client + " / " + @Resources.Resource.Supplier)
+
+                    @Html.DropDownListFor(m => m.ClientSup, new List<SelectListItem>
+                          {
+
+                             new SelectListItem{ Text=Resources.Resource.Client, Value = "1",Selected=true },
+                              new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false }
+
+                          }, new { @id = "ClientSup", @class = "form-control  input-sml", @style = "width:100%;display:inline" })
+
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn  btn-anim" id="reload" style="background-color:#D16587"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            <button type="submit" class="btn  btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top : 10px">
+
+            @using (Html.BeginForm())
+            {
+                @Html.Action("CustSuppGridViewPartial", Model)
+            }
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+    <script>
+        $(document).ready(function () {
+
+         function validatedate(dateString) {
+                var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+                if (dateString.match(dateformat)) {
+                    var operator = dateString.split('/');
+                    var datepart = [];
+                    if (operator.length > 1) {
+                        datepart = dateString.split('/');
+                    }
+                    var month = parseInt(datepart[1]);
+                    var day = parseInt(datepart[0]);
+                    var year = parseInt(datepart[2]);
+                    var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    if (month == 1 || month > 2) {
+                        if (day > ListofDays[month - 1]) {
+                            return false;
+                        }
+                    } else if (month == 2) {
+                        var leapYear = false;
+                        if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                            leapYear = true;
+                        }
+                        if ((leapYear == false) && (day >= 29)) {
+                            return false;
+                        } else
+                            if ((leapYear == true) && (day > 29)) {
+                                return false;
+                            }
+                    }
+                }
+                else {
+                    return false;
+                }
+                return true;
+            }
+
+         $(document).on('click', '#SaveToFav', function () {
+
+				bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+								closeButton: false
+							});
+
+							var dataToSave = {
+
+								ScreenName: '@Resources.Resource.BalancesCustSup',
+                                ScreenUrl: "/Report/CustSuppBalances",
+								ScreenType: 1
+
+							};
+
+							$.ajax({
+								type: "POST",
+								url: "/FavScreen/AddToFave",
+								data: JSON.stringify(dataToSave),
+								contentType: 'application/json',
+								success: function (data) {
+
+									dialog.modal('hide');
+									if (data.Code == 0) {
+										toastr.error(data.Msg);
+									}
+									else if (data.Code == 1) {
+										toastr.success(data.Msg);
+									}
+
+								},
+								error: function (data) {
+									dialog.modal('hide');
+									toastr.error(data);
+								}
+
+							});
+						}
+					}
+				});
+
+
+		});
+          $("#ToDate").blur(function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+            $(document).on('click', '#CloseForm', function () {
+                window.location = "/Report/ReportDash";
+            });
+            $("#ToDate").mask("99/99/9999");
+            $("#ToDate").focus().select();
+
+          $(document).on('click', '#reload', function () {
+            var dToDate = document.getElementById("ToDate").value;
+             if (!validatedate(dToDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                $('#tdataTable').DataTable().clear().draw();
+                $('#tdataTable').DataTable().ajax.reload();
+                dialog.modal('hide');
+            }
+        });
+
+
+         });
+    </script>
+
+}
+
+
+

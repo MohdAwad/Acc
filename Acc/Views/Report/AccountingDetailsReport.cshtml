@@ -1,0 +1,633 @@
+﻿@model Acc.ViewModels.AccountingDetailsReportVM
+@{
+    ViewBag.Title = @Resources.Resource.AccountingDetailsReport;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+   
+
+</style>
+
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.AccountingDetailsReport</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <div class="panel card-view">
+                        <div class="panel-heading" style="background-color: #34495E">
+                            <div class="pull-left">
+                                <h6 class="panel-title txt-light" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true">@Resources.Resource.TransactionType</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse in" aria-expanded="true" style="height: auto;">
+                            <div class="panel-body">
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <div class="col-lg-4">
+                                            <label style="font-size :smaller">
+                                                @Html.CheckBoxFor(m => m.AllTransaction, new { @id = "AllTransaction" }) @Resources.Resource.AllTransaction
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label style="font-size :smaller">
+                                                @Html.CheckBoxFor(m => m.AllExportTransaction, new { @id = "AllExportTransaction" }) @Resources.Resource.AllExportTransaction
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label style="font-size :smaller">
+                                                @Html.CheckBoxFor(m => m.AllUnExportTransaction, new { @id = "AllUnExportTransaction" }) @Resources.Resource.AllUnExportTransaction
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CompanyTransactionKindNo)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.CompanyTransactionKindNo, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), Resources.Resource.CompnyTransactionKind, new { @id = "CompanyTransactionKindNo", @class = "form-control  input-sm", @style = "max-width:480px" })
+
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.CompanyTransactionKindNo, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), Resources.Resource.CompnyTransactionKind, new { @id = "CompanyTransactionKindNo", @class = "form-control  input-sm", @style = "max-width:480px" })
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.DateApproval, new { @id = "DateApproval" }) @Resources.Resource.DateApproval / @Html.LabelFor(m => m.FromDate)
+                    @Html.TextBoxFor(model => model.FromDate, new { @id = "FromDate", @class = "form-control  input-sm", @Value = Model.FromDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control  input-sm", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.VoucherApproval, new { @id = "VoucherApproval" }) @Resources.Resource.VoucherApproval / @Html.LabelFor(m => m.FromVoucherNumber)
+                    @Html.TextBoxFor(m => m.FromVoucherNumber, new { @id = "FromVoucherNumber", @class = "form-control  input-sm" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToVoucherNumber)
+                    @Html.TextBoxFor(m => m.ToVoucherNumber, new { @id = "ToVoucherNumber", @class = "form-control  input-sm" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.NoteApproval, new { @id = "NoteApproval" }) @Resources.Resource.NoteApproval
+                    @Html.TextBoxFor(m => m.SearchNote, new { @id = "SearchNote", @class = "form-control  input-sm" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+
+            @if (User.IsInRole("PrintRepAccountingDetailsPrintReport") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+
+            }
+
+
+            <button type="submit" class="btn  btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top : 10px">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.VoucherDate</th>
+                        <th>@Resources.Resource.TransactionKind</th>
+                        <th>@Resources.Resource.ReceiptVoucherNumber</th>
+                        <th>@Resources.Resource.ReceiptAmount</th>
+                        <th>@Resources.Resource.Note</th>
+                        <th>@Resources.Resource.UserName</th>
+                        <th>@Resources.Resource.Detail</th>
+                        <th>VHI</th>
+                        <th>TransactionKindNo</th>
+                        <th>CompanyTransactionKindNo</th>
+                        <th>CompanyYear</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+
+@section Scripts {
+
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+        $(document).ready(function () {
+            
+
+           
+
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
+
+        $(document).on('click', '#PrintPDF', function () {
+
+            var FromDate = $("#FromDate").val();
+            var ToDate = $("#ToDate").val();
+            var FromVoucherNumber = $("#FromVoucherNumber").val();
+            var ToVoucherNumber = $("#ToVoucherNumber").val();
+
+            var SearchNote = $("#SearchNote").val();
+            var CompanyTransactionKindNo = $("#CompanyTransactionKindNo").val();
+
+            var AllTransaction = $("#AllTransaction:checked").val();
+            var AllExportTransaction = $("#AllExportTransaction:checked").val();
+            var AllUnExportTransaction = $("#AllUnExportTransaction:checked").val();
+            var DateApproval = $("#DateApproval:checked").val();
+            var VoucherApproval = $("#VoucherApproval:checked").val();
+            var NoteApproval = $("#NoteApproval:checked").val();
+
+            if (AllTransaction) { AllTransaction = 1 } else { AllTransaction = 0 }
+            if (AllExportTransaction) { AllExportTransaction = 1 } else { AllExportTransaction = 0 }
+            if (AllUnExportTransaction) { AllUnExportTransaction = 1 } else { AllUnExportTransaction = 0 }
+            if (DateApproval) { DateApproval = 1 } else { DateApproval = 0 }
+            if (VoucherApproval) { VoucherApproval = 1 } else { VoucherApproval = 0 }
+            if (NoteApproval) { NoteApproval = 1 } else { NoteApproval = 0 }
+
+
+
+
+            if (FromVoucherNumber == '' || FromVoucherNumber == null) {
+                FromVoucherNumber = "0";
+            }
+            if (ToVoucherNumber == '' || ToVoucherNumber == null) {
+                ToVoucherNumber = "0";
+            }
+            if (SearchNote == '' || SearchNote == null) {
+                SearchNote = "0";
+            }
+            if (CompanyTransactionKindNo == '' || CompanyTransactionKindNo == null) {
+                CompanyTransactionKindNo = "0";
+            }
+
+            var words = FromDate.split('/');
+            FromDate = words[0] + words[1] + words[2];
+            words = ToDate.split('/');
+            ToDate = words[0] + words[1] + words[2];
+
+
+
+
+
+
+            window.open('/PDFReport/GetAccountingDetailsReportPDF/' + FromDate + "/" + ToDate + "/" + FromVoucherNumber + "/" + ToVoucherNumber + "/" + SearchNote + "/" + CompanyTransactionKindNo + "/" + AllTransaction
+                + "/" + AllExportTransaction + "/" + AllUnExportTransaction + "/" + DateApproval + "/" + VoucherApproval + "/" + NoteApproval, '_blank');
+
+
+
+
+
+
+
+
+        });
+        $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.AccountingDetailsReport',
+                            ScreenUrl: "/Report/AccountingDetailsReport",
+                            ScreenType: 1
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+
+
+        });
+
+
+        $(document).on('click', '#reload', function () {
+
+                    var dDate = document.getElementById("FromDate").value;
+                    var dToDate = document.getElementById("ToDate").value;
+                    if (!validatedate(dDate)) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else if (!validatedate(dToDate)) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        $('#tdataTable').DataTable().clear().draw();
+                        $('#tdataTable').DataTable().ajax.reload();
+                        dialog.modal('hide');
+                    }
+                });
+
+        document.getElementById('AllTransaction').checked = true;
+        $('#AllTransaction').click(function () {
+            document.getElementById('AllExportTransaction').checked = false;
+            document.getElementById('AllUnExportTransaction').checked = false;
+        });
+        $('#AllExportTransaction').click(function () {
+            document.getElementById('AllTransaction').checked = false;
+            document.getElementById('AllUnExportTransaction').checked = false;
+        });
+        $('#AllUnExportTransaction').click(function () {
+            document.getElementById('AllTransaction').checked = false;
+            document.getElementById('AllExportTransaction').checked = false;
+        });
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/Report/ReportDash";
+        });
+        $("#FromDate").blur(function () {
+            var dDate = document.getElementById("FromDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToDate").blur(function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#FromDate").mask("99/99/9999");
+        $("#ToDate").mask("99/99/9999");
+        $("#FromDate").focus().select();
+        $("#FromDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToDate").focus().select();
+            }
+
+        });
+        $("#ToDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromVoucherNumber").focus().select();
+            }
+
+        });
+        $("#FromVoucherNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToVoucherNumber").focus().select();
+            }
+
+        });
+        $("#ToVoucherNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#SearchNote").focus().select();
+            }
+
+        });
+        $("#SearchNote").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromDate").focus().select();
+            }
+
+        });
+
+
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+
+            "columnDefs": [
+                { "width": "70px", "targets": 0, "className": "dt-center" },
+                { "targets": 1, "className": "dt-center" },
+                { "width": "100px", "targets": 2, "className": "dt-center" },
+                { "width": "100px", "targets": 3, "className": "dt-center" },
+                { "targets": 4, "className": "dt-center" },
+                { "targets": 5, "className": "dt-center" },
+                { "width": "40px", "targets": 6, "className": "dt-center" },
+                {
+                    "targets": [7],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [8],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [9],
+                    "visible": false,
+                    "searchable": false
+                },
+                {
+                    "targets": [10],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/Report/GetAccountingDetailsReport",
+                "data": function (d) {
+                    d.FromDate = $("#FromDate").val();
+                    d.ToDate = $("#ToDate").val();
+                    d.FromVoucherNumber = $("#FromVoucherNumber").val();
+                    d.ToVoucherNumber = $("#ToVoucherNumber").val();
+
+                    d.SearchNote = $("#SearchNote").val();
+                    d.CompanyTransactionKindNo = $("#CompanyTransactionKindNo").val();
+
+                    d.AllTransaction = $("#AllTransaction:checked").val();
+                    d.AllExportTransaction = $("#AllExportTransaction:checked").val();
+                    d.AllUnExportTransaction = $("#AllUnExportTransaction:checked").val();
+                    d.DateApproval = $("#DateApproval:checked").val();
+                    d.VoucherApproval = $("#VoucherApproval:checked").val();
+                    d.NoteApproval = $("#NoteApproval:checked").val();
+
+                },
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "VoucherDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+                },
+                {
+                    data: "CompanyTransactionKindName"
+
+                },
+                {
+                    data: "VoucherNumber"
+                },
+                {
+                    data: "Amount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Note"
+
+                },
+                {
+                    data: "UserName"
+
+                },
+                {
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-icon-anim btn-square js-Pop btnDetail btn-sm' href='/Report/ShowVoucherDetails/" + r.VoucherNumber + "/"
+                            + r.TransactionKindNo + "/" + r.CompanyTransactionKindNo + "/" + r.CompanyYear + "/" + "'><i class='fa fa-tasks' style='margin-top: 4px;'></i> </a>";
+                    }
+
+                },
+                {
+
+                    data: "VHI"
+                },
+                {
+                    data: "TransactionKindNo"
+                },
+                {
+                    data: "CompanyTransactionKindNo"
+                },
+                {
+                    data: "CompanyYear"
+                }
+            ]
+
+        });
+
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+    });
+</script>
+}
+

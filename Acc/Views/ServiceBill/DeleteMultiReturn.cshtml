@@ -1,0 +1,698 @@
+﻿@model Acc.ViewModels.HeaderServiceBillVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+
+<div style="padding-top: 20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Delete - @Resources.Resource.ReturnForMultiAccount</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.CompanyTransactionKindID)
+                    <div class="form-group">
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), new { @id = "CurrencyID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), new { @id = "CurrencyID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyNewValue)
+                        @Html.TextBoxFor(m => m.CurrencyNewValue, new { @id = "CurrencyNewValue", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BillID)
+                        @Html.TextBoxFor(m => m.BillID, new { @id = "BillID", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BillDate)
+                        @Html.TextBoxFor(model => model.BillDate, new { @id = "BillDate", @class = "form-control input-sml", @Value = Model.BillDate.ToString("dd/MM/yyyy"), data_val = "false", @readonly = "@readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountNumber)
+                        @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.AccountName, new { @id = "AccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SaleManNo)
+                        @Html.DropDownListFor(m => m.SaleManNo, new SelectList(Model.SaleMan, "SalesID", "SalesName"), Resources.Resource.SalesMan, new { @id = "SaleManNo", @class = "form-control input-sml", @disabled = "disabled" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.CreditAccountNumber)
+                        @Html.TextBoxFor(m => m.CreditAccountNumber, new { @id = "CreditAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.CreditAccountName, new { @id = "CreditAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CreditCostNumber)
+                            @Html.TextBoxFor(m => m.CreditCostNumber, new { @id = "CreditCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.CreditCostName, new { @id = "CreditCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.CheckBoxFor(m => m.NoTax, new { @id = "NoTax", @disabled = "disabled" }) @Html.Label(Resources.Resource.NoTax, new { @style = "color : red" }) / @Html.Label(Resources.Resource.TaxAccountNumber)
+                        @Html.TextBoxFor(m => m.TaxAccountNumber, new { @id = "TaxAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.TaxAccountName, new { @id = "TaxAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.TaxCostCenter)
+                            @Html.TextBoxFor(m => m.TaxCostNumber, new { @id = "TaxCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.TaxCostName, new { @id = "TaxCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Note)
+                        @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Note)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-12" style="padding-top:20px;">
+                <div class="col-lg-12">
+                    <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                        <thead>
+                            @if (Model.WorkWithCostCenter)
+                            {
+                                <tr>
+                                    <th>@Resources.Resource.ServiceNo</th>
+                                    <th>@Resources.Resource.ServiceName</th>
+                                    <th>@Resources.Resource.AccountNumber</th>
+                                    <th>@Resources.Resource.AccountName</th>
+                                    <th>@Resources.Resource.CostCenter</th>
+                                    <th>@Resources.Resource.CostCenterName</th>
+                                    <th>@Resources.Resource.Qty</th>
+                                    <th>@Resources.Resource.Price</th>
+                                    <th>@Resources.Resource.ForeignPrice</th>
+                                    <th>@Resources.Resource.LocalDiscount</th>
+                                    <th>@Resources.Resource.ForeignDiscount</th>
+                                    <th>@Resources.Resource.TotalLocal</th>
+                                    <th>@Resources.Resource.TotalForeign</th>
+                                    <th>@Resources.Resource.Note</th>
+                                    <th>@Resources.Resource.ServiceNot</th>
+                                    <th>@Resources.Resource.Tax</th>
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr>
+                                    <th>@Resources.Resource.ServiceNo</th>
+                                    <th>@Resources.Resource.ServiceName</th>
+                                    <th>@Resources.Resource.AccountNumber</th>
+                                    <th>@Resources.Resource.AccountName</th>
+                                    <th>@Resources.Resource.Qty</th>
+                                    <th>@Resources.Resource.Price</th>
+                                    <th>@Resources.Resource.ForeignPrice</th>
+                                    <th>@Resources.Resource.LocalDiscount</th>
+                                    <th>@Resources.Resource.ForeignDiscount</th>
+                                    <th>@Resources.Resource.TotalLocal</th>
+                                    <th>@Resources.Resource.TotalForeign</th>
+                                    <th>@Resources.Resource.Note</th>
+                                    <th>@Resources.Resource.ServiceNot</th>
+                                    <th>@Resources.Resource.Tax</th>
+                                </tr>
+                            }
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-12" style="margin-top : 5px">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Discount)
+                        @Html.TextBoxFor(m => m.Discount, new { @id = "Discount", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Discount)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Total)
+                        @Html.TextBoxFor(m => m.sTotal, new { @id = "sTotal", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Total)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Tax)
+                        @Html.TextBoxFor(m => m.sTax, new { @id = "sTax", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Tax)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.NetTotal)
+                        @Html.TextBoxFor(m => m.sNetTotal, new { @id = "sNetTotal", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.NetTotal)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12" style="margin-top : 5px">
+                <div class="col-lg-2" id="Foreign1" style="display:none;">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ForeignAmount)
+                        @Html.TextBoxFor(m => m.sForeignAmount, new { @id = "sForeignAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Total)
+                    </div>
+                </div>
+                <div class="col-lg-2" id="Foreign2" style="display:none;">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ForeignAmountTax)
+                        @Html.TextBoxFor(m => m.sForeignAmountTax, new { @id = "sForeignAmountTax", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.ForeignAmountTax)
+                    </div>
+                </div>
+                <div class="col-lg-2" id="Foreign3" style="display:none;">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.NetTotalForeignAmount)
+                        @Html.TextBoxFor(m => m.sNetTotalForeignAmount, new { @id = "sNetTotalForeignAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-anim btnDelete-lg" id="Delete"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.Total, new { @id = "Total", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.Tax, new { @id = "Tax", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.NetTotal, new { @id = "NetTotal", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OrignailTaxAccountNumber, new { @id = "OrignailTaxAccountNumber", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CurrentYear, new { @id = "CurrentYear", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OrignailTaxAccountName, new { @id = "OrignailTaxAccountName", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ForeignAmount, new { @id = "ForeignAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ForeignAmountTax, new { @id = "ForeignAmountTax", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.NetTotalForeignAmount, new { @id = "NetTotalForeignAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+    $(document).ready(function () {
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        document.getElementById("Discount").value = formatMoney(document.getElementById("Discount").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sTotal").value = formatMoney(document.getElementById("Total").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sTax").value = formatMoney(document.getElementById("Tax").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sNetTotal").value = formatMoney(document.getElementById("NetTotal").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sForeignAmount").value = formatMoney(document.getElementById("ForeignAmount").value, TheDecimalPointForTheForeignCurrency);
+        document.getElementById("sNetTotalForeignAmount").value = formatMoney(document.getElementById("NetTotalForeignAmount").value, TheDecimalPointForTheForeignCurrency);
+        document.getElementById("sForeignAmountTax").value = formatMoney(document.getElementById("ForeignAmountTax").value, TheDecimalPointForTheForeignCurrency);
+        var NoTax = $("#NoTax:checked").val();
+        if (NoTax) {
+            if (WorkWithCostCenter) {
+                document.getElementById("TaxCostNumber").value = '';
+                document.getElementById("TaxCostName").value = '';
+            }
+            document.getElementById("TaxAccountNumber").value = '';
+            document.getElementById("TaxAccountName").value = '';
+        }
+        else {
+            document.getElementById("TaxAccountNumber").value = document.getElementById("OrignailTaxAccountNumber").value;
+            document.getElementById("TaxAccountName").value = document.getElementById("OrignailTaxAccountName").value;
+        }
+        var SelectedCurrency = $("#CurrencyID").val();
+        if (SelectedCurrency != null && SelectedCurrency != '') {
+            $.getJSON('@Url.Action("GetCurrencyValueById", "CurrencyValue")', { id: SelectedCurrency }, function (Data) {
+                if (Data != null) {
+                    document.getElementById("CurrencyNewValue").value = (Data).toFixed(3);
+                    if (Data == 0) {
+                        Data = 1;
+                    };
+                    if (Data == 1) {
+                        document.getElementById("CurrencyNewValue").value = (0).toFixed(3);
+                        document.getElementById("ForeignAmount").value = (0).toFixed(2);
+                        document.getElementById("sForeignAmount").value = (0).toFixed(2);
+                        document.getElementById("ForeignAmountTax").value = (0).toFixed(2);
+                        document.getElementById("sForeignAmountTax").value = (0).toFixed(2);
+                        document.getElementById("NetTotalForeignAmount").value = (0).toFixed(2);
+                        document.getElementById("sNetTotalForeignAmount").value = (0).toFixed(2);
+                        document.getElementById("Foreign1").style.display = 'none';
+                        document.getElementById("Foreign2").style.display = 'none';
+                        document.getElementById("Foreign3").style.display = 'none';
+                    }
+                    else {
+                        document.getElementById("Foreign1").style.display = 'block';
+                        document.getElementById("Foreign2").style.display = 'block';
+                        document.getElementById("Foreign3").style.display = 'block';
+                        document.getElementById("ForeignAmount").value = (document.getElementById("Total").value / Data).toFixed(2);
+                        document.getElementById("sForeignAmount").value = formatMoney((document.getElementById("Total").value / Data), TheDecimalPointForTheForeignCurrency);
+                        document.getElementById("ForeignAmountTax").value = (document.getElementById("Tax").value / Data).toFixed(2);
+                        document.getElementById("sForeignAmountTax").value = formatMoney((document.getElementById("Tax").value / Data), TheDecimalPointForTheForeignCurrency);
+                        document.getElementById("NetTotalForeignAmount").value = (document.getElementById("NetTotal").value / Data).toFixed(2);
+                        document.getElementById("sNetTotalForeignAmount").value = formatMoney((document.getElementById("NetTotal").value / Data), TheDecimalPointForTheForeignCurrency);
+                    }
+                } else {
+                    document.getElementById("Foreign1").style.display = 'none';
+                    document.getElementById("Foreign2").style.display = 'none';
+                    document.getElementById("Foreign3").style.display = 'none';
+                    document.getElementById("CurrencyNewValue").value = (0).toFixed(3);
+                    document.getElementById("ForeignAmount").value = (0).toFixed(2);
+                    document.getElementById("sForeignAmount").value = (0).toFixed(2);
+                    document.getElementById("ForeignAmountTax").value = (0).toFixed(2);
+                    document.getElementById("sForeignAmountTax").value = (0).toFixed(2);
+                    document.getElementById("NetTotalForeignAmount").value = (0).toFixed(2);
+                    document.getElementById("sNetTotalForeignAmount").value = (0).toFixed(2);
+                };
+            });
+        }
+        else {
+        }
+        $(document).on('click', '#Close', function () {
+            window.location = "/ServiceBill/Index";
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        if (WorkWithCostCenter) {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "className": "dt-center",
+                        "targets": "_all",
+                        "orderable": false,
+
+                    }],
+
+                dom: 'Bfrtip',
+                ajax: {
+                    "type": "GET",
+                    url: "/ServiceBill/GetServiceDetails/@Model.BillID/@Model.CompanyTransactionKindID/@Model.TransactionKindNo",
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "ServiceNo"
+
+                    },
+                    {
+                        data: "ServiceName"
+                    },
+                    {
+                        data: "AccountNumber"
+                    },
+                    {
+                        data: "AccountName"
+                    },
+                    {
+                        data: "CostNumber"
+                    },
+                    {
+                        data: "CostName"
+                    },
+                    {
+                        data: "Qty"
+
+                    },
+                    {
+                        data: "Price",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "ForeignPrice",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+
+                    },
+                    {
+                        data: "LocalDiscount",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "ForeignDiscount",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+                    },
+                    {
+                        data: "TotalLocal",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+                    },
+                    {
+                        data: "TotalForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+                    },
+                    {
+                        data: "Note"
+                    },
+                    {
+                        data: "ServiceNot"
+                    },
+                    {
+                        data: "Tax"
+                    }
+                ]
+
+            });
+        }
+        else {
+            var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "columnDefs": [
+                {
+                    "className": "dt-center",
+                    "targets": "_all",
+                    "orderable": false,
+
+                }],
+
+            dom: 'Bfrtip',
+            ajax: {
+                "type": "GET",
+                url: "/ServiceBill/GetServiceDetails/@Model.BillID/@Model.CompanyTransactionKindID/@Model.TransactionKindNo",
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "ServiceNo"
+
+                },
+                {
+                    data: "ServiceName"
+                },
+                {
+                    data: "AccountNumber"
+                },
+                {
+                    data: "AccountName"
+                },
+                {
+                    data: "Qty"
+
+                },
+                {
+                    data: "Price",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "ForeignPrice",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                    }
+
+                },
+                {
+                    data: "LocalDiscount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "ForeignDiscount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                    }
+                },
+                {
+                    data: "TotalLocal",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "TotalForeign",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                    }
+                },
+                {
+                    data: "Note"
+                },
+                {
+                    data: "ServiceNot"
+                },
+                {
+                    data: "Tax"
+                }
+            ]
+
+        });
+        }
+        $(document).on('click', '#Delete', function () {
+                bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                            closeButton: false
+                        });
+                        var dataToDelete = {
+                            BillID: $("#BillID").val(),
+                            CompanyYear: $("#CompanyYear").val(),
+                            CompanyTransactionKindID: $("#CompanyTransactionKindID").val(),
+                            TransactionKindNo: 20,
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/ServiceBill/DeleteServiceBill",
+                            data: JSON.stringify(dataToDelete),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    $('#modal-container').modal('hide');
+                                    toastr.success(data.Msg);
+                                    $('#modal-container').modal('hide');
+                                    window.location = "/ServiceBill/Index";
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+			});
+    });
+    </script>
+}
+
+
+
+
+
+

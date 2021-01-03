@@ -1,0 +1,89 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.WarehouseSettings;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.WarehouseSettings</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_FactoryH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Factories</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_WarehouseH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Warehouses</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_FundingAgencyH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.FundingAgencies</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_ItemCardH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.ItemCard</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_SectionsOfFactoryH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SectionOfFactories</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_CompanyTransactionKindH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.WarehouseCompanyTransactionKind</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_BankH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Banks</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_SubItemColorH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SubColors</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_BranchH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Branches</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_ItemGroupH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.ItemGroups</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_BranchAccountH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.BranchesAccounts</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_ItemUnitH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.ItemUnits</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_OtherAccountH/SaveSt_OtherAccountH" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.OtherAccounts</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_SalesManH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SalesMan</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_CarpenterH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Carpenters</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_DelegateReceivingH/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.DelegateReceiving</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

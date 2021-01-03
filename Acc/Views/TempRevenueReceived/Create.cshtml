@@ -1,0 +1,1627 @@
+﻿@model Acc.ViewModels.TempPrepaidAndRevenueReceivedVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #TempRevenueGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvBatchEditNewItem_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+    #TempRevenueGrid_col0 {
+        width: 55px;
+    }
+</style>
+<script>
+    var LastStatment = "";
+    var preventEndEditOnLostFocus = false;
+    var currentEditedValue;
+    var SelectAccount;
+    var lastVisibleIndex;
+    var FocusedCellColumnIndex = 0;
+    var FocusedCellRowIndex = 0;
+    function GetSelectedRevenueReceivedAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+              document.getElementById("RevenueReceivedAccountNumber").value = data.AccountNumber;
+              document.getElementById("RevenueReceivedAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("RevenueReceivedAccountNumber").value = '';
+            document.getElementById("RevenueReceivedAccountName").value = '';
+        }
+
+        }
+    function GetSelectedRevenueAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+              document.getElementById("RevenueAccountNumber").value = data.AccountNumber;
+              document.getElementById("RevenueAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("RevenueAccountNumber").value = '';
+            document.getElementById("RevenueAccountName").value = '';
+        }
+
+    }
+    function GetSelectedRevenueReceivedCost(data) {
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("c").value = data.CostNumber;
+            document.getElementById("RevenueReceivedCostName").value = data.CostName;
+        }
+        else {
+            document.getElementById("RevenueReceivedCostNumber").value = '';
+            document.getElementById("RevenueReceivedCostName").value = '';
+        }
+
+        }
+    function GetSelectedRevenueCost(data) {
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("RevenueCostNumber").value = data.CostNumber;
+            document.getElementById("RevenueCostName").value = data.CostName;
+        }
+        else {
+            document.getElementById("RevenueCostNumber").value = '';
+            document.getElementById("RevenueCostName").value = '';
+        }
+
+    }
+    var SumAmount = 0;
+    function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+        try {
+            decimalCount = Math.abs(decimalCount);
+            decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+            const negativeSign = amount < 0 ? "-" : "";
+
+            let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+            let j = (i.length > 3) ? i.length % 3 : 0;
+
+            return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+        } catch (e) {
+            console.log(e)
+        }
+    };
+    function validatedate(dateString) {
+        var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+        if (dateString.match(dateformat)) {
+            var operator = dateString.split('/');
+            var datepart = [];
+            if (operator.length > 1) {
+                datepart = dateString.split('/');
+            }
+            var month = parseInt(datepart[1]);
+            var day = parseInt(datepart[0]);
+            var year = parseInt(datepart[2]);
+            var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (month == 1 || month > 2) {
+                if (day > ListofDays[month - 1]) {
+                    return false;
+                }
+            } else if (month == 2) {
+                var leapYear = false;
+                if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                    leapYear = true;
+                }
+                if ((leapYear == false) && (day >= 29)) {
+                    return false;
+                } else
+                    if ((leapYear == true) && (day > 29)) {
+                        return false;
+                    }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+    function CalcSumAmount(s, e) {
+        SumAmount = 0;
+        var Amount = 0;
+        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            Amount = TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount");
+            Amount = Number(Amount);
+            if (Amount == "NaN") {
+                Amount = 0;
+            }
+            SumAmount = SumAmount + parseFloat(Amount);
+        }
+        document.getElementById("Total").value = SumAmount;
+        $("#Total").val((parseFloat($("#Total").val())).toFixed(TheDecimalPointForTheLocalCurrency));
+    }
+    function ClearGrid(s, e) {
+        TempRevenueGrid.PerformCallback('clear');
+        setTimeout(function () {
+            CalcSumAmount(s, e);
+        }, 1000);
+    }
+    function ReCalc(s, e) {
+        setTimeout(function () {
+            CalcSumAmount(s, e);
+        }, 1000);
+    }
+    function LoopGrid(s, e) {
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        var iError = 0;
+        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices();
+        var dDate = document.getElementById("VoucherDate").value;
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            if (TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate") == "" || TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate") == null) {
+                iError = 1;
+                break;
+            }
+            else if (TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount") == "" || TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount") == null
+                || TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount") == 0) {
+                iError = 2;
+                break;
+            }
+        }
+        if (WorkWithCostCenter) {
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (dDate != null && dDate != '') {
+                var dd = parseInt(dDate.substring(0, 2));
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                var mm = parseInt(dDate.substring(3, 5));
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                var yyyy = parseInt(dDate.substring(6, 10));
+                dDate = mm + '/' + dd + '/' + yyyy;
+                $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                    if (Data >= 1) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        if (iError == 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillCollectionDate</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if (iError == 2) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillAmount</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#RevenueReceivedAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#RevenueAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#RevenueReceivedCostNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#RevenueCostNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#NumberOfPayments").val() == '' || $("#NumberOfPayments").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#Total").val() == '' || $("#Total").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            bootbox.confirm({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    confirm: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        CalcSumAmount(s, e);
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                            closeButton: false
+                                        });
+                                        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+                                        var TempDetailslist = [];
+
+                                        for (var i = 0; i < visibleRowIndices.length; i++) {
+                                            var TempDetails = {
+                                                CollectionDate: moment(TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate")).format('LL'),
+                                                Amount: TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount"),
+                                                Note: TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Note")
+                                            };
+                                            TempDetailslist.push(TempDetails);
+                                        }
+                                        var TempPrepaidAndRevenueReceivedData = {
+                                            VoucherNumber: $("#VoucherNumber").val(),
+                                            VoucherDate: $("#VoucherDate").val(),
+                                            DateFirstPayment: $("#DateFirstPayment").val(),
+                                            NumberOfPayments: $("#NumberOfPayments").val(),
+                                            Total: $("#Total").val(),
+                                            Note: $("#Note").val(),
+                                            CompanyTransactionKindNo: $("#CompanyTransactionKindID").val()
+                                        }
+                                        var dataToSave = {
+                                            TempPrepaidAndRevenueReceivedDetail: TempDetailslist,
+                                            TempPrepaidAndRevenueReceived: TempPrepaidAndRevenueReceivedData,
+                                            CompanyTransactionKindID: $("#CompanyTransactionKindID").val(),
+                                            RevenueAccountNumber: $("#RevenueAccountNumber").val(),
+                                            RevenueReceivedAccountNumber: $("#RevenueReceivedAccountNumber").val(),
+                                            RevenueCostNumber: $("#RevenueCostNumber").val(),
+                                            RevenueReceivedCostNumber: $("#RevenueReceivedCostNumber").val()
+                                        }
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/TempRevenueReceived/SaveTempRevenue",
+                                            data: JSON.stringify(dataToSave),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    $('#modal-container').modal('hide');
+                                                    toastr.success(data.Msg);
+                                                    document.getElementById("Clear").click();
+                                                    $('#modal-container').modal('hide');
+                                                    bootbox.confirm({
+                                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                                        className: 'rubberBand animated',
+                                                        buttons: {
+                                                            confirm: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                className: 'btn-success'
+                                                            },
+                                                            cancel: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                className: 'btn-danger'
+                                                            }
+                                                        },
+                                                        callback: function (result) {
+                                                            if (result) {
+                                                                window.open('/TempRevenueReceived/ShowAttach/' + data.Year + '/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo, '_blank');
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempRevenuePDF/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year, '_blank');
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+
+                                                            else {
+
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempRevenuePDF/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year, '_blank');
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    };
+                });
+            }
+        }
+        else {
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (dDate != null && dDate != '') {
+                var dd = parseInt(dDate.substring(0, 2));
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                var mm = parseInt(dDate.substring(3, 5));
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                var yyyy = parseInt(dDate.substring(6, 10));
+                dDate = mm + '/' + dd + '/' + yyyy;
+                $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                    if (Data >= 1) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        if (iError == 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillCollectionDate</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if (iError == 2) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillAmount</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#RevenueReceivedAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#RevenueAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#NumberOfPayments").val() == '' || $("#NumberOfPayments").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#Total").val() == '' || $("#Total").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            bootbox.confirm({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    confirm: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        CalcSumAmount(s, e);
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                            closeButton: false
+                                        });
+                                        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+                                        var TempDetailslist = [];
+
+                                        for (var i = 0; i < visibleRowIndices.length; i++) {
+                                            var TempDetails = {
+                                                CollectionDate: moment(TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate")).format('LL'),
+                                                Amount: TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount"),
+                                                Note: TempRevenueGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Note")
+                                            };
+                                            TempDetailslist.push(TempDetails);
+                                        }
+                                        var TempPrepaidAndRevenueReceivedData = {
+                                            VoucherNumber: $("#VoucherNumber").val(),
+                                            VoucherDate: $("#VoucherDate").val(),
+                                            DateFirstPayment: $("#DateFirstPayment").val(),
+                                            NumberOfPayments: $("#NumberOfPayments").val(),
+                                            Total: $("#Total").val(),
+                                            Note: $("#Note").val(),
+                                            CompanyTransactionKindNo: $("#CompanyTransactionKindID").val()
+                                        }
+                                        var dataToSave = {
+                                            TempPrepaidAndRevenueReceivedDetail: TempDetailslist,
+                                            TempPrepaidAndRevenueReceived: TempPrepaidAndRevenueReceivedData,
+                                            CompanyTransactionKindID: $("#CompanyTransactionKindID").val(),
+                                            RevenueAccountNumber: $("#RevenueAccountNumber").val(),
+                                            RevenueReceivedAccountNumber: $("#RevenueReceivedAccountNumber").val(),
+                                            RevenueCostNumber: "",
+                                            RevenueReceivedCostNumber: ""
+                                        }
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/TempRevenueReceived/SaveTempRevenue",
+                                            data: JSON.stringify(dataToSave),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    $('#modal-container').modal('hide');
+                                                    toastr.success(data.Msg);
+                                                    document.getElementById("Clear").click();
+                                                    $('#modal-container').modal('hide');
+                                                    bootbox.confirm({
+                                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                                        className: 'rubberBand animated',
+                                                        buttons: {
+                                                            confirm: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                className: 'btn-success'
+                                                            },
+                                                            cancel: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                className: 'btn-danger'
+                                                            }
+                                                        },
+                                                        callback: function (result) {
+                                                            if (result) {
+                                                                window.open('/TempRevenueReceived/ShowAttach/' + data.Year + '/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo, '_blank');
+
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempRevenuePDF/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year, '_blank');
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+
+                                                            else {
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempRevenuePDF/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year , '_blank');
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+                                                        }
+                                                    });
+
+                                                }
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    };
+                });
+            }
+        }
+    }
+    function OnInit(s, e) {
+        ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+            "keydown",
+            function (evt) {
+            });
+    }
+    function Grid_BatchEditEndEditing(s, e) {
+    }
+    function Grid_BatchEditStartEditing(s, e) {
+        setTimeout(function () {
+            CalcSumAmount(s, e);
+        }, 1000);
+    }
+    function OnBeginCallback(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallback(s, e) {
+        if (s.cpSuccessFlag)
+        {
+            alert("All changes were saved");
+            window.location = "@Url.Action("Success","Test1")";
+        }
+    }
+    function OnClickPostData(s, e) {
+        if (TempRevenueGrid.batchEditApi.HasChanges())
+            TempRevenueGrid.UpdateEdit();
+        else
+            TempRevenueGrid.PerformCallback();
+    }
+    function AddRows() {
+        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (visibleRowIndices.length > 0) {
+            bootbox.confirm({
+                message: "@Resources.Resource.TheProcessWillBeRecalculation",
+                buttons: {
+                    confirm: {
+                        label: '@Resources.Resource.Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '@Resources.Resource.No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        TempRevenueGrid.PerformCallback('clear');
+                        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+                        for (var i = 1; i <= NumberOfPayments; i++) {
+                            TempRevenueGrid.AddNewRow();
+                        }
+                    }
+                    else {
+                        document.getElementById("NumberOfPayments").value = visibleRowIndices.length;
+                    }
+                }
+            });
+        }
+        else {
+            TempRevenueGrid.PerformCallback('clear');
+            var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+            for (var i = 1; i <= NumberOfPayments; i++) {
+                TempRevenueGrid.AddNewRow();
+            }
+        }
+    }
+    function AddAmount() {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+        var Total = document.getElementById("Total").value;
+        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (NumberOfPayments > 0) {
+            var Amount = Total / NumberOfPayments;
+            for (var i = 0; i <= visibleRowIndices.length; i++) {
+                TempRevenueGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Amount", (parseFloat(Amount)).toFixed(TheDecimalPointForTheLocalCurrency));
+            }
+        }
+    }
+    function AddDate() {
+        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+        var DateFirst = document.getElementById("DateFirstPayment").value;
+        var dd = parseInt(DateFirst.substring(0, 2));
+        var mm = parseInt(DateFirst.substring(3, 5));
+
+        var yyyy = parseInt(DateFirst.substring(6, 10));
+         mm = mm-1;
+        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (NumberOfPayments > 0) {
+            for (var i = 1; i <= NumberOfPayments; i++) {
+                if (mm > 11) {
+                    mm =  0 ;
+                     yyyy = yyyy + 1;
+                    var CollectionDate = new Date(yyyy, mm, dd);
+                    TempRevenueGrid.batchEditApi.SetCellValue(visibleRowIndices[i - 1], "CollectionDate",CollectionDate);
+                }
+                else {
+                    var CollectionDate = new Date(yyyy,mm,dd);
+                    TempRevenueGrid.batchEditApi.SetCellValue(visibleRowIndices[i - 1], "CollectionDate", CollectionDate);
+                };
+
+                mm = mm + 1;
+            }
+        }
+    }
+    function AddNote() {
+        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+        var Note = document.getElementById("Note").value;
+        var visibleRowIndices = TempRevenueGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (NumberOfPayments > 0) {
+            for (var i = 0; i <= visibleRowIndices.length; i++) {
+              TempRevenueGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Note", Note);
+            }
+        }
+    }
+ var RevenueReceivedNumber = [];
+    $.getJSON('@Url.Action("GetDefinitionRevenueReceived", "MultiUse")', { id: 0 }, function (Data) {
+        RevenueReceivedNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                RevenueReceivedNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#RevenueReceivedAccountNumber").autocomplete({
+            source: RevenueReceivedNumber,
+            select: function (event, ui) {
+                document.getElementById("RevenueReceivedAccountNumber").value = ui.item.value;
+                document.getElementById("RevenueReceivedAccountName").value = ui.item.label;
+            }
+        });
+    });
+
+    var RevenueNumber = [];
+    $.getJSON('@Url.Action("GetDefinitionRevenue", "MultiUse")', { id: 0 }, function (Data) {
+        RevenueNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                RevenueNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#RevenueAccountNumber").autocomplete({
+            source: RevenueNumber,
+            select: function (event, ui) {
+                document.getElementById("RevenueAccountNumber").value = ui.item.value;
+                document.getElementById("RevenueAccountName").value = ui.item.label;
+            }
+        });
+    });
+
+  var CostCenter = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostCenter = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedAccount };
+                CostCenter.push(r);
+            }
+    });
+
+    $(function () {
+        $("#RevenueReceivedCostNumber").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("RevenueReceivedCostNumber").value = ui.item.value;
+                document.getElementById("RevenueReceivedCostName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#RevenueCostNumber").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("RevenueCostNumber").value = ui.item.value;
+                document.getElementById("RevenueCostName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+
+@using (Html.BeginForm("Create", " RevenueReceived", FormMethod.Post, new { id = "myForm" }))
+{
+    <div style="padding-top: 20px;">
+        <div class="panel card-view">
+            <div class="panel-heading" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.RevenueReceived</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.RevenueReceivedAccountNumber)<span style="color:red">*</span>
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.RevenueReceivedAccountNumber, new { @id = "RevenueReceivedAccountNumber", @class = "form-control input-sml"})
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueReceivedAccountNumber">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                                @Html.ValidationMessageFor(m => m.RevenueReceivedAccountNumber)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AccountName)
+                            <div class="form-group input-group">
+                                @Html.TextBoxFor(m => m.RevenueReceivedAccountName, new { @id = "RevenueReceivedAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueReceivedAccountNumber">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.RevenueAccountNumber)<span style="color:red">*</span>
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.RevenueAccountNumber, new { @id = "RevenueAccountNumber", @class = "form-control input-sml" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueAccountNumber">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                                @Html.ValidationMessageFor(m => m.RevenueAccountNumber)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AccountName)
+                            <div class="form-group input-group">
+                                @Html.TextBoxFor(m => m.RevenueAccountName, new { @id = "RevenueAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueAccountNumber">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.RevenueReceivedCostNumber)<span style="color:red">*</span>
+                                <div class="form-group  input-group">
+                                    @Html.TextBoxFor(m => m.RevenueReceivedCostNumber, new { @id = "RevenueReceivedCostNumber", @class = "form-control input-sml"})
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueReceivedCostNumber">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                    @Html.ValidationMessageFor(m => m.RevenueReceivedCostNumber)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.CostCenterName)
+                                <div class="form-group input-group">
+                                    @Html.TextBoxFor(m => m.RevenueReceivedCostName, new { @id = "RevenueReceivedCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueReceivedCostNumber">
+                                            <i class="fa fa-minus-square"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.RevenueCostNumber)<span style="color:red">*</span>
+                                <div class="form-group  input-group">
+                                    @Html.TextBoxFor(m => m.RevenueCostNumber, new { @id = "RevenueCostNumber", @class = "form-control input-sml"})
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRevenueCostNumber">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </span>
+                                    @Html.ValidationMessageFor(m => m.RevenueCostNumber)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.CostCenterName)
+                                <div class="form-group input-group">
+                                    @Html.TextBoxFor(m => m.RevenueCostName, new { @id = "RevenueCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRevenueCostNumber">
+                                            <i class="fa fa-minus-square"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="col-lg-12">
+                    <div class="col-lg-2">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.VoucherNumber)
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.VoucherDate)
+                            @Html.TextBoxFor(model => model.TempPrepaidAndRevenueReceived.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.TempPrepaidAndRevenueReceived.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments)<span style="color:red">*</span>
+                            @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments, new { @id = "NumberOfPayments", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                            @Html.ValidationMessageFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments)
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.DateFirstPayment)
+                            @Html.TextBoxFor(model => model.TempPrepaidAndRevenueReceived.DateFirstPayment, new { @id = "DateFirstPayment", @class = "form-control input-sml", @Value = Model.TempPrepaidAndRevenueReceived.DateFirstPayment.ToString("dd/MM/yyyy"), data_val = "false" })
+
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.Total)<span style="color:red">*</span>
+                            @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.Total, new { @id = "Total", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                            @Html.ValidationMessageFor(m => m.TempPrepaidAndRevenueReceived.Total)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-9">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.Note)
+                        @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.Note, new { @id = "Note", @class = "form-control input-sml" })
+                    </div>
+                </div>
+                <div class="col-lg-12" style="padding-top:20px;">
+                    <div class="col-lg-12">
+                        @Html.Action("GridViewTempRevenuePartial", new { id = "", id2 = "0", id3 = "18", @style = "max-width:initial" })
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "buttonSave";
+               settings.Text = Resources.Resource.Save;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "LoopGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnClear";
+               settings.Text = Resources.Resource.CreateNew;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "ClearGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnAddRows";
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "AddRows";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnAddAmount";
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "AddAmount";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnAddDate";
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "AddDate";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+       {
+           settings.Name = "btnAddNote";
+           settings.UseSubmitBehavior = false;
+           settings.ClientVisible = false;
+           settings.ClientSideEvents.Click = "AddNote";
+       }).GetHtml()
+                <button type="button" class="btn btn-primary btn-anim" id="Save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-warning btn-anim" id="Clear"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Clear</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+}
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        var bWorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        $.getJSON('@Url.Action("GetMaxVHIForAcc", "TempRevenueReceived")', { id: 0}, function (Data) {
+
+                if (Data != null) {
+                    document.getElementById("VoucherNumber").value = Data;
+                } else {
+
+
+                };
+            })
+        $(document).on('click', '#Clear', function () {
+            document.getElementById("btnClear").click();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            $.getJSON('@Url.Action("GetMaxVHIForAcc", "TempRevenueReceived")', { id: 0}, function (Data) {
+
+                if (Data != null) {
+                    document.getElementById("VoucherNumber").value = Data;
+                } else {
+
+
+                };
+            })
+            document.getElementById("VoucherDate").value = today;
+            document.getElementById("Note").value = "";
+            document.getElementById("Total").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("DateFirstPayment").value = today;
+            document.getElementById("NumberOfPayments").value = 0;
+            document.getElementById("RevenueReceivedAccountNumber").value = "";
+            document.getElementById("RevenueReceivedAccountName").value = "";
+            document.getElementById("RevenueAccountNumber").value = "";
+            document.getElementById("RevenueAccountName").value = "";
+            if (bWorkWithCostCenter) {
+                document.getElementById("RevenueReceivedCostNumber").value = "";
+                document.getElementById("RevenueReceivedCostName").value = "";
+                document.getElementById("RevenueCostNumber").value = "";
+                document.getElementById("RevenueCostName").value = "";
+            }
+            $("#VoucherDate").focus().select();
+        });
+        $(document).on('click', '#Save', function () {
+            document.getElementById("buttonSave").click();
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/TempRevenueReceived/index";
+        });
+        $("#RevenueReceivedAccountNumber").focus().select();
+        $("#VoucherDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#NumberOfPayments").focus().select();;
+        });
+        $("#NumberOfPayments").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#DateFirstPayment").focus().select();;
+        });
+        $("#DateFirstPayment").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Total").focus().select();;
+        });
+        $("#Total").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Note").focus().select();;
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#RevenueReceivedAccountNumber").focus().select();;
+        });
+        $("#VoucherDate").mask("99/99/9999");
+        $("#DateFirstPayment").mask("99/99/9999");
+        $('#BtnRevenueReceivedAccountNumber').on('click', function () {
+           var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchRevenueReceivedAccountNumber/RevenueReceivedAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRevenueAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchRevenueAccountNumber/RevenueAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRevenueReceivedCostNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/RevenueReceivedCostNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRevenueCostNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/RevenueCostNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearRevenueReceivedAccountNumber').on('click', function () {
+            document.getElementById("RevenueReceivedAccountNumber").value = '';
+            document.getElementById("RevenueReceivedAccountName").value = '';
+        });
+        $('#BtnClearRevenueAccountNumber').on('click', function () {
+            document.getElementById("RevenueAccountNumber").value = '';
+            document.getElementById("RevenueAccountName").value = '';
+        });
+        $('#BtnClearRevenueReceivedCostNumber').on('click', function () {
+            document.getElementById("RevenueReceivedCostNumber").value = '';
+            document.getElementById("RevenueReceivedCostName").value = '';
+        });
+        $('#BtnClearRevenueCostNumber').on('click', function () {
+            document.getElementById("RevenueCostNumber").value = '';
+            document.getElementById("RevenueCostName").value = '';
+        });
+        $("#NumberOfPayments").blur(function () {
+            document.getElementById("btnAddRows").click();
+        });
+        $("#Total").blur(function () {
+            document.getElementById("btnAddAmount").click();
+        });
+        $("#Note").blur(function () {
+            document.getElementById("btnAddNote").click();
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (dDate != null && dDate != '') {
+                if (!validatedate(dDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dd = parseInt(dDate.substring(0, 2));
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    var mm = parseInt(dDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    var yyyy = parseInt(dDate.substring(6, 10));
+                    dDate = mm + '/' + dd + '/' + yyyy;
+                    $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                        if (Data >= 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            else {
+            }
+        });
+        $("#DateFirstPayment").blur(function () {
+            var dDate = document.getElementById("DateFirstPayment").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("DateFirstPayment").value = '01/01/' + new Date().getFullYear();
+
+            }
+            document.getElementById("btnAddDate").click();
+        });
+
+
+
+        $("#RevenueReceivedAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#RevenueAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchRevenueReceivedAccountNumber/RevenueReceivedAccountNumberSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#RevenueReceivedAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("RevenueReceivedAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("RevenueReceivedAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckDefinitionRevenueReceived", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("RevenueReceivedAccountNumber").value = '';
+                            document.getElementById("RevenueReceivedAccountName").value = '';
+                            $("#RevenueReceivedAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("RevenueReceivedAccountName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#RevenueAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#RevenueReceivedCostNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchRevenueAccountNumber/RevenueAccountNumberSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#RevenueAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("RevenueAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("RevenueAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckDefinitionRevenue", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("RevenueAccountNumber").value = '';
+                            document.getElementById("RevenueAccountName").value = '';
+                            $("#RevenueAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("RevenueAccountName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+
+
+
+        $("#RevenueReceivedCostNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#RevenueCostNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/RevenueReceivedCostNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#RevenueCostNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#VoucherDate").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/RevenueCostNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+
+        $("#RevenueReceivedCostNumber").blur(function () {
+            var AccountNumber = document.getElementById("RevenueReceivedCostNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("RevenueReceivedCostName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("RevenueReceivedCostNumber").value = '';
+                            document.getElementById("RevenueReceivedCostName").value = '';
+                            $("#RevenueReceivedCostNumber").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("RevenueReceivedCostName").value = Data.ArabicName;
+                            }
+                            else {
+                                document.getElementById("RevenueReceivedCostName").value = Data.EnglishName;
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#RevenueCostNumber").blur(function () {
+            var AccountNumber = document.getElementById("RevenueCostNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("RevenueCostName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("RevenueCostNumber").value = '';
+                            document.getElementById("RevenueCostName").value = '';
+                            $("#RevenueCostNumber").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("RevenueCostName").value = Data.ArabicName;
+                            }
+                            else {
+                                document.getElementById("RevenueCostName").value = Data.EnglishName;
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
+
+    });
+</script>
+}
+

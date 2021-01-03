@@ -1,0 +1,89 @@
+﻿@model Acc.ViewModels.St_BankHVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-sm ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Delete</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+
+                <div class="col-lg-12">
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankID)
+
+                        @Html.TextBoxFor(m => m.BankID, new { @id = "BankID", @class = "form-control input-sml input-sm", @readonly = "readonly" })
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ArabicName)
+
+                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EnglishName)
+
+                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.FundingAgencies)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.FundingAgencyID, new SelectList(Model.St_FundingAgencyH, "FundingAgencyID", "ArabicName"), new { @id = "FundingAgencyID", @class = "form-control  input-sm", @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.FundingAgencyID, new SelectList(Model.St_FundingAgencyH, "FundingAgencyID", "EnglishName"), new { @id = "FundingAgencyID", @class = "form-control  input-sm", @disabled = "disabled" })
+                        }
+                        
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankAccountNumber)
+
+                        @Html.TextBoxFor(m => m.BankAccountNumber, new { @id = "BankAccountNumber", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+
+                        @Html.TextBoxFor(m => m.BankAccountName, new { @id = "BankAccountName", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-anim btnDelete-lg" id="DeleteSt_BankH"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

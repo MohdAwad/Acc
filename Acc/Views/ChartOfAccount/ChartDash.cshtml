@@ -1,0 +1,56 @@
+﻿@model Acc.ViewModels.ChartDashVM
+@{
+    ViewBag.Title = @Resources.Resource.Accounts;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Accounts</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("ShowChartOfAccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/ChartOfAccount/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.AccountChart </span></a>
+                    </div>
+                }
+                @if (Model.WorkWithCostCenter)
+                {
+                    if (User.IsInRole("ShowChartofcostcenter") || User.IsInRole("CoOwner"))
+                    {
+                        <div class="col-sm-2 col-xs-12 mt-15">
+                            <a href="/CostCenter/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.CostCenters</span></a>
+                        </div>
+                    }
+                }
+                @if (User.IsInRole("Showcustomeraccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/CustomerInformation/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.CustomerDefinition</span></a>
+                    </div>
+                }
+                @if (User.IsInRole("ShowSupplieraccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierInformation/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.DefinitionSuppliers </span></a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })

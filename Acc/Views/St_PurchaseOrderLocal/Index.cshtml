@@ -1,0 +1,627 @@
+﻿@model Acc.ViewModels.St_PurchaseOrderVM
+@{
+    ViewBag.Title = @Resources.Resource.LocalPurchaseOrder;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    table.dataTable th.dt-center {
+        font-size: 8pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 8pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after {
+        display: none !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    function GetSelectedAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SupplierAccountNumber").value = data.AccountNumber;
+            document.getElementById("SupplierAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SupplierAccountNumber").value = '';
+            document.getElementById("SupplierAccountName").value = '';
+        }
+
+    }
+    var SupplierAccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        SupplierAccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber};
+                SupplierAccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#SupplierAccountNumber").autocomplete({
+            source: SupplierAccNumber,
+            select: function (event, ui) {
+                document.getElementById("SupplierAccountNumber").value = ui.item.value;
+                document.getElementById("SupplierAccountName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.LocalPurchaseOrder</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.PurchaseOrderNo)
+                    @Html.TextBoxFor(m => m.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.FromDate)
+                    @Html.TextBoxFor(model => model.FromDate, new { @id = "FromDate", @class = "form-control input-sml", @Value = Model.FromDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.ToDate)
+                    @Html.TextBoxFor(model => model.ToDate, new { @id = "ToDate", @class = "form-control input-sml", @Value = Model.ToDate.ToString("dd/MM/yyyy") })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.TaxType)
+                    @Html.DropDownListFor(m => m.TaxType, new List<SelectListItem>{
+                   new SelectListItem{ Text=Resources.Resource.TaxType, Value = "0",Selected=true },
+                   new SelectListItem{ Text=Resources.Resource.Taxable, Value = "1",Selected=false },
+                   new SelectListItem{ Text=Resources.Resource. TaxableByZero, Value = "2",Selected=false },
+                   new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "3",Selected=false }
+               }, new { @id = "TaxType", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.VoucherCase)
+                    @Html.DropDownListFor(m => m.VoucherCase, new List<SelectListItem>{
+                   new SelectListItem{ Text=Resources.Resource.VoucherCase, Value = "0",Selected=true },
+                   new SelectListItem{ Text=Resources.Resource.Cash, Value = "1",Selected=false },
+                   new SelectListItem{ Text=Resources.Resource.VoucherCredit, Value = "2",Selected=false },
+               }, new { @id = "VoucherCase", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.LinkWithVoucher)
+                    @Html.DropDownListFor(m => m.LinkWithVoucher, new List<SelectListItem>{
+                   new SelectListItem{ Text=Resources.Resource.LinkWithVoucher, Value = "-1",Selected=true },
+                   new SelectListItem{ Text=Resources.Resource.NotRelated, Value = "0",Selected=false },
+                   new SelectListItem{ Text=Resources.Resource.Related, Value = "1",Selected=false },
+               }, new { @id = "LinkWithVoucher", @class = "form-control input-sml" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                @Html.Label(Resources.Resource.SupplierAccountNo)
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.SupplierAccountNumber, new { @id = "SupplierAccountNumber", @class = "form-control input-sml" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSupplierAccountNumber">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                @Html.Label(Resources.Resource.AccountName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.SupplierAccountName, new { @id = "SupplierAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSupplierAccountNumber">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <a class="btn btn btn-anim btnSearch" id="btnSearch"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+            <a class="btn btn-primary btn-anim" id="btnSave"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            <button type="button" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            <button type="submit" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.PurchaseOrderNo</th>
+                        <th>@Resources.Resource.OrderDate</th>
+                        <th>@Resources.Resource.SupplierAccountName</th>
+                        <th>@Resources.Resource.Quantity</th>
+                        <th>@Resources.Resource.NetTotal</th>
+                        <th>@Resources.Resource.TaxType</th>
+                        <th>@Resources.Resource.VoucherCase</th>
+                        <th>@Resources.Resource.LinkWithVoucher</th>
+                        <th>@Resources.Resource.UserName</th>
+                        <th>@Resources.Resource.Detail</th>
+                        <th>@Resources.Resource.Update</th>
+                        <th>@Resources.Resource.Delete</th>
+                        <th>@Resources.Resource.Copy</th>
+                        <th>@Resources.Resource.Print</th>
+                        <th>@Resources.Resource.Attach</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/St_Transaction/Index";
+        });
+        $("#FromDate").mask("99/99/9999");
+        $("#ToDate").mask("99/99/9999");
+
+        $(document).on('click', '#PrintPDF', function () {
+            var FromDate = $("#FromDate").val();
+            var ToDate = $("#ToDate").val();
+            var VoucherNumber = $("#VoucherNumber").val();
+            var SupplierAccountNumber = $("#SupplierAccountNumber").val();
+            var LinkWithVoucher = $("#LinkWithVoucher").val();
+            var TaxType = $("#TaxType").val();
+            var VoucherCase = $("#VoucherCase").val();
+
+
+
+            if (VoucherNumber == '' || VoucherNumber == null) {
+                VoucherNumber = "0";
+            }
+            if (SupplierAccountNumber == '' || SupplierAccountNumber == null) {
+                SupplierAccountNumber = 0;
+            }
+            if (LinkWithVoucher == '' || LinkWithVoucher == null) {
+                LinkWithVoucher = 0;
+            }
+            if (TaxType == '' || TaxType == null) {
+                TaxType = 0;
+            }
+            if (VoucherCase == '' || VoucherCase == null) {
+                VoucherCase = 0;
+            }
+            var words = FromDate.split('/');
+            FromDate = words[0] + words[1] + words[2];
+            words = ToDate.split('/');
+            ToDate = words[0] + words[1] + words[2];
+            window.open('/St_PDFReport/GetAllSt_PurchaseOrderPDF/' + FromDate + "/" + ToDate + "/" + VoucherNumber + "/" + SupplierAccountNumber + "/" + LinkWithVoucher + "/" + TaxType + "/" + VoucherCase + "/0", '_blank');
+        });
+
+
+        $("#VoucherNumber").focus().select();
+        $("#VoucherNumber").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FromDate").focus().select();
+
+        });
+        $("#FromDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ToDate").focus().select();
+
+        });
+        $("#ToDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#SupplierAccountNumber").focus().select();
+
+        });
+        $("#SupplierAccountNumber").keyup(function (event) {
+           if (event.keyCode == 13) {
+               $("#VoucherNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+               var url = '/MultiUse/SearchAcc/SearchSupplierAccountNo';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $(document).on('click', '#btnSave', function () {
+            window.location = "/St_PurchaseOrderLocal/Add";
+        });
+          
+        $(document).on('click', '#btnSearch', function () {
+            var dDate = document.getElementById("FromDate").value;
+            var dToDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dToDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                $('#tdataTable').DataTable().clear().draw();
+                $('#tdataTable').DataTable().ajax.reload();
+                dialog.modal('hide');
+            }
+        });
+        $('#BtnSupplierAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/SearchSupplierAccountNo';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearSupplierAccountNumber').on('click', function () {
+            document.getElementById("SupplierAccountNumber").value = '';
+            document.getElementById("SupplierAccountName").value = '';
+        });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "paging": false,
+            "ordering": true,
+            "order": [[0, "asc"]],
+            "scrollCollapse": true,
+            "fixedColumns": true,
+            "columnDefs": [
+                { "width": 50, "targets": 0, "className": "dt-center" },
+                { "width": 70, "targets": 1, "className": "dt-center" },
+                { "width": 100, "targets": 2, "className": "dt-center" },
+                { "width": 70, "targets": 3, "className": "dt-center" },
+                { "width": 70, "targets": 4, "className": "dt-center" },
+                { "width": 70, "targets": 5, "className": "dt-center" },
+                { "width": 70, "targets": 6, "className": "dt-center" },
+                { "width": 70, "targets": 7, "className": "dt-center" },
+                { "width": 100, "targets": 8, "className": "dt-center" },
+                { "width": 10, "targets": 9, "className": "dt-center", "orderable": false },
+                { "width": 10, "targets": 10, "className": "dt-center", "orderable": false },
+                { "width": 10, "targets": 11, "className": "dt-center", "orderable": false },
+                { "width": 10, "targets": 12, "className": "dt-center", "orderable": false },
+                { "width": 10, "targets": 13, "className": "dt-center", "orderable": false },
+                { "width": 10, "targets": 14, "className": "dt-center", "orderable": false }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/St_PurchaseOrderLocal/GetAllSt_PurchaseOrder",
+                "data": function (d) {
+                    d.FromDate = $("#FromDate").val();
+                    d.ToDate = $("#ToDate").val();
+                    d.VoucherNumber = $("#VoucherNumber").val();
+                    d.SupplierAccountNumber = $("#SupplierAccountNumber").val();
+                    d.LinkWithVoucher = $("#LinkWithVoucher").val();
+                    d.TaxType = $("#TaxType").val();
+                    d.VoucherCase = $("#VoucherCase").val();
+                },
+
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "VoucherNumber"
+                },
+                {
+                    data: "VoucherDate",
+                    render: function (data, type, r) {
+                        return type === 'sort' ? data : moment(data).format('DD/MM/YYYY')
+                    }
+                },
+                {
+                    data: "SupplierAccountName"
+                },
+                {
+                    data: "TotalQuantity"
+                },
+                {
+                    data: "NetTotal",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "TaxTypeName"
+                },
+                {
+                    data: "VoucherCaseName"
+                },
+                {
+                    data: "LinkWithVoucherName"
+                },
+                {
+                    data: "UserName"
+                },
+                {
+                    data: "VoucherNumber",
+                    render: function (data, type, r) {
+                        return "<a  class='btn  btn-icon-anim btn-square btnDetail btn-sm' href='/St_PurchaseOrderLocal/Detail/" + data + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + "/" + r.CompanyYear + " '><i class='fa fa-tasks' style='margin-top: 4px;'></i> </a>";
+                    }
+                },
+                {
+                    data: "VoucherNumber",
+                    render: function (data, type, r) {
+                        if (r.LinkWithVoucher == 1) {
+                            return "<a  class='btn btn-success btn-icon-anim btn-square  btn-sm' href='#' id='CheckLinkWithVoucher'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+                        }
+                        else {
+                            return "<a  class='btn btn-success btn-icon-anim btn-square  btn-sm' href='/St_PurchaseOrderLocal/Update/" + data + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + "/" + r.CompanyYear + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+                        }
+                    }
+                },
+                {
+                    data: "VoucherNumber",
+                    render: function (data, type, r) {
+                        if (r.LinkWithVoucher == 1) {
+                            return "<a  class='btn btn-icon-anim btn-square btnDelete  btn-sm' href='#' id='CheckLinkWithVoucher'><i class='fa fa-trash-o' style='margin-top: 4px;'></i> </a>";
+                        }
+                        else {
+                            return "<a  class='btn btn-icon-anim btn-square btnDelete  btn-sm' href='/St_PurchaseOrderLocal/Delete/" + data + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + "/" + r.CompanyYear + "'><i class='fa fa-trash-o' style='margin-top: 4px;'></i> </a>";
+                        }
+                    }
+                },
+                {
+                    data: "VoucherNumber",
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-primary btn-icon-anim btn-square btn-sm' href='/St_PurchaseOrderLocal/Copy/" + data + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + "/" + r.CompanyYear + " '><i class='fa fa-copy' style='margin-top: 4px;'></i> </a>";
+                    }
+                },
+                {
+                    data: "VoucherNumber",
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-warning btn-icon-anim btn-square btn-sm' target='_blank'  href='/St_PDFReport/PurchaseOrderLocalDetailPdf/" + data + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + "/" + r.CompanyYear + " '><i class='fa fa-print' style='margin - top: 4px; '></i> </a>";
+                    }
+                },
+                {
+                    data: "VoucherNumber",
+                    render: function (data, type, r) {
+                        return "<a  class='btn btn-icon-anim btn-square btnAttach btn-sm' href='/St_PurchaseOrderLocal/ShowAttach/" + r.CompanyYear + "/" + data + "/" + r.CompanyTransactionKindNo + "/" + r.TransactionKindNo + " '><i class='fa fa-cloud-upload' style='margin-top: 4px;'></i> </a>";
+                    }
+                }
+            ]
+        });
+        $(document).on("click", "#CheckLinkWithVoucher", function () {
+            bootbox.alert({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageLinkWithVoucher</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    ok: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                        className: 'btn-primary'
+                    }
+                }
+            });
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        $("#FromDate").blur(function () {
+            var dDate = document.getElementById("FromDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToDate").blur(function () {
+            var dDate = document.getElementById("ToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#SupplierAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("SupplierAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("SupplierAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("SupplierAccountNumber").value = '';
+                            document.getElementById("SupplierAccountName").value = '';
+                            $("#SupplierAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("SupplierAccountName").value = Data.AccountName;
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}
+
+
+

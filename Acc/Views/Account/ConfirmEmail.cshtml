@@ -1,0 +1,9 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.ConfirmEmail;
+}
+
+<div>
+    <p style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+        @Resources.Resource.ThankYouForConfirmingYourEmail @Html.ActionLink(@Resources.Resource.ClickHereToLogIn, @Resources.Resource.Login, @Resources.Resource.Account, routeValues: null, htmlAttributes: new { id = "loginLink" })
+    </p>
+</div>

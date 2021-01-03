@@ -1,0 +1,112 @@
+﻿@{
+	ViewBag.Title = "TestDev";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>TestDev</h2>
+
+
+<div class="col-lg-12">
+	@Html.Action("TreeListPartial")
+</div>
+<button type="submit" class="btn btn-outline btn-success" id="save"> @Resources.Resource.Save</button>
+@section Scripts {
+	@Scripts.Render("~/bundles/jqueryval")
+
+	<script>
+
+		 $(document).ready(function () {
+		  $('input[name="AccountChart"]').mask('0-0-0-0-0-0-0-0-0-0');
+
+			 $(document).on('click', '#save', function () {
+				 ChartOfAccountList.PerformCallback();
+			 var dialog = bootbox.dialog({
+				  title: '@Resources.Resource.PleaseWait',
+				  message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+				  closeButton: false
+				});
+
+			var dataToSave = {
+				CompanyID: 1
+
+
+
+			};
+
+				$.ajax({
+					type: "POST",
+					url: "/ChartOfAccount/TreeListPartial",
+					 
+					contentType: 'application/json',
+					success: function (data) {
+
+
+						dialog.modal('hide');
+						if (data.Code == 0) {
+							toastr.error(data.Msg);
+						}
+						else if (data.Code == 1) {
+							$('#modal-container').modal('hide');
+							toastr.success(data.Msg);
+						}
+
+					},
+					error: function (data) {
+						dialog.modal('hide');
+						toastr.error(data);
+					}
+
+				});
+			});
+
+
+	  $(document).on('click', '#update', function () {
+			 var dialog = bootbox.dialog({
+				  title: '@Resources.Resource.PleaseWait',
+				  message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+				  closeButton: false
+				});
+
+			var dataToSave = {
+				CompanyID:$("#CompanyID").val(),
+				ArabicName: $("#ArabicName").val(), ArabicAddress: $("#ArabicAddress").val(), AccountChart: $("#AccountChart").val(),
+				EnglishName: $("#EnglishName").val(), EnglishAddress: $("#EnglishAddress").val(), Email: $("#Email").val(),
+				Mobile: $("#Mobile").val(), Telephone: $("#Telephone").val(), TeleFax: $("#TeleFax").val(),
+				 Website:$("#Website").val()
+
+
+			};
+
+				$.ajax({
+					type: "POST",
+					url: "/Company/Update",
+					data: JSON.stringify(dataToSave),
+					contentType: 'application/json',
+					success: function (data) {
+
+						dialog.modal('hide');
+						if (data.Code == 0) {
+							toastr.error(data.Msg);
+						}
+						else if (data.Code == 1) {
+							$('#modal-container').modal('hide');
+							toastr.success(data.Msg);
+							//tabelMemRef.ajax.reload();
+							//ClearForm();
+						}
+
+					},
+					error: function (data) {
+						dialog.modal('hide');
+						toastr.error(data);
+					}
+
+				});
+			});
+
+
+		 });
+	</script>
+}
+
+

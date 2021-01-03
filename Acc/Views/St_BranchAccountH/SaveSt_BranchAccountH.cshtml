@@ -1,0 +1,1388 @@
+﻿@model Acc.ViewModels.St_BranchAccountHVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    #OtherExpensesGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #OtherExpensesGrid_col0 {
+        width: 55px;
+    }
+
+    #ExpensesGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #ExpensesGrid_col0 {
+        width: 55px;
+    }
+    .dxgvBatchEditNewItem_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    function GetSelectedDataFundAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("FundAccountNumber").value = data.AccountNumber;
+            document.getElementById("FundAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("FundAccountNumber").value = '';
+            document.getElementById("FundAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataSalesAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SalesAccountNumber").value = data.AccountNumber;
+            document.getElementById("SalesAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SalesAccountNumber").value = '';
+            document.getElementById("SalesAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataMaintenanceCardAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("MaintenanceCardAccountNumber").value = data.AccountNumber;
+            document.getElementById("MaintenanceCardAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("MaintenanceCardAccountNumber").value = '';
+            document.getElementById("MaintenanceCardAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataReturnCardAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ReturnCardAccountNumber").value = data.AccountNumber;
+            document.getElementById("ReturnCardAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ReturnCardAccountNumber").value = '';
+            document.getElementById("ReturnCardAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataTransferFeesAndInstallationAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("TransferFeesAndInstallationAccountNumber").value = data.AccountNumber;
+            document.getElementById("TransferFeesAndInstallationAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("TransferFeesAndInstallationAccountNumber").value = '';
+            document.getElementById("TransferFeesAndInstallationAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataChequeFundAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ChequeFundAccountNumber").value = data.AccountNumber;
+            document.getElementById("ChequeFundAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ChequeFundAccountNumber").value = '';
+            document.getElementById("ChequeFundAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataRelocationAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("RelocationAccountNumber").value = data.AccountNumber;
+            document.getElementById("RelocationAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("RelocationAccountNumber").value = '';
+            document.getElementById("RelocationAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataVisaAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("VisaAccountNumber").value = data.AccountNumber;
+            document.getElementById("VisaAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("VisaAccountNumber").value = '';
+            document.getElementById("VisaAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataMasterAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("MasterAccountNumber").value = data.AccountNumber;
+            document.getElementById("MasterAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("MasterAccountNumber").value = '';
+            document.getElementById("MasterAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataAmericanAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("AmericanAccountNumber").value = data.AccountNumber;
+            document.getElementById("AmericanAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("AmericanAccountNumber").value = '';
+            document.getElementById("AmericanAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataArabiCashAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ArabiCashAccountNumber").value = data.AccountNumber;
+            document.getElementById("ArabiCashAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ArabiCashAccountNumber").value = '';
+            document.getElementById("ArabiCashAccountName").value = '';
+        }
+
+    }
+    //Start Expenses------------------------------------------
+    var currentEditedValueExpenses;
+    var lastVisibleIndexExpenses;
+    var FocusedCellColumnIndexExpenses = 0;
+    var FocusedCellRowIndexExpenses = 0;
+    function GetSelectedExpenseAccountNumber(data) {
+        ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountNumber", data.AccountNumber);
+        ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", data.AccountName);
+        ExpensesGrid.batchEditApi.StartEdit(lastVisibleIndexExpenses, 1);
+    }
+    var ExpensesAccount = [];
+     $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+         ExpensesAccount = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+             ExpensesAccount.push(r);
+         }
+     });
+    function AutoCompleteExpenses(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: ExpensesAccount,
+             select: function (event, ui) {
+                 if (ui.item.stop == '0') {
+                     s.SetValue(ui.item.value);
+                     ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", ui.item.label);
+                     ExpensesGrid.batchEditApi.GetCellValue()
+                 }
+                 else {
+                     bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                     FocusedCellColumnIndexExpenses = 0;
+                     s.SetValue('');
+                     ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", "");
+                 }
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function OnInitExpenses(s, e) {
+            ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+                "keydown",
+                function (evt) {
+                    if (evt.ctrlKey && FocusedCellColumnIndexExpenses == 1) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        var url = '/MultiUse/SearchAcc/ExpenseAccountNumber';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+                    }
+                });
+    };
+    function Grid_BatchEditEndEditingExpenses(s, e) {
+        var productNameColumn = s.GetColumnByField("ExpenseAccountNumber");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndexExpenses == 1) {
+            var AccountNumberIndex = s.GetColumnByField("ExpenseAccountNumber").index;
+            var AccountNumber = e.rowValues[AccountNumberIndex].value;
+            if (!AccountNumber) {
+                ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", "");
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountNumber", "");
+                            ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", "");
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            FocusedCellColumnIndexExpenses = 1;
+                        }
+                        else {
+                            if (Data.StoppedAccount) {
+                                ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountNumber", "");
+                                ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndexExpenses = 1;
+                            }
+                            else {
+
+                                ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountNumber", Data.AccountNumber);
+                                ExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexExpenses, "ExpenseAccountName", Data.AccountName);
+                                ExpensesGrid.AddNewRow();
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        FocusedCellColumnIndexExpenses = 0;
+        FocusedCellRowIndexExpenses = 0;
+    }
+    function Grid_BatchEditStartEditingExpenses(s, e) {
+        FocusedCellColumnIndexExpenses = e.focusedColumn.index;
+        FocusedCellRowIndexExpenses = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("ExpenseAccountNumber");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndexExpenses = e.visibleIndex;
+        currentEditedValueExpenses = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+    }
+    function OnBeginCallbackExpenses(s, e) {
+        e.Expenses['BranchCode'] = $("#BranchCode").val();
+    }
+    function OnEndCallbackExpenses(s, e) {
+            if (s.cpSuccessFlag)
+            {
+                alert("All changes were saved");
+                window.location = "@Url.Action("Success","Test1")";
+            }
+    }
+    function Grid_DeleteRowEventExpenses(s, e) {
+    }
+    //End Expenses-------------------------------------------
+    //Start Other Expenses------------------------------------------
+    var currentEditedValueOtherExpenses;
+    var lastVisibleIndexOtherExpenses;
+    var FocusedCellColumnIndexOtherExpenses = 0;
+    var FocusedCellRowIndexOtherExpenses = 0;
+    function GetSelectedOtherExpenseAccountNumber(data) {
+        OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountNumber", data.AccountNumber);
+        OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountName", data.AccountName);
+        OtherExpensesGrid.batchEditApi.StartEdit(lastVisibleIndexOtherExpenses, 1);
+    }
+    var OtherExpensesAccount = [];
+     $.getJSON('@Url.Action("GetAcountFather", "MultiUse")', { id: 0 }, function (Data) {
+         OtherExpensesAccount = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = { label: Data[i].AccountName, value: Data[i].AccountNumber };
+             OtherExpensesAccount.push(r);
+         }
+     });
+    function AutoCompleteOtherExpenses(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: OtherExpensesAccount,
+             select: function (event, ui) {
+                 s.SetValue(ui.item.value);
+                 OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountName", ui.item.label);
+                     OtherExpensesGrid.batchEditApi.GetCellValue()
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function OnInitOtherExpenses(s, e) {
+            ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+                "keydown",
+                function (evt) {
+                    if (evt.ctrlKey && FocusedCellColumnIndexOtherExpenses == 1) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                            closeButton: false
+                        });
+                        var url = '/MultiUse/SearchFatherAccount/OtherExpenseAccountNumber';
+                        $.get(url, function (data) {
+                            $('#modal-container').html(data);
+                            $('#modal-container').modal('show');
+                            dialog.modal('hide');
+                        })
+                    }
+                });
+    };
+    function Grid_BatchEditEndEditingOtherExpenses(s, e) {
+        var productNameColumn = s.GetColumnByField("OtherExpenseAccountNumber");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndexOtherExpenses == 1) {
+            var AccountNumberIndex = s.GetColumnByField("OtherExpenseAccountNumber").index;
+            var AccountNumber = e.rowValues[AccountNumberIndex].value;
+            if (!AccountNumber) {
+                OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountName", "");
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckFatherAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountNumber", "");
+                            OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountName", "");
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            FocusedCellColumnIndexOtherExpenses = 1;
+                        }
+                        else {
+                            OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountNumber", Data.AccountNumber);
+                            OtherExpensesGrid.batchEditApi.SetCellValue(lastVisibleIndexOtherExpenses, "OtherExpenseAccountName", Data.AccountName);
+                            OtherExpensesGrid.AddNewRow();
+                        }
+                    });
+                }
+            }
+        }
+        FocusedCellColumnIndexOtherExpenses = 0;
+        FocusedCellRowIndexOtherExpenses = 0;
+    }
+    function Grid_BatchEditStartEditingOtherExpenses(s, e) {
+        FocusedCellColumnIndexOtherExpenses = e.focusedColumn.index;
+        FocusedCellRowIndexOtherExpenses = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("OtherExpenseAccountNumber");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndexOtherExpenses = e.visibleIndex;
+        currentEditedValueOtherExpenses = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+    }
+    function OnBeginCallbackOtherExpenses(s, e) {
+        e.OtherExpenses['BranchCode'] = $("#BranchCode").val();
+    }
+    function OnEndCallbackOtherExpenses(s, e) {
+            if (s.cpSuccessFlag)
+            {
+                alert("All changes were saved");
+                window.location = "@Url.Action("Success","Test1")";
+            }
+    }
+    function Grid_DeleteRowEventOtherExpenses(s, e) {
+
+    }
+    //End Other Expenses-------------------------------------------
+    function ClearGrid(s, e) {
+        OtherExpensesGrid.PerformCallback('clear');
+        ExpensesGrid.PerformCallback('clear');
+    }
+    function LoopGrid() {
+        var iError = 0;
+        var visibleRowIndicesExpenses = ExpensesGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndicesExpenses.length; i++) {
+            if (ExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesExpenses[i], "ExpenseAccountNumber") == "" || ExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesExpenses[i], "ExpenseAccountNumber") == null) {
+                iError = 1;
+                break;
+            }
+            else if (ExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesExpenses[i], "ExpenseAccountName") == "" || ExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesExpenses[i], "ExpenseAccountName") == null) {
+                iError = 1;
+                break;
+            }
+        }
+        var visibleRowIndicesOtherExpenses = OtherExpensesGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndicesOtherExpenses.length; i++) {
+            if (OtherExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesOtherExpenses[i], "OtherExpenseAccountNumber") == "" || OtherExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesOtherExpenses[i], "OtherExpenseAccountNumber") == null) {
+                iError = 2;
+                break;
+            }
+            else if (OtherExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesOtherExpenses[i], "OtherExpenseAccountName") == "" || OtherExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesOtherExpenses[i], "OtherExpenseAccountName") == null) {
+                iError = 2;
+                break;
+            }
+        }
+        if (iError == 1) {
+            bootbox.alert({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillExpenseAccount</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    ok: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                        className: 'btn-primary'
+                    }
+                }
+            });
+        }
+        else if (iError == 2) {
+            bootbox.alert({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillOtherExpenseAccount</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    ok: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                        className: 'btn-primary'
+                    }
+                }
+            });
+        }
+        else {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+                        var visibleRowIndicesExpenses = ExpensesGrid.batchEditApi.GetRowVisibleIndices();
+                        var ExpensesList = [];
+                        for (var i = 0; i < visibleRowIndicesExpenses.length; i++) {
+                            var St_BranchExpenseAccountH = {
+                                ExpenseAccountNumber: ExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesExpenses[i], "ExpenseAccountNumber"),
+                                RowNumber: i + 1
+                            };
+                            ExpensesList.push(St_BranchExpenseAccountH);
+
+                        }
+                        var visibleRowIndicesOtherExpenses = OtherExpensesGrid.batchEditApi.GetRowVisibleIndices();
+                        var OtherExpensesList = [];
+                        for (var i = 0; i < visibleRowIndicesOtherExpenses.length; i++) {
+                            var St_BranchOtherExpenseAccountH = {
+                                OtherExpenseAccountNumber : OtherExpensesGrid.batchEditApi.GetCellValue(visibleRowIndicesOtherExpenses[i], "OtherExpenseAccountNumber"),
+                                RowNumber: i + 1
+                            };
+                            OtherExpensesList.push(St_BranchOtherExpenseAccountH);
+
+                        }
+                        var dataToSave = {
+                            BranchCode: $("#BranchCode").val(),
+                            FundAccountNumber: $("#FundAccountNumber").val(),
+                            SalesAccountNumber: $("#SalesAccountNumber").val(),
+                            MaintenanceCardAccountNumber: $("#MaintenanceCardAccountNumber").val(),
+                            ReturnCardAccountNumber: $("#ReturnCardAccountNumber").val(),
+                            TransferFeesAndInstallationAccountNumber: $("#TransferFeesAndInstallationAccountNumber").val(),
+                            ChequeFundAccountNumber: $("#ChequeFundAccountNumber").val(),
+                            RelocationAccountNumber: $("#RelocationAccountNumber").val(),
+                            VisaAccountNumber: $("#VisaAccountNumber").val(),
+                            MasterAccountNumber: $("#MasterAccountNumber").val(),
+                            AmericanAccountNumber: $("#AmericanAccountNumber").val(),
+                            ArabiCashAccountNumber: $("#ArabiCashAccountNumber").val(),
+                            St_BranchExpenseAccountH: ExpensesList,
+                            St_BranchOtherExpenseAccountH: OtherExpensesList,
+                            ReceiptVoucherNo: $("#ReceiptVoucherNo").val(),
+                            PaymentVoucherNo: $("#PaymentVoucherNo").val(),
+                            ReceiptChequeVoucherNo: $("#ReceiptChequeVoucherNo").val(),
+                            TransferFeesAndInstallationVoucherNo: $("#TransferFeesAndInstallationVoucherNo").val(),
+                            MaintenanceCardVoucherNo: $("#MaintenanceCardVoucherNo").val(),
+                            TransferVoucherNo: $("#TransferVoucherNo").val(),
+                            ReturningSoldItemVoucherNo: $("#ReturningSoldItemVoucherNo").val(),
+                            InstallmentSchedulingVoucherNo: $("#InstallmentSchedulingVoucherNo").val(),
+                            ClosingAFundVoucherNo: $("#ClosingAFundVoucherNo").val(),
+                            ChequeFundClosingVoucherNo: $("#ChequeFundClosingVoucherNo").val(),
+                            ClosingAFinancingFundVoucherNo: $("#ClosingAFinancingFundVoucherNo").val(),
+                            FinancingVoucherNo: $("#FinancingVoucherNo").val(),
+                            InstallationVoucherNo: $("#InstallationVoucherNo").val(),
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/St_BranchAccountH/SaveSt_BranchAccountH",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                    window.location = "/St_BranchAccountH/Index";
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                                bootbox.alert(data.Msg);
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    }
+    function OnClickPostData(s, e) {
+        if (OtherExpenseGrid.batchEditApi.HasChanges())
+            OtherExpenseGrid.UpdateEdit();
+        else
+            OtherExpenseGrid.PerformCallback();
+        if (ExpenseGrid.batchEditApi.HasChanges())
+            ExpenseGrid.UpdateEdit();
+        else
+            ExpenseGrid.PerformCallback();
+    }
+</script>
+@using (Html.BeginForm("SaveSt_BranchAccountH", "St_BranchAccountH", FormMethod.Post, new { id = "myForm" }))
+{
+    <div style="padding-top: 20px;">
+        <div class="panel card-view">
+            <div class="panel-heading" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.BranchesAccounts - @Model.BranchName </h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="pills-struct mt-40">
+                    <ul role="tablist" class="nav nav-pills" id="myTabs_6">
+                        <li class="active" id="sAccounts" role="presentation"><a data-toggle="tab" role="tab" style="background: #34495E" href="#Accounts" aria-expanded="true">@Resources.Resource.Accounts</a></li>
+                        <li role="presentation" id="sMovements" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#Movements" aria-expanded="false">@Resources.Resource.Movements</a></li>
+                        <li role="presentation" id="sExpenses" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#Expenses" aria-expanded="false">@Resources.Resource.Expenses</a></li>
+                        <li role="presentation" id="sOtherExpenses" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#OtherExpenses" aria-expanded="false">@Resources.Resource.OtherExpenses</a></li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="myTabContent_6" style="margin-top : 10px">
+                    <div id="Accounts" class="tab-pane fade active in" role="tabpanel">
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.FundAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.FundAccountNumber, new { @id = "FundAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnFundAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.FundAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.FundAccountName, new { @id = "FundAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearFundAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.SalesAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.SalesAccountNumber, new { @id = "SalesAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSalesAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.SalesAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.SalesAccountName, new { @id = "SalesAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSalesAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.MaintenanceCardAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.MaintenanceCardAccountNumber, new { @id = "MaintenanceCardAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnMaintenanceCardAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.MaintenanceCardAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.MaintenanceCardAccountName, new { @id = "MaintenanceCardAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearMaintenanceCardAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.ReturnCardAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.ReturnCardAccountNumber, new { @id = "ReturnCardAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnReturnCardAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.ReturnCardAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.ReturnCardAccountName, new { @id = "ReturnCardAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearReturnCardAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.TransferFeesAndInstallationAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.TransferFeesAndInstallationAccountNumber, new { @id = "TransferFeesAndInstallationAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnTransferFeesAndInstallationAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.TransferFeesAndInstallationAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.TransferFeesAndInstallationAccountName, new { @id = "TransferFeesAndInstallationAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearTransferFeesAndInstallationAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.ChequeFundAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.ChequeFundAccountNumber, new { @id = "ChequeFundAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnChequeFundAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.ChequeFundAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.ChequeFundAccountName, new { @id = "ChequeFundAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearChequeFundAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.RelocationAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.RelocationAccountNumber, new { @id = "RelocationAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnRelocationAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.RelocationAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.RelocationAccountName, new { @id = "RelocationAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearRelocationAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.VisaAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.VisaAccountNumber, new { @id = "VisaAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnVisaAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.VisaAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.VisaAccountName, new { @id = "VisaAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearVisaAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.MasterAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.MasterAccountNumber, new { @id = "MasterAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnMasterAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.MasterAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.MasterAccountName, new { @id = "MasterAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearMasterAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.AmericanAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.AmericanAccountNumber, new { @id = "AmericanAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAmericanAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.AmericanAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.AmericanAccountName, new { @id = "AmericanAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAmericanAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-4">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.ArabiCashAccountNumber)
+                                    <div class="form-group  input-group">
+                                        @Html.TextBoxFor(m => m.ArabiCashAccountNumber, new { @id = "ArabiCashAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnArabiCashAccountNumber">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                        @Html.ValidationMessageFor(m => m.ArabiCashAccountNumber)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    @Html.Label(@Resources.Resource.AccountName)
+                                    <div class="form-group input-group">
+                                        @Html.TextBoxFor(m => m.ArabiCashAccountName, new { @id = "ArabiCashAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearArabiCashAccountNumber">
+                                                <i class="fa fa-minus-square"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Movements" class="tab-pane fade" role="tabpanel">
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindReceiptVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ReceiptVoucherNo, new SelectList(Model.CompanyTransactionKindReceiptVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "ReceiptVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ReceiptVoucherNo, new SelectList(Model.CompanyTransactionKindReceiptVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "ReceiptVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindPaymentVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.PaymentVoucherNo, new SelectList(Model.CompanyTransactionKindPaymentVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "PaymentVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.PaymentVoucherNo, new SelectList(Model.CompanyTransactionKindPaymentVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "PaymentVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindReceiptChequeVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ReceiptChequeVoucherNo, new SelectList(Model.CompanyTransactionKindReceiptChequeVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "ReceiptChequeVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ReceiptChequeVoucherNo, new SelectList(Model.CompanyTransactionKindReceiptChequeVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "ReceiptChequeVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindTransferFeesAndInstallationVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.TransferFeesAndInstallationVoucherNo, new SelectList(Model.CompanyTransactionKindTransferFeesAndInstallationVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "TransferFeesAndInstallationVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.TransferFeesAndInstallationVoucherNo, new SelectList(Model.CompanyTransactionKindTransferFeesAndInstallationVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "TransferFeesAndInstallationVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindMaintenanceCardVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.MaintenanceCardVoucherNo, new SelectList(Model.CompanyTransactionKindMaintenanceCardVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "MaintenanceCardVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.MaintenanceCardVoucherNo, new SelectList(Model.CompanyTransactionKindMaintenanceCardVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "MaintenanceCardVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindTransferVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.TransferVoucherNo, new SelectList(Model.CompanyTransactionKindTransferVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "TransferVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.TransferVoucherNo, new SelectList(Model.CompanyTransactionKindTransferVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "TransferVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindReturningSoldItemVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ReturningSoldItemVoucherNo, new SelectList(Model.CompanyTransactionKindReturningSoldItemVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "ReturningSoldItemVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ReturningSoldItemVoucherNo, new SelectList(Model.CompanyTransactionKindReturningSoldItemVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "ReturningSoldItemVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindInstallmentSchedulingVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.InstallmentSchedulingVoucherNo, new SelectList(Model.CompanyTransactionKindInstallmentSchedulingVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "InstallmentSchedulingVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.InstallmentSchedulingVoucherNo, new SelectList(Model.CompanyTransactionKindInstallmentSchedulingVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "InstallmentSchedulingVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindClosingAFundVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ClosingAFundVoucherNo, new SelectList(Model.CompanyTransactionKindClosingAFundVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "ClosingAFundVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ClosingAFundVoucherNo, new SelectList(Model.CompanyTransactionKindClosingAFundVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "ClosingAFundVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindChequeFundClosingVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ChequeFundClosingVoucherNo, new SelectList(Model.CompanyTransactionKindChequeFundClosingVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "ChequeFundClosingVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ChequeFundClosingVoucherNo, new SelectList(Model.CompanyTransactionKindChequeFundClosingVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "ChequeFundClosingVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindClosingAFinancingFundVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ClosingAFinancingFundVoucherNo, new SelectList(Model.CompanyTransactionKindClosingAFinancingFundVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "ClosingAFinancingFundVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ClosingAFinancingFundVoucherNo, new SelectList(Model.CompanyTransactionKindClosingAFinancingFundVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "ClosingAFinancingFundVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindFinancingVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.FinancingVoucherNo, new SelectList(Model.CompanyTransactionKindFinancingVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "FinancingVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.FinancingVoucherNo, new SelectList(Model.CompanyTransactionKindFinancingVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "FinancingVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="col-lg-5">
+                                @Html.LabelFor(m => m.CompanyTransactionKindInstallationVoucher)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.InstallationVoucherNo, new SelectList(Model.CompanyTransactionKindInstallationVoucher, "CompanyTransactionKindID", "ArabicName"), new { @id = "InstallationVoucherNo", @class = "form-control input-sml" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.InstallationVoucherNo, new SelectList(Model.CompanyTransactionKindInstallationVoucher, "CompanyTransactionKindID", "EnglishName"), new { @id = "InstallationVoucherNo", @class = "form-control input-sml" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="Expenses" class="tab-pane fade" role="tabpanel">
+                        <div class="col-lg-12">
+                            @Html.Action("GridViewExpenses", new { id = Model.BranchCode })
+                        </div>
+                    </div>
+                    <div id="OtherExpenses" class="tab-pane fade" role="tabpanel">
+                        <div class="col-lg-12">
+                            @Html.Action("GridViewOtherExpenses", new { id = Model.BranchCode })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "buttonSave";
+               settings.Text = Resources.Resource.Save;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "LoopGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+          {
+              settings.Name = "btnClear";
+              settings.Text = Resources.Resource.Clear;
+              settings.UseSubmitBehavior = false;
+              settings.ClientVisible = false;
+              settings.ClientSideEvents.Click = "ClearGrid";
+          }).GetHtml()
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary btn-anim" id="Save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                    <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@Html.TextBoxFor(m => m.BranchCode, new { @id = "BranchCode", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/St_BranchAccountH/Index";
+        });
+        $(document).on('click', '#Save', function () {
+            document.getElementById("buttonSave").click();
+        });
+        $('#BtnFundAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/FundAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnSalesAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/SalesAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnMaintenanceCardAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/MaintenanceCardAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnReturnCardAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ReturnCardAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnTransferFeesAndInstallationAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/TransferFeesAndInstallationAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnChequeFundAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ChequeFundAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnRelocationAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/RelocationAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnVisaAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/VisaAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnMasterAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/MasterAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnAmericanAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/AmericanAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnArabiCashAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ArabiCashAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearFundAccountNumber').on('click', function () {
+            document.getElementById("FundAccountNumber").value = '';
+            document.getElementById("FundAccountName").value = '';
+        });
+        $('#BtnClearSalesAccountNumber').on('click', function () {
+            document.getElementById("SalesAccountNumber").value = '';
+            document.getElementById("SalesAccountName").value = '';
+        });
+        $('#BtnClearMaintenanceCardAccountNumber').on('click', function () {
+            document.getElementById("MaintenanceCardAccountNumber").value = '';
+            document.getElementById("MaintenanceCardAccountName").value = '';
+        });
+        $('#BtnClearReturnCardAccountNumber').on('click', function () {
+            document.getElementById("ReturnCardAccountNumber").value = '';
+            document.getElementById("ReturnCardAccountName").value = '';
+        });
+        $('#BtnClearTransferFeesAndInstallationAccountNumber').on('click', function () {
+            document.getElementById("TransferFeesAndInstallationAccountNumber").value = '';
+            document.getElementById("TransferFeesAndInstallationAccountName").value = '';
+        });
+        $('#BtnClearChequeFundAccountNumber').on('click', function () {
+            document.getElementById("ChequeFundAccountNumber").value = '';
+            document.getElementById("ChequeFundAccountName").value = '';
+        });
+        $('#BtnClearRelocationAccountNumber').on('click', function () {
+            document.getElementById("RelocationAccountNumber").value = '';
+            document.getElementById("RelocationAccountName").value = '';
+        });
+        $('#BtnClearVisaAccountNumber').on('click', function () {
+            document.getElementById("VisaAccountNumber").value = '';
+            document.getElementById("VisaAccountName").value = '';
+        });
+        $('#BtnClearMasterAccountNumber').on('click', function () {
+            document.getElementById("MasterAccountNumber").value = '';
+            document.getElementById("MasterAccountName").value = '';
+        });
+        $('#BtnClearAmericanAccountNumber').on('click', function () {
+            document.getElementById("AmericanAccountNumber").value = '';
+            document.getElementById("AmericanAccountName").value = '';
+        });
+        $('#BtnClearArabiCashAccountNumber').on('click', function () {
+            document.getElementById("ArabiCashAccountNumber").value = '';
+            document.getElementById("ArabiCashAccountName").value = '';
+        });
+    });
+
+    </script>
+}

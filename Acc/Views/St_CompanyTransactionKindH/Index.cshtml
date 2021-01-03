@@ -1,0 +1,236 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.WarehouseCompanyTransactionKind;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.WarehouseCompanyTransactionKind</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+
+        </div>
+        <div class="col-lg-12">
+            <a class="btn btn-warning btn-anim" id="PrintExcel"> <i class="fa fa-file-excel-o"></i><span class="btn-text">@Resources.Resource.PrintExcel</span></a>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.Serial</th>
+                        <th>@Resources.Resource.TransactionKind</th>
+                        <th>@Resources.Resource.StockName</th>
+                        <th>@Resources.Resource.Case</th>
+                        <th>@Resources.Resource.Modify</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+	$(document).ready(function () {
+		$(document).on('click', '#CloseForm', function () {
+			window.location = "/St_CompanySettingH/Index";
+		});
+		$(document).on('click', '#btnPrintExcel', function () {
+			$(".dt-button").click();
+		});
+		var tabelMemRef = $("#tdataTable").DataTable({
+			"language": {
+				"emptyTable": '@Resources.Resource.EmptyTable',
+				"search": '@Resources.Resource.Search',
+				"loadingRecords": '@Resources.Resource.LoadingRecords',
+				"processing": '@Resources.Resource.Processing',
+				"zeroRecords": '@Resources.Resource.ZeroRecords',
+				"info": '@Resources.Resource.Info',
+				"infoEmpty": '@Resources.Resource.InfoEmpty',
+				"lengthMenu": '@Resources.Resource.LengthMenu',
+				"infoFiltered": '@Resources.Resource.InfoFiltered',
+				"paginate": {
+					"previous": '@Resources.Resource.Previous',
+					"next": '@Resources.Resource.Next',
+					"first": '@Resources.Resource.First',
+					"last": '@Resources.Resource.Last',
+				},
+				"aria": {
+					"sortAscending": '@Resources.Resource.SortAscending',
+					"sortDescending": '@Resources.Resource.SortDescending'
+				}
+			},
+			"scrollY": "500px",
+			"scrollX": true,
+			"ordering": false,
+			"autoWidth": false,
+			"paging": false,
+			"columnDefs": [
+				{ "width": "50px", "targets": 0, "className": "dt-center" },
+				{ "targets": 1, "className": "dt-center" },
+				{ "targets": 2, "className": "dt-center" },
+                { "width": "70px", "targets": 3, "className": "dt-center" },
+				{ "width": "50px", "targets": 4, "className": "dt-center" }
+			],
+
+			dom: 'Bfrtip',
+			buttons: [
+
+				{
+					messageTop: '@Resources.Resource.WarehouseCompanyTransactionKind',
+					extend: 'excelHtml5',
+					exportOptions: {
+						columns: [0, 1, 2,3]
+					}
+				}
+
+			],
+			ajax: {
+				url: "/St_CompanyTransactionKindH/GetAllSt_CoampnyTransactionKindH",
+				dataSrc: ""
+			},
+			columns: [
+				{
+
+					data: "St_CompanyTransactionKindID"
+				},
+
+				{
+					data: "TransactionKindName"
+
+				},
+				{
+					data: "WarehouseName"
+
+				},
+                {
+                    data: "CaseSerial"
+
+                },
+				{
+					data: "St_CompanyTransactionKindID",
+					render: function (data, type, r) {
+						return "<a  class='btn btn-success btn-icon-anim btn-square js-Pop btn-sm' href='/St_CompanyTransactionKindH/Update/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+					}
+
+				},
+			]
+
+		});
+		$(document).on('click', '.js-Pop', function (e) {
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+
+		});
+		$('#modal-container').on('hidden.bs.modal', function () {
+			$(this).removeData('bs.modal');
+
+		});
+		$('#CancelModal').on('click', function () {
+			return false;
+		});
+		$(document).on('click', '#Update', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						var dialog = bootbox.dialog({
+							title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+							message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+							closeButton: false
+						});
+
+						var dataToSave = {
+
+							St_CompanyTransactionKindID: $("#St_CompanyTransactionKindID").val(),
+                            St_TransactionKindID: $("#St_TransactionKindID").val(),
+							AutoSerial: $("#AutoSerial:checked").val(),
+                            SymbolSerial: $("#SymbolSerial:checked").val(),
+							Symbol: $("#Symbol").val(),
+							Serial: $("#Serial").val(),
+                            StockCode: $("#StockCode").val()
+						};
+
+						$.ajax({
+							type: "POST",
+                            url: "/St_CompanyTransactionKindH/UpdateSt_CompanyTransactionKindH",
+							data: JSON.stringify(dataToSave),
+							contentType: 'application/json',
+							success: function (data) {
+
+								dialog.modal('hide');
+								if (data.Code == 0) {
+									toastr.error(data.Msg);
+								}
+								else if (data.Code == 1) {
+									$('#modal-container').modal('hide');
+									toastr.success(data.Msg);
+                                    tabelMemRef.ajax.reload();
+									document.getElementById("Close").click();
+								}
+
+							},
+							error: function (data) {
+								dialog.modal('hide');
+								toastr.error(data);
+							}
+
+						});
+
+					}
+				}
+			});
+		});
+	});
+    </script>
+}
+
+
+

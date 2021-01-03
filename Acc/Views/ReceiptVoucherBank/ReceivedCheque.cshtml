@@ -1,0 +1,505 @@
+﻿@model Acc.ViewModels.PaperFilterVM
+@{
+    ViewBag.Title = @Resources.Resource.ReceivedChequeTransactions;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ReceivedChequeTransactions</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            @if (User.IsInRole("ShowReturnACheque") || User.IsInRole("CoOwner"))
+            {
+
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/ReturnAChequeFromTheChequeBox">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#E74C3C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnAChequeFromTheChequeBox</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.PaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowTransferFromFundCD") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/TransferFromFundToClearingDeposit">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#2980B9">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ClearingDeposit</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.PaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sPaperAmountClearingDeposit">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowTransferFromFundToChequeE") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/TransferFromFundToChequeEndorsement">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#1ABC9C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ChequeEndorsement</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.PaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sPaperAmountChequeEndorsement">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowFundChequesDrawnFromUC") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/FundChequesDrawnFromUnderCollection">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#F39C12;font-size:10pt">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.FundChequesDrawnFromUnderCollection</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.DrawingUnderCollectionPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sDrawingUnderCollectionPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+        </div>
+        <div class="row">
+            @if (User.IsInRole("ShowTransferFromFundUC") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/TransferFromFundToUnderCollection">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#E74C3C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.DepositChequesUnderCollection</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.PaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sPaperAmountFundToUnderCollection">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowReturnAChequeCD") || User.IsInRole("CoOwner"))
+
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/ReturnChequeClearingDeposit">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#2980B9">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnChequeClearingDeposit</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.ClearingDepositPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sClearingDepositPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowPaymentChequeEndorsement") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/PaymentChequeEndorsement">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#1ABC9C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.PaymentChequeEndorsement</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.EndorsementPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sEndorsementPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowReturnedChequeFund") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/ReturnedChequeFund">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#F39C12">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnedChequeFund</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.ReturnedChequePaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sReturnedChequePaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+        </div>
+        <div class="row">
+            @if (User.IsInRole("ShowDrawingUC") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/DrawingChequeUnderCollection">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#E74C3C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.DrawingChequeUnderCollection</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.UnderCollectionPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sUnderCollectionPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+            @if (User.IsInRole("ShowReturnChequeEndorsement") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/ReturnChequeEndorsement">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#1ABC9C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnChequeEndorsement</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.EndorsementPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sEndorsementPaperAmountReturn">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            @if (User.IsInRole("ShowCourtFund") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/CourtFund">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#F39C12">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.CourtFund</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.CourtFundPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts<span id="sCourtFundPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+        </div>
+        <div class="row">
+            @if (User.IsInRole("ShowPaymentchequeUC") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/PaymentChequeUnderCollection">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#E74C3C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.PaymentChequeUnderCollection</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.UnderCollectionPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sUnderCollectionPaperAmountPayment">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+        </div>
+        <div class="row">
+            @if (User.IsInRole("ShowReturnChequeUnderCollection") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/ReceiptVoucherBank/ReturnChequeUnderCollection">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#E74C3C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnChequeUnderCollection</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.PaymentUnderCollectionPaperCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sPaymentUnderCollectionPaperAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-lg-3 col-md-6"></div>
+            }
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+            <div class="col-lg-3 col-md-6">
+
+            </div>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.PaymentUnderCollectionPaperAmount, new { @id = "PaymentUnderCollectionPaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.UnderCollectionPaperAmount, new { @id = "UnderCollectionPaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CourtFundPaperAmount, new { @id = "CourtFundPaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.EndorsementPaperAmount, new { @id = "EndorsementPaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ReturnedChequePaperAmount, new { @id = "ReturnedChequePaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ClearingDepositPaperAmount, new { @id = "ClearingDepositPaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.PaperAmount, new { @id = "PaperAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.DrawingUnderCollectionPaperAmount, new { @id = "DrawingUnderCollectionPaperAmount", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+
+            var PaymentUnderCollectionPaperAmount = document.getElementById("PaymentUnderCollectionPaperAmount").value;
+            PaymentUnderCollectionPaperAmount = PaymentUnderCollectionPaperAmount.replace(",", "");
+            document.getElementById("PaymentUnderCollectionPaperAmount").value = formatMoney(PaymentUnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sPaymentUnderCollectionPaperAmount = $('#sPaymentUnderCollectionPaperAmount');
+            $sPaymentUnderCollectionPaperAmount.html(formatMoney(PaymentUnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var UnderCollectionPaperAmount = document.getElementById("UnderCollectionPaperAmount").value;
+            UnderCollectionPaperAmount = UnderCollectionPaperAmount.replace(",", "");
+            document.getElementById("UnderCollectionPaperAmount").value = formatMoney(UnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sUnderCollectionPaperAmount = $('#sUnderCollectionPaperAmount');
+
+            $sUnderCollectionPaperAmount.html(formatMoney(UnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency));
+            var $ssUnderCollectionPaperAmountPayment = $('#sUnderCollectionPaperAmountPayment');
+            $ssUnderCollectionPaperAmountPayment.html(formatMoney(UnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency));
+            
+
+            var CourtFundPaperAmount = document.getElementById("CourtFundPaperAmount").value;
+            CourtFundPaperAmount = CourtFundPaperAmount.replace(",", "");
+            document.getElementById("CourtFundPaperAmount").value = formatMoney(CourtFundPaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sCourtFundPaperAmount = $('#sCourtFundPaperAmount');
+            $sCourtFundPaperAmount.html(formatMoney(CourtFundPaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var EndorsementPaperAmount = document.getElementById("EndorsementPaperAmount").value;
+            EndorsementPaperAmount = EndorsementPaperAmount.replace(",", "");
+            document.getElementById("EndorsementPaperAmount").value = formatMoney(EndorsementPaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sEndorsementPaperAmount = $('#sEndorsementPaperAmount');
+            $sEndorsementPaperAmount.html(formatMoney(EndorsementPaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var $sEndorsementPaperAmountReturn = $('#sEndorsementPaperAmountReturn');
+            $sEndorsementPaperAmountReturn.html(formatMoney(EndorsementPaperAmount, TheDecimalPointForTheLocalCurrency));
+            
+            var ReturnedChequePaperAmount = document.getElementById("ReturnedChequePaperAmount").value;
+            ReturnedChequePaperAmount = ReturnedChequePaperAmount.replace(",", "");
+            document.getElementById("ReturnedChequePaperAmount").value = formatMoney(ReturnedChequePaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sReturnedChequePaperAmount = $('#sReturnedChequePaperAmount');
+            $sReturnedChequePaperAmount.html(formatMoney(ReturnedChequePaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var ClearingDepositPaperAmount = document.getElementById("ClearingDepositPaperAmount").value;
+            ClearingDepositPaperAmount = ClearingDepositPaperAmount.replace(",", "");
+            document.getElementById("ClearingDepositPaperAmount").value = formatMoney(ClearingDepositPaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sClearingDepositPaperAmount = $('#sClearingDepositPaperAmount');
+            $sClearingDepositPaperAmount.html(formatMoney(ClearingDepositPaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var PaperAmount = document.getElementById("PaperAmount").value;
+            PaperAmount = PaperAmount.replace(",", "");
+            document.getElementById("PaperAmount").value = formatMoney(PaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sPaperAmount = $('#sPaperAmount');
+            $sPaperAmount.html(formatMoney(PaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var $sPaperAmountClearingDeposit = $('#sPaperAmountClearingDeposit');
+            $sPaperAmountClearingDeposit.html(formatMoney(PaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var $sPaperAmountChequeEndorsement = $('#sPaperAmountChequeEndorsement');
+            $sPaperAmountChequeEndorsement.html(formatMoney(PaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var $sPaperAmountFundToUnderCollection = $('#sPaperAmountFundToUnderCollection');
+            $sPaperAmountFundToUnderCollection.html(formatMoney(PaperAmount, TheDecimalPointForTheLocalCurrency));
+
+            var DrawingUnderCollectionPaperAmount = document.getElementById("DrawingUnderCollectionPaperAmount").value;
+            DrawingUnderCollectionPaperAmount = DrawingUnderCollectionPaperAmount.replace(",", "");
+            document.getElementById("DrawingUnderCollectionPaperAmount").value = formatMoney(DrawingUnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency);
+            var $sDrawingUnderCollectionPaperAmount = $('#sDrawingUnderCollectionPaperAmount');
+            $sDrawingUnderCollectionPaperAmount.html(formatMoney(DrawingUnderCollectionPaperAmount, TheDecimalPointForTheLocalCurrency));
+        });
+    </script>
+}
+
+

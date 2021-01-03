@@ -1,0 +1,647 @@
+﻿@model Acc.Models.Company
+@{
+    ViewBag.Title = @Resources.Resource.CompanyInfo;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <style>
+        .panel-body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+        .panel-footer {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+        .panel-title {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+    </style>
+@Html.AntiForgeryToken()
+@Html.HiddenFor(m => m.CompanyID,new { @id="CompanyID"})
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CompanyInfo</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ArabicName)
+                    @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ArabicAddress)
+                    @Html.TextAreaFor(m => m.ArabicAddress, new { @id = "ArabicAddress", @class = "form-control input-sml" })
+                </div>
+
+
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AccountChart)
+                    @Html.TextBoxFor(m => m.AccountChart, new { @id = "AccountChart", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CostChart)
+                    @Html.TextBoxFor(m => m.CostChart, new { @id = "CostChart", @class = "form-control input-sml" })
+                </div>
+
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.EnglishName)
+                    @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.EnglishAddress)
+                    @Html.TextAreaFor(m => m.EnglishAddress, new { @id = "EnglishAddress", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TheDecimalPointForTheLocalCurrency)
+                    @Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @class = "form-control input-sml", @type = "number", @min = 2, @max = 3 })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TheDecimalPointForTheForeignCurrency)
+                    @Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @class = "form-control input-sml", @type = "number", @min = 2, @max = 3 })
+                </div>
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter" })
+                    @Html.ValidationMessageFor(m => m.WorkWithCostCenter)
+                    @Html.Label(Resources.Resource.WorkWithCostCenter, new { @style = "color:red" })
+                </div>
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.DirectExportTheTransactions, new { @id = "DirectExportTheTransactions" })
+                    @Html.ValidationMessageFor(m => m.DirectExportTheTransactions)
+                    @Html.Label(Resources.Resource.DirectExportTheTransactions, new { @style = "color:red" })
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, new { @id = "Email", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Mobile)
+                    @Html.TextBoxFor(m => m.Mobile, new { @id = "Mobile", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Telephone)
+                    @Html.TextBoxFor(m => m.Telephone, new { @id = "Telephone", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TeleFax)
+                    @Html.TextBoxFor(m => m.TeleFax, new { @id = "TeleFax", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Website)
+                    @Html.TextBoxFor(m => m.Website, new { @id = "Website", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CompanyLogo)
+                </div>
+                <div class="form-group">
+                    <img style="width:400px;height:150px;object-fit:contain;" src="~/CompanyLogo/@Model.CompanyLogo" id="CoLogo" class="img-responsive img-rounded" />
+                    <input type="file" id="LogoImageUpload" style="visibility:hidden;" accept="image/*" />
+                    <button type="button" class="btn btn-primary btn-anim" id="OpenDialog"><i class="fa  fa-file-image-o"></i><span class="btn-text">@Resources.Resource.ChoosePicture</span> </button>
+                    <button type="button" class="btn btn-warning btn-anim" id="ClearPicture"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.ClearPicture</span> </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+        <div class="form-group">
+            @if (Model.CompanyID == 0)
+            {
+                if (User.IsInRole("CoOwner"))
+                {
+                    <button type="submit" class="btn btn-success btn-anim" id="save"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></button>
+                }
+
+
+            }
+            else
+            {
+                if (User.IsInRole("UpdateCompany") || User.IsInRole("CoOwner"))
+                {
+                    <button type="submit" class="btn btn-success btn-anim" id="update"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                }
+
+            }
+            <button type="button" class="btn btn-warning btn-anim" id="ResettingAccounts"> <i class="fa fa-table"></i><span class="btn-text">@Resources.Resource.ResettingAccounts</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+
+    $(document).ready(function () {
+        var ImgPath;
+       $("#LogoImageUpload").change(function () {
+				if (window.FormData !== undefined) {
+					var fileUpload = $("#LogoImageUpload").get(0);
+					var files = fileUpload.files;
+					var fileData = new FormData();
+					for (var i = 0; i < files.length; i++) {
+						fileData.append(files[i].name, files[i]);
+					}
+					$.ajax({
+						url: '/Company/UploadFiles',
+						type: "POST",
+						contentType: false,
+						processData: false,
+						data: fileData,
+						success: function (result) {
+							if (result == "0") {
+								toastr.warning("يرجي تخزين بيانات الشركه اولا");
+							}
+							else {
+								$("#CoLogo").attr("src", "../CompanyLogo/" + result);
+								ImgPath =  result;
+							}
+						},
+						error: function (err) {
+							alert(err.statusText);
+						}
+					});
+				} else {
+					toastr.warning("Error!");
+				}
+            });
+        $("#ArabicName").focus().select();
+        $.getJSON('@Url.Action("CheckCostChartExist", "Company")', { }, function (Data) {
+                if (Data > 0) {
+                    document.getElementById("WorkWithCostCenter").disabled = true;
+                    document.getElementById("CostChart").readOnly = true;
+
+                } else {
+                    var WorkWithCostCenter = $("#WorkWithCostCenter:checked").val();
+                    if (WorkWithCostCenter) {
+                        document.getElementById("CostChart").readOnly = false;
+                    }
+                    else {
+                        document.getElementById("CostChart").value = '';
+                        document.getElementById("CostChart").readOnly = true;
+                    }
+                };
+        });
+        $.getJSON('@Url.Action("CheckAccountChartExist", "Company")', { }, function (Data) {
+                if (Data > 0) {
+                    document.getElementById("AccountChart").readOnly = true;
+
+                } else {
+                };
+        });
+        $(document).on('click', '#ClearPicture', function () {
+            $('#CoLogo').attr('src', '~/CompanyLogo/@Model.CompanyLogo');
+            $("#LogoImageUpload").replaceWith($("#LogoImageUpload").val('').clone(true));
+        });
+        $(document).on('click', '#OpenDialog', function () {
+            document.getElementById('LogoImageUpload').click();
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/CompanySettingsDash/Index";
+        });
+        $(document).on('click', '#ResettingAccounts', function () {
+            window.location = "/ResettingAccounts/Index";
+        });
+        $(document).on('click', '#save', function () {
+            if (document.getElementById("TheDecimalPointForTheLocalCurrency").value == "" || document.getElementById("TheDecimalPointForTheLocalCurrency").value < 2) {
+                document.getElementById("TheDecimalPointForTheLocalCurrency").value = "2";
+            }
+            else if (document.getElementById("TheDecimalPointForTheLocalCurrency").value > 3) {
+                document.getElementById("TheDecimalPointForTheLocalCurrency").value = "3";
+            }
+            if (document.getElementById("TheDecimalPointForTheForeignCurrency").value == "" || document.getElementById("TheDecimalPointForTheForeignCurrency").value < 2) {
+                document.getElementById("TheDecimalPointForTheForeignCurrency").value = "2";
+            }
+            else if (document.getElementById("TheDecimalPointForTheForeignCurrency").value > 3) {
+                document.getElementById("TheDecimalPointForTheForeignCurrency").value = "3";
+            }
+            if (document.getElementById("WorkWithCostCenter").checked) {
+                if ($("#CostChart").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if ($("#AccountChart").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    bootbox.confirm({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            confirm: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                var dialog = bootbox.dialog({
+                                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                    closeButton: false
+                                });
+                                var dataToSave = {
+                                    CompanyID: $("#CompanyID").val(),
+                                    ArabicName: $("#ArabicName").val(), ArabicAddress: $("#ArabicAddress").val(), AccountChart: $("#AccountChart").val(),
+                                    EnglishName: $("#EnglishName").val(), EnglishAddress: $("#EnglishAddress").val(), Email: $("#Email").val(),
+                                    Mobile: $("#Mobile").val(), Telephone: $("#Telephone").val(), TeleFax: $("#TeleFax").val(),
+                                    Website: $("#Website").val(), CostChart: $("#CostChart").val(),
+                                    WorkWithCostCenter: $("#WorkWithCostCenter:checked").val(),
+                                    DirectExportTheTransactions: $("#DirectExportTheTransactions:checked").val(), TheDecimalPointForTheLocalCurrency: $("#TheDecimalPointForTheLocalCurrency").val(),
+                                    TheDecimalPointForTheForeignCurrency: $("#TheDecimalPointForTheForeignCurrency").val(),CompanyLogo: ImgPath
+                                };
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Company/Save",
+                                    data: JSON.stringify(dataToSave),
+                                    contentType: 'application/json',
+                                    success: function (data) {
+
+                                        dialog.modal('hide');
+                                        if (data.Code == 0) {
+                                            toastr.error(data.Msg);
+                                        }
+                                        else if (data.Code == 1) {
+                                            $('#modal-container').modal('hide');
+                                            toastr.success(data.Msg);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        dialog.modal('hide');
+                                        toastr.error(data);
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+            else {
+                if ($("#AccountChart").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    bootbox.confirm({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            confirm: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                var dialog = bootbox.dialog({
+                                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                    closeButton: false
+                                });
+                                var dataToSave = {
+                                    CompanyID: $("#CompanyID").val(),
+                                    ArabicName: $("#ArabicName").val(), ArabicAddress: $("#ArabicAddress").val(), AccountChart: $("#AccountChart").val(),
+                                    EnglishName: $("#EnglishName").val(), EnglishAddress: $("#EnglishAddress").val(), Email: $("#Email").val(),
+                                    Mobile: $("#Mobile").val(), Telephone: $("#Telephone").val(), TeleFax: $("#TeleFax").val(),
+                                    Website: $("#Website").val(), CostChart: $("#CostChart").val(),
+                                    WorkWithCostCenter: $("#WorkWithCostCenter:checked").val(),
+                                    DirectExportTheTransactions: $("#DirectExportTheTransactions:checked").val(), TheDecimalPointForTheLocalCurrency: $("#TheDecimalPointForTheLocalCurrency").val(),
+                                    TheDecimalPointForTheForeignCurrency: $("#TheDecimalPointForTheForeignCurrency").val()
+                                };
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Company/Save",
+                                    data: JSON.stringify(dataToSave),
+                                    contentType: 'application/json',
+                                    success: function (data) {
+
+                                        dialog.modal('hide');
+                                        if (data.Code == 0) {
+                                            toastr.error(data.Msg);
+                                        }
+                                        else if (data.Code == 1) {
+                                            $('#modal-container').modal('hide');
+                                            toastr.success(data.Msg);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        dialog.modal('hide');
+                                        toastr.error(data);
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        $(document).on('click', '#update', function () {
+            if (document.getElementById("TheDecimalPointForTheLocalCurrency").value == "" || document.getElementById("TheDecimalPointForTheLocalCurrency").value < 2) {
+                document.getElementById("TheDecimalPointForTheLocalCurrency").value = "2";
+            }
+            else if (document.getElementById("TheDecimalPointForTheLocalCurrency").value > 3) {
+                document.getElementById("TheDecimalPointForTheLocalCurrency").value = "3";
+            }
+            if (document.getElementById("TheDecimalPointForTheForeignCurrency").value == "" || document.getElementById("TheDecimalPointForTheForeignCurrency").value < 2) {
+                document.getElementById("TheDecimalPointForTheForeignCurrency").value = "2";
+            }
+            else if (document.getElementById("TheDecimalPointForTheForeignCurrency").value > 3) {
+                document.getElementById("TheDecimalPointForTheForeignCurrency").value = "3";
+            }
+            if (document.getElementById("WorkWithCostCenter").checked) {
+                if ($("#CostChart").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if ($("#AccountChart").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    bootbox.confirm({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            confirm: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                var dialog = bootbox.dialog({
+                                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.PleaseWait...</h6>',
+                                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                    closeButton: false
+                                });
+                                var dataToSave = {
+                                    CompanyID: $("#CompanyID").val(),
+                                    ArabicName: $("#ArabicName").val(), ArabicAddress: $("#ArabicAddress").val(), AccountChart: $("#AccountChart").val(),
+                                    EnglishName: $("#EnglishName").val(), EnglishAddress: $("#EnglishAddress").val(), Email: $("#Email").val(),
+                                    Mobile: $("#Mobile").val(), Telephone: $("#Telephone").val(), TeleFax: $("#TeleFax").val(),
+                                    Website: $("#Website").val(), CostChart: $("#CostChart").val(),
+                                    WorkWithCostCenter: $("#WorkWithCostCenter:checked").val(),
+                                    DirectExportTheTransactions: $("#DirectExportTheTransactions:checked").val(), TheDecimalPointForTheLocalCurrency: $("#TheDecimalPointForTheLocalCurrency").val(),
+                                    TheDecimalPointForTheForeignCurrency: $("#TheDecimalPointForTheForeignCurrency").val()
+                                };
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Company/Update",
+                                    data: JSON.stringify(dataToSave),
+                                    contentType: 'application/json',
+                                    success: function (data) {
+
+                                        dialog.modal('hide');
+                                        if (data.Code == 0) {
+                                            toastr.error(data.Msg);
+                                        }
+                                        else if (data.Code == 1) {
+                                            $('#modal-container').modal('hide');
+                                            toastr.success(data.Msg);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        dialog.modal('hide');
+                                        toastr.error(data);
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+            else {
+                if ($("#AccountChart").val() == '') {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    bootbox.confirm({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            confirm: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                className: 'btn-success'
+                            },
+                            cancel: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                className: 'btn-danger'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                var dialog = bootbox.dialog({
+                                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.PleaseWait...</h6>',
+                                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                    closeButton: false
+                                });
+                                var dataToSave = {
+                                    CompanyID: $("#CompanyID").val(),
+                                    ArabicName: $("#ArabicName").val(), ArabicAddress: $("#ArabicAddress").val(), AccountChart: $("#AccountChart").val(),
+                                    EnglishName: $("#EnglishName").val(), EnglishAddress: $("#EnglishAddress").val(), Email: $("#Email").val(),
+                                    Mobile: $("#Mobile").val(), Telephone: $("#Telephone").val(), TeleFax: $("#TeleFax").val(),
+                                    Website: $("#Website").val(), CostChart: $("#CostChart").val(),
+                                    WorkWithCostCenter: $("#WorkWithCostCenter:checked").val(),
+                                    DirectExportTheTransactions: $("#DirectExportTheTransactions:checked").val(), TheDecimalPointForTheLocalCurrency: $("#TheDecimalPointForTheLocalCurrency").val(),
+                                    TheDecimalPointForTheForeignCurrency: $("#TheDecimalPointForTheForeignCurrency").val()
+                                };
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/Company/Update",
+                                    data: JSON.stringify(dataToSave),
+                                    contentType: 'application/json',
+                                    success: function (data) {
+
+                                        dialog.modal('hide');
+                                        if (data.Code == 0) {
+                                            toastr.error(data.Msg);
+                                        }
+                                        else if (data.Code == 1) {
+                                            $('#modal-container').modal('hide');
+                                            toastr.success(data.Msg);
+                                        }
+
+                                    },
+                                    error: function (data) {
+                                        dialog.modal('hide');
+                                        toastr.error(data);
+                                    }
+
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicAddress").focus().select();
+
+        });
+        $("#AccountChart").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#CostChart").focus().select();
+
+        });
+        $("#CostChart").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishAddress").focus().select();
+
+        });
+        $("#TheDecimalPointForTheLocalCurrency").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TheDecimalPointForTheForeignCurrency").focus().select();
+
+        });
+        $("#TheDecimalPointForTheForeignCurrency").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Email").focus().select();
+
+        });
+        $("#Email").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Mobile").focus().select();
+
+        });
+        $("#Mobile").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Telephone").focus().select();
+
+        });
+        $("#Telephone").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TeleFax").focus().select();
+
+        });
+        $("#TeleFax").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Website").focus().select();
+
+        });
+        $("#Website").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+
+        });
+        $('#WorkWithCostCenter').on('change', function (e) {
+            var WorkWithCostCenter = $("#WorkWithCostCenter:checked").val();
+            if (WorkWithCostCenter) {
+                document.getElementById("CostChart").readOnly = false;
+                $("#CostChart").focus().select();
+            }
+            else {
+                document.getElementById("CostChart").value = '';
+                document.getElementById("CostChart").readOnly = true;
+            }
+        });
+        var TheDecimalPointForTheLocalCurrency = $("#TheDecimalPointForTheLocalCurrency").val();
+        if (TheDecimalPointForTheLocalCurrency == 0) {
+            document.getElementById("TheDecimalPointForTheLocalCurrency").value = '2';
+        }
+        var TheDecimalPointForTheForeignCurrency = $("#TheDecimalPointForTheForeignCurrency").val();
+        if (TheDecimalPointForTheForeignCurrency == 0) {
+            document.getElementById("TheDecimalPointForTheForeignCurrency").value = '2';
+        }
+        $("#TheDecimalPointForTheLocalCurrency").blur(function () {
+            if (document.getElementById("TheDecimalPointForTheLocalCurrency").value == "" || document.getElementById("TheDecimalPointForTheLocalCurrency").value < 2) {
+                document.getElementById("TheDecimalPointForTheLocalCurrency").value = "2";
+            }
+            else if (document.getElementById("TheDecimalPointForTheLocalCurrency").value > 3) {
+                document.getElementById("TheDecimalPointForTheLocalCurrency").value = "3";
+            }
+        });
+        $("#TheDecimalPointForTheForeignCurrency").blur(function () {
+            if (document.getElementById("TheDecimalPointForTheForeignCurrency").value == "" || document.getElementById("TheDecimalPointForTheForeignCurrency").value < 2) {
+                document.getElementById("TheDecimalPointForTheForeignCurrency").value = "2";
+            }
+            else if (document.getElementById("TheDecimalPointForTheForeignCurrency").value > 3) {
+                document.getElementById("TheDecimalPointForTheForeignCurrency").value = "3";
+            }
+        });
+    });
+</script>
+}
+
+
+
+

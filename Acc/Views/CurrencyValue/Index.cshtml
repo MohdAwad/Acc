@@ -1,0 +1,385 @@
+﻿@model Acc.ViewModels.CurrencyValueVM
+@{
+    ViewBag.Title = @Resources.Resource.CurrencyValue;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CurrencyValue</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            @if (User.IsInRole("AddCurrancyValue") || User.IsInRole("CoOwner"))
+            {
+                 <a class="btn btn-primary btn-anim js-Pop" id="btnSave" href="/CurrencyValue/AddNew"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+           }
+            @if (User.IsInRole("PrintCurrancyValue") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-warning btn-anim" id="btnPrintExcel"> <i class="fa fa-file-excel-o"></i><span class="btn-text">@Resources.Resource.PrintExcel</span></a>
+            }
+
+
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+
+            <table id="tdataTable" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.CurrencyNumber</th>
+                        <th>@Resources.Resource.CurrencyName</th>
+                        <th>@Resources.Resource.ConversionFactor</th>
+                        <th>@Resources.Resource.LastUpdatedDate</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/CompanySettingsDash/Index";
+        });
+        $(document).on('click', '#SaveNewCurrencyValue', function () {
+            if ($("#ConversionFactor").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                CurrencyID: $("#CurrencyID").val(),
+                                ConversionFactor: $("#ConversionFactor").val()
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/CurrencyValue/SaveCurrencyValue",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        tabelMemRef.ajax.reload();
+
+                                        document.getElementById("CurrencyID").value = 1;
+                                        document.getElementById("ConversionFactor").value = 0.000;
+                                        document.getElementById("Close").click();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+
+            }
+
+        });
+        //-----------------//
+
+        $(document).on('click', '#btnPrintExcel', function () {
+
+            var dialog = bootbox.dialog({
+                title: '@Resources.Resource.PleaseWait',
+                message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Print...</p>',
+                closeButton: false
+            });
+
+
+            var dataToSave = [];
+            tabelMemRef.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                var data = this.data();
+                dataToSave.push(data);
+
+
+            });
+
+
+            $.ajax({
+                type: "POST",
+                url: "/ExcelREport/CreateCurrencyValueExcel",
+                data: JSON.stringify(dataToSave),
+                contentType: 'application/json',
+                success: function (data) {
+                    dialog.modal('hide');
+
+
+                    window.location = '/ExcelReport/DownloadCurrencyValueExcel?fileGuid=' + data.FileGuid;
+
+
+
+                },
+                error: function (data) {
+                    dialog.modal('hide');
+                    toastr.error(data);
+                }
+
+            });
+
+            dialog.modal('hide');
+            //$('#tdataTable').DataTable().ajax.reload();
+
+        });
+
+        if ('@Resources.Resource.CurLang' == 'Arb') {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "500px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "columnDefs": [
+                    { "width": "50px", "targets": 0, "className": "dt-center" },
+                    { "targets": 1, "className": "dt-center" },
+                    { "width": "100px", "targets": 2, "className": "dt-center" },
+                    { "width": "100px", "targets": 3, "className": "dt-center" }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+                    {
+                        messageTop: '@Resources.Resource.Currency',
+                        extend: 'excelHtml5',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3]
+                        }
+                    }
+
+                ],
+
+                ajax: {
+                    url: "/CurrencyValue/GetAllCurrencyValue",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+
+                        data: "CurrencyID"
+                    },
+
+                    {
+                        data: "ArabicName"
+
+                    },
+                    {
+                        data: "SConversionFactor"
+
+                    }
+
+
+                    ,
+
+
+                    {
+                        data: "InsDateTime",
+                        render: function (data, type, r) {
+                            return moment(data).format('DD/MM/YYYY')
+                        }
+
+                    }
+
+
+                ]
+
+
+            });
+        }
+        else {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "columnDefs": [
+                    { "width": "50px", "targets": 0, "className": "dt-center" },
+                    { "targets": 1, "className": "dt-center" },
+                    { "width": "100px", "targets": 2, "className": "dt-center" },
+                    { "width": "100px", "targets": 3, "className": "dt-center" }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+
+                    {
+                        messageTop: '@Resources.Resource.Currency',
+                        extend: 'excelHtml5',
+                        exportOptions: {
+                            columns: [0, 1, 2, 3]
+                        }
+                    }
+
+                ],
+                ajax: {
+                    url: "/CurrencyValue/GetAllCurrencyValue",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+
+                        data: "CurrencyID"
+                    },
+
+                    {
+                        data: "EnglishName"
+
+                    },
+                    {
+                        data: "SConversionFactor"
+
+                    } ,
+
+                    {
+                        data: "InsDateTime",
+                        render: function (data, type, r) {
+                            return moment(data).format('DD/MM/YYYY')
+                        }
+
+                    }
+
+
+                ]
+            });
+
+        }
+
+
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+
+
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        //-----------------------//
+
+    });
+</script>
+}

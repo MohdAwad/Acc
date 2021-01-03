@@ -1,0 +1,122 @@
+﻿@model  Acc.Models.CostCenter
+@{
+    ViewBag.Title = @Resources.Resource.UpdateAccount;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#ArabicName").focus().select();
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Note").focus().select();
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">
+                        @Resources.Resource.UpdateCostCenter
+                    </h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CostNumber)
+                        @Html.TextBoxFor(m => m.CostNumber, new { @id = "CostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.CostNumber)
+                    </div>
+
+                </div>
+                <div class="col-lg-6">
+                    @if (User.IsInRole("CoOwner") || User.IsInRole("UpdateCostName"))
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ArabicName)<span style="color:red">*</span>
+                            @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                            @Html.ValidationMessageFor(m => m.ArabicName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EnglishName)
+                            @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                            @Html.ValidationMessageFor(m => m.EnglishName)
+                        </div>
+                    }
+                    else
+
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ArabicName)<span style="color:red">*</span>
+                            @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.ArabicName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EnglishName)
+                            @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.EnglishName)
+                        </div>
+                    }
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Note)
+                        @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Note)
+                    </div>
+
+                    @if (User.IsInRole("CoOwner") || User.IsInRole("StopCost"))
+                    {
+                        <div class="form-group  ">
+
+                            @Html.CheckBoxFor(m => m.StoppedCost, new { @id = "StoppedCost" })
+                            @Html.ValidationMessageFor(m => m.StoppedCost)
+                            @Html.Label(Resources.Resource.StoppedCost, new { @style = "color:red" })
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group  ">
+
+                            @Html.CheckBoxFor(m => m.StoppedCost, new { @id = "StoppedCost", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.StoppedCost)
+                            @Html.Label(Resources.Resource.StoppedCost, new { @style = "color:red" })
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-success btn-anim" id="UpdateAccount"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

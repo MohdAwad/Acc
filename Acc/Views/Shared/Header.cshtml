@@ -1,0 +1,75 @@
+﻿@using Microsoft.AspNet.Identity
+<ul class="@(Acc.Helpers.CultureHelper.IsRighToLeft() ? "nav navbar-top-links navbar-left" : "nav navbar-top-links navbar-right")">
+
+    <li class="notifications" id="NotificationHide">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class=" fa fa-bell" id="NotificationClick"></i>
+            <span class="badge js-notifications-count hide" style=" position: absolute ;  top: 8px;right: -1px;  background: #a80a0a;"></span>
+
+        </a>
+        <ul class=" dropdown-menu dropdown-messages" id="NotificationHeader" style="height:400px;overflow:hidden; overflow-y:scroll; ">
+
+
+            <li class="btn btn-outline btn-info btn-sm"><a href="/Home/NotificationLog"><i class="fa fa-clock-o"></i> @Resources.Resource.MyNotinifactioLogs</a> </li>
+
+
+
+            <li class="divider"></li>
+
+
+
+        </ul>
+
+
+    </li>
+
+
+    <li class="dropdown">
+
+
+    <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <i class="fa fa-user fa-1x"></i> <i class="fa fa-caret-down"></i>
+        </a>
+        <ul class="dropdown-menu dropdown-user">
+
+
+            <li>
+                <a href="#"><i class="fa fa-user "></i> @User.Identity.GetUserName()</a>
+            </li>
+            @*<li>
+                    <a href="/Manage/ChangePassword"><i class="fa  fa-unlock  "></i> @Resources.Resource.ChangePassword</a>
+                </li>*@
+
+            @if (Resources.Resource.CurLang == "Arb")
+            {
+                <li>
+                    <a href="/Home/SetCulture?culture=en"><i class="fa fa-language fa-fw"></i> English</a>
+                </li>
+
+            }
+            else
+
+            {
+                <li>
+                    <a href="/Home/SetCulture?culture=ar"><i class="fa fa-language fa-fw"></i> Arabic</a>
+                </li>
+            }
+            <li class="divider"></li>
+            <li>
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <a href="javascript:document.getElementById('logoutForm').submit()"><i class="fa fa-sign-out fa-fw"></i> @Resources.Resource.LogOff</a>
+
+                }
+            </li>
+        </ul>
+    </li>
+
+</ul>
+
+
+
+
+

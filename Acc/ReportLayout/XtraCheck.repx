@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="19.1.5.0" Ref="1" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v19.1, Version=19.1.5.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="XtraCheck" Landscape="true" Margins="100, 100, 0, 17" PaperKind="A5" PageWidth="827" PageHeight="583" Version="19.1" DataSource="#Ref-0" Font="Arial, 9.75pt">
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="0" />
+    <Item2 Ref="3" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="17.08333" />
+    <Item3 Ref="4" ControlType="ReportHeaderBand" Name="ReportHeader" HeightF="152.7083">
+      <Controls>
+        <Item1 Ref="5" ControlType="XRLabel" Name="LbFils" Multiline="true" Text="LbFils" SizeF="64.58334,23" LocationFloat="508.333344, 119.708313" Padding="2,2,0,0,100" />
+        <Item2 Ref="6" ControlType="XRLabel" Name="LbDinar" Multiline="true" Text="LbDinar" SizeF="77.08334,23" LocationFloat="431.25, 119.708282" Padding="2,2,0,0,100" />
+        <Item3 Ref="7" ControlType="XRLabel" Name="LbTotal" RightToLeft="Yes" Multiline="true" Text="LbTafqet" SizeF="389.5834,23" LocationFloat="29.166666, 119.708313" Padding="2,2,0,0,100" />
+        <Item4 Ref="8" ControlType="XRLabel" Name="LbCustrName" Multiline="true" Text="LbCustrName" SizeF="362.5,23" LocationFloat="210.4167, 50.1249962" Padding="2,2,0,0,100" />
+        <Item5 Ref="9" ControlType="XRLabel" Name="LbTxt1" Multiline="true" SizeF="362.5,23" LocationFloat="210.4167, 10.0000067" Padding="2,2,0,0,100" />
+        <Item6 Ref="10" ControlType="XRLabel" Name="LbCheckDate" Multiline="true" Text="LbCheckDate" SizeF="100,23" LocationFloat="29.16667, 27.04166" Padding="2,2,0,0,100" />
+      </Controls>
+    </Item3>
+    <Item4 Ref="11" ControlType="DetailBand" Name="Detail" HeightF="0" />
+  </Bands>
+  <StyleSheet>
+    <Item1 Ref="12" Name="Title" BorderStyle="Inset" Font="Arial, 14.25pt" ForeColor="255,64,70,80" BackColor="Transparent" BorderColor="Black" Sides="None" StringFormat="Near;Near;0;None;Character;Default" BorderWidthSerializable="1" />
+    <Item2 Ref="13" Name="DetailCaption1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,64,70,80" BackColor="255,153,212,246" BorderColor="White" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item3 Ref="14" Name="DetailData1" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BorderColor="Transparent" Sides="Left" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="2" />
+    <Item4 Ref="15" Name="DetailData3_Odd" BorderStyle="Inset" Padding="6,6,0,0,100" Font="Arial, 8.25pt" ForeColor="Black" BackColor="255,243,245,248" BorderColor="Transparent" Sides="None" StringFormat="Near;Center;0;None;Character;Default" TextAlignment="MiddleLeft" BorderWidthSerializable="1" />
+    <Item5 Ref="16" Name="PageInfo" BorderStyle="Inset" Padding="2,2,0,0,100" Font="Arial, 8.25pt, style=Bold" ForeColor="255,64,70,80" StringFormat="Near;Near;0;None;Character;Default" />
+  </StyleSheet>
+  <ComponentStorage>
+    <Item1 Ref="0" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v19.1" Name="objectDataSource1" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RGF0YVNvdXJjZTEiPjxEYXRhU291cmNlIFR5cGU9IkFjYy5Nb2RlbHMuUGFwZXIsIEFjYywgVmVyc2lvbj0xLjAuMC4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPW51bGwiIC8+PC9PYmplY3REYXRhU291cmNlPg==" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

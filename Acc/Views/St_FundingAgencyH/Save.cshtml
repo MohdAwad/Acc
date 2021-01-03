@@ -1,0 +1,202 @@
+﻿
+@model Acc.ViewModels.St_FundingAgencyHVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetCommissionAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("CommissionAccount").value = data.AccountNumber;
+            document.getElementById("CommissionAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("CommissionAccount").value = '';
+            document.getElementById("CommissionAccountName").value = '';
+        }
+    }
+    $(document).ready(function () {
+        $("#ArabicName").focus().select();
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FlatCommission12").focus().select();
+
+        });
+        $("#FlatCommission12").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FlatCommission24").focus().select();
+
+        });
+        $("#FlatCommission24").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FlatCommission36").focus().select();
+
+        });
+        $("#FlatCommission36").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FlatCommission48").focus().select();
+
+        });
+        $("#FlatCommission48").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FlatCommission60").focus().select();
+
+        });
+        $("#FlatCommission60").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#NameOfPersonInCharge").focus().select();
+
+        });
+        $("#NameOfPersonInCharge").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EmailOfPersonInCharge").focus().select();
+
+        });
+        $("#EmailOfPersonInCharge").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#PhoneOfPersonInCharge").focus().select();
+
+        });
+        $("#PhoneOfPersonInCharge").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+
+        });
+        $('#BtnClearCommissionAccountNumber').on('click', function () {
+            document.getElementById("CommissionNumber").value = '';
+            document.getElementById("CommissionAccountName").value = '';
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Save</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Folowing Error!")
+                <div class="col-lg-12">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FundingAgencyID)
+
+                            @Html.TextBoxFor(m => m.FundingAgencyID, new { @id = "FundingAgencyID", @class = "form-control input-sml input-sm", @readonly = "readonly" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ArabicName) <span style="color:red">*</span>
+
+                            @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control  input-sm" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EnglishName)
+
+                            @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control  input-sm" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.CommissionAccount)
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.CommissionAccount, new { @id = "CommissionAccount", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnCommissionAccountNumber">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                                @Html.ValidationMessageFor(m => m.CommissionAccount)
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AccountName)
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.CommissionAccountName, new { @id = "CommissionAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearCommissionAccountNumber">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FlatCommission12)
+
+                            @Html.TextBoxFor(m => m.FlatCommission12, new { @id = "FlatCommission12", @class = "form-control input-sml input-sm", @type = "number", @min = "0" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FlatCommission24)
+
+                            @Html.TextBoxFor(m => m.FlatCommission24, new { @id = "FlatCommission24", @class = "form-control input-sml input-sm", @type = "number", @min = "0" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FlatCommission36)
+
+                            @Html.TextBoxFor(m => m.FlatCommission36, new { @id = "FlatCommission36", @class = "form-control input-sml input-sm", @type = "number", @min = "0" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FlatCommission48)
+
+                            @Html.TextBoxFor(m => m.FlatCommission48, new { @id = "FlatCommission48", @class = "form-control input-sml input-sm", @type = "number", @min = "0" })
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FlatCommission60)
+
+                            @Html.TextBoxFor(m => m.FlatCommission60, new { @id = "FlatCommission60", @class = "form-control input-sml input-sm", @type = "number", @min = "0" })
+                        </div>
+
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.NameOfPersonInCharge)
+
+                            @Html.TextBoxFor(m => m.NameOfPersonInCharge, new { @id = "NameOfPersonInCharge", @class = "form-control input-sml input-sm"})
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EmailOfPersonInCharge)
+
+                            @Html.TextBoxFor(m => m.EmailOfPersonInCharge, new { @id = "EmailOfPersonInCharge", @class = "form-control input-sml input-sm"})
+                        </div> 
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.PhoneOfPersonInCharge)
+
+                            @Html.TextBoxFor(m => m.PhoneOfPersonInCharge, new { @id = "PhoneOfPersonInCharge", @class = "form-control input-sml input-sm"})
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary btn-anim" id="SaveSt_FundingAgencyH"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

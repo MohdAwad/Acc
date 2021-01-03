@@ -1,0 +1,132 @@
+﻿@model Acc.ViewModels.ServiceVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#ArabicName").focus();
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Note").focus().select();
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#CostPrice").focus().select();
+
+        });
+        $("#CostPrice").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#SalePrice").focus().select();
+
+        });
+        $("#SalePrice").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TaxPercentage").focus().select();
+
+        });
+        $("#TaxPercentage").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+
+        });
+    });
+</script>
+
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Save</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+                <div class="col-lg-6">
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ServiceID)
+
+                        @Html.TextBoxFor(m => m.ServiceID, new { @id = "ServiceID", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ServiceGroupID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.ServiceGroupID, new SelectList(Model.ServiceGroup, "ServiceGroupID", "ArabicName"), new { @id = "ServiceGroupID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.ServiceGroupID, new SelectList(Model.ServiceGroup, "ServiceGroupID", "EnglishName"),new { @id = "ServiceGroupID", @class = "form-control input-sml" })
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ArabicName) <span style="color:red">*</span>
+
+                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EnglishName)
+
+                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                    </div>
+
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Note)
+
+                        @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CostPrice)
+
+                        @Html.TextBoxFor(m => m.CostPrice, new { @id = "CostPrice", @class = "form-control input-sml", @type = "number", @min = "0" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SalePrice)
+
+                        @Html.TextBoxFor(m => m.SalePrice, new { @id = "SalePrice", @class = "form-control input-sml", @type = "number", @min = "0" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TaxPercentage)
+
+                        @Html.TextBoxFor(m => m.TaxPercentage, new { @id = "TaxPercentage", @class = "form-control input-sml", @type = "number", @min = "0" })
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary btn-anim" id="SaveNewService"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

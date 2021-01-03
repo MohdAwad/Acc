@@ -1,0 +1,271 @@
+﻿@model Acc.ViewModels.AssetMaintenanceVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#VoucherDate").mask("99/99/9999");
+        $("#GrundToDate").mask("99/99/9999");
+        $("#TrDate").mask("99/99/9999");
+        $("#TrDate").focus().select();
+        $("#TrDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#MaintenanceNo").focus().select();
+            }
+        });
+        $("#MaintenanceNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PayValue").focus().select();
+            }
+        });
+        $("#PayValue").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#GrundToDate").focus().select();
+            }
+        });
+        $("#GrundToDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#MaintenanceVoucherNo").focus().select();
+            }
+        });
+        $("#MaintenanceVoucherNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#VoucherDate").focus().select();
+            }
+        });
+        $("#VoucherDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#MaintenanceNote").focus().select();
+            }
+        });
+        $("#MaintenanceNote").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#TrDate").focus().select();
+            }
+        });
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("VoucherDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#GrundToDate").blur(function () {
+            var dDate = document.getElementById("GrundToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("GrundToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#TrDate").blur(function () {
+            var dDate = document.getElementById("TrDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("TrDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+    });
+</script>
+@Html.HiddenFor(m => m.CompanyID, new { @id = "CompanyID" })
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.Serial)
+                            @Html.TextBoxFor(m => m.Serial, new { @id = "Serial", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AssetID)
+                            @Html.TextBoxFor(m => m.AssetID, new { @id = "UpdAssetID", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.AssetName)
+                            @Html.TextBoxFor(m => m.AssetName, new { @id = "UpdAssetName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FAssetTypeID)
+                            @Html.DropDownListFor(m => m.FAssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType,
+                           new { @id = "UpdFAssetTypeID", @class = "form-control input-sml", @disabled = "disabled" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ConsumptionComplexNo)
+                            @Html.TextBoxFor(m => m.CreditAccountNo, new { @id = "CreditAccountNo", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ConsumptionComplexName)
+                            @Html.TextBoxFor(m => m.CreditAccountName, new { @id = "CreditAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TrDate)
+                            @Html.TextBoxFor(model => model.TrDate, new { @id = "TrDate", @class = "form-control input-sml", @Value = Model.TrDate.ToString("dd/MM/yyyy") })
+                            @Html.ValidationMessageFor(m => m.TrDate)
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+
+                            @Html.LabelFor(m => m.TrKind)
+
+                            @Html.DropDownListFor(m => m.TrKind, new List<SelectListItem>
+                                                             {
+
+                                                          new SelectListItem{ Text=Resources.Resource. IncreaseTheEfficiency, Value = "1",Selected=false },
+                                                               new SelectListItem{ Text=Resources.Resource. Periodic, Value = "2",Selected=false },
+                                                              new SelectListItem{ Text=Resources.Resource.MaintenanceContract, Value = "3",Selected=false }
+                                                                }, new { @id = "TrKind", @class = "form-control input-sml" })
+                            @Html.ValidationMessageFor(model => model.TrKind, "", new { @class = "text-danger" })
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaintenanceNo)
+                            @Html.TextBoxFor(m => m.MaintenanceNo, new { @id = "MaintenanceNo", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.PayValue)
+                            @Html.TextBoxFor(m => m.PayValue, new { @id = "PayValue", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.GrundToDate)
+                            @Html.TextBoxFor(model => model.GrundToDate, new { @id = "GrundToDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy") })
+                            @Html.ValidationMessageFor(m => m.GrundToDate)
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaintenanceVoucherNo)
+                            @Html.TextBoxFor(m => m.MaintenanceVoucherNo, new { @id = "MaintenanceVoucherNo", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.VoucherDate)
+                            @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy") })
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.MaintenanceNote)
+                            @Html.TextBoxFor(m => m.MaintenanceNote, new { @id = "MaintenanceNote", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-success btn-anim" id="UpdateMaintenance"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

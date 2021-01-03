@@ -1,0 +1,672 @@
+﻿@model Acc.ViewModels.AccountLevelRepVM
+@{
+    ViewBag.Title = @Resources.Resource.CompareCostMonths;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedCostCenter(data) {
+
+        if (data.CostNumber != null && data.AccNo != '') {
+            document.getElementById("AccNo").value = data.CostNumber;
+            document.getElementById("AccName").value = data.CostName;
+        }
+        else {
+            document.getElementById("AccNo").value = '';
+            document.getElementById("AccName").value = '';
+        }
+
+    }
+
+         var CostNumber = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedCost };
+                CostNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#AccNo").autocomplete({
+            source: CostNumber,
+            select: function (event, ui) {
+                document.getElementById("AccNo").value = ui.item.value;
+                document.getElementById("AccName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CompareCostMonths</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AccountLevelDropVMID)<span style="color:red">*</span>
+                    @Html.DropDownListFor(m => m.AccountLevelDropVMID, new SelectList(Model.AccountLevelDropVM, "AccountLevel", "LevelName"), Resources.Resource.Level, new { @id = "AccountLevelID", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Month)
+                    @Html.DropDownListFor(m => m.Month, new List<SelectListItem>
+                                                     {
+                                                      new SelectListItem{ Text=Resources.Resource.January, Value = "1",Selected=true },
+                                                      new SelectListItem{ Text=Resources.Resource. February, Value = "2",Selected=false },
+                                                       new SelectListItem{ Text=Resources.Resource. March, Value = "3",Selected=false },
+                                                        new SelectListItem{ Text=Resources.Resource. April, Value = "4",Selected=false },
+                                                         new SelectListItem{ Text=Resources.Resource. May, Value = "5",Selected=false },
+                                                          new SelectListItem{ Text=Resources.Resource. June, Value = "6",Selected=false },
+                                                           new SelectListItem{ Text=Resources.Resource. July, Value = "7",Selected=false },
+                                                            new SelectListItem{ Text=Resources.Resource. August, Value = "8",Selected=false },
+                                                             new SelectListItem{ Text=Resources.Resource. September, Value = "9",Selected=false },
+                                                              new SelectListItem{ Text=Resources.Resource. October, Value = "10",Selected=false },
+                                                               new SelectListItem{ Text=Resources.Resource. November, Value = "11",Selected=false },
+                                                                new SelectListItem{ Text=Resources.Resource. December, Value = "12",Selected=false }
+                                                                }, new { @id = "Month", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(model => model.Month, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                @Html.Label(Resources.Resource.CostCenter)
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.AccNo, new { @id = "AccNo", @class = "form-control input-sml" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccNo">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                @Html.Label(Resources.Resource.CostCenterName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.AccName, new { @id = "AccName", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccNo">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowEstimatedZero, new { @id = "ShowEstimatedZero" })
+                    @Html.Label(Resources.Resource.ShowEstimatedZero)
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowMainAccountValue, new { @id = "ShowMainAccountValue" })
+                    @Html.Label(Resources.Resource.ShowMainAccountValue)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowOnlyaccountswithcostcenter, new { @id = "ShowOnlyaccountswithcostcenter" })
+                    @Html.Label(Resources.Resource.ShowOnlyaccountswithcostcenter)
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn  btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            @if (User.IsInRole("PrintRepEstimatedBudgetForCostCenters") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="submit" class="btn btn-anim btnFav" id="AddToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTableTransAction" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>*</th>
+                        <th>@Resources.Resource.AccountNumber</th>
+                        <th>@Resources.Resource.AccountName</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th style="color:black !important">*</th>
+                        <th style="color:black !important">@Resources.Resource.AccountNumber</th>
+                        <th style="color:black !important">@Resources.Resource.AccountName</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+    $(document).ready(function () {
+
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
+        $(document).on('click', '#AddToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.CompareCostMonths',
+                            ScreenUrl: "/Report/EstimatedBudgetForCostCenters",
+                            ScreenType: 1
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+
+
+        });
+        $(document).on('click', '#PrintPDF', function () {
+            var ShowMainAccountValue = $("#ShowMainAccountValue:checked").val();
+            var AccountLevelDropVMID = $("#AccountLevelID").val();
+            var AccNo = $("#AccNo").val();
+            var Month = $("#Month").val();
+            var ShowOnlyaccountswithcostcenter = $("#ShowOnlyaccountswithcostcenter:checked").val();
+            var ShowEstimatedZero = $("#ShowEstimatedZero:checked").val();
+
+            if (ShowOnlyaccountswithcostcenter) {
+                ShowOnlyaccountswithcostcenter = 1
+            }
+            else {
+                ShowOnlyaccountswithcostcenter = 0
+            }
+
+            if (ShowEstimatedZero) {
+                ShowEstimatedZero = 1
+
+            }
+            else {
+                ShowEstimatedZero = 0
+
+            }
+            if (ShowMainAccountValue) {
+                ShowMainAccountValue = 1
+
+            }
+            else {
+                ShowMainAccountValue = 0
+
+            }
+
+
+
+
+
+            if (AccountLevelDropVMID == '' || AccountLevelDropVMID == null) {
+                AccountLevelDropVMID = "0";
+            }
+            if (AccNo == '' || AccNo == null) {
+                AccNo = "0";
+
+            }
+            if (Month == '' || Month == null) {
+                Month = "0";
+            }
+
+            window.open('/PDFReport/GetEstimatedBudgetForCostCenterPDF/' + ShowMainAccountValue + "/" + AccountLevelDropVMID + "/" + AccNo + "/" + Month + "/" + ShowOnlyaccountswithcostcenter + "/" + ShowEstimatedZero + "/0", '_blank');
+        });
+        $(document).on('click', '#reload', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            tdataTableTransActionRef.ajax.reload();
+            dialog.modal('hide');
+        });
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/Report/ReportDash";
+        });
+        var tdataTableTransActionRef = $("#tdataTableTransAction").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            buttons: [
+            ],
+            "columnDefs": [
+
+                {
+                    "targets": 1,
+                    "className": "text-center",
+                },
+                {
+                    className: 'text-center', targets: [2, 3, 4, 5, 6]
+                }
+                ,
+                {
+                    "targets": [7, 8, 9, 10],
+                    "visible": false
+                }
+
+
+            ],
+            "decimal": ",",
+            "thousands": ".",
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            ajax: {
+                "type": "POST",
+                url: "/Report/GetEstimatedBudgetForCostCenter",
+                "data": function (d) {
+                    d.ShowMainAccountValue = $("#ShowMainAccountValue:checked").val();
+                    d.AccountLevelDropVMID = $("#AccountLevelID").val();
+                    d.AccNo = $("#AccNo").val();
+                    d.Month = $("#Month").val();
+                    d.ShowOnlyaccountswithcostcenter = $("#ShowOnlyaccountswithcostcenter:checked").val();
+                    d.ShowEstimatedZero = $("#ShowEstimatedZero:checked").val();
+                },
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+                    data: "MainAccount"
+
+                },
+                {
+
+                    data: "AccountNumber",
+                    render: function (data, type, r) {
+                        if (r.IsMainAccount == 1) {
+                            return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                        }
+                        else {
+                            return "<i class='text-primary'><strong>" + data + "</strong></i>";
+
+                        }
+
+                    }
+                },
+                {
+                    data: "Name"
+
+                },
+                {
+                    data: "MonthTransaction",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                }
+                , {
+                    data: "Expected",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                }
+                ,
+                {
+                    data: "ChangeVaule",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                }
+                ,
+                {
+                    data: "ChangePrec",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+
+                {
+                    data: "nMonthTransaction"
+
+                },
+                {
+                    data: "nExpected"
+
+                }
+                ,
+                {
+                    data: "nChangeVaule"
+
+                },
+                {
+                    data: "nChangePrec"
+
+                }
+
+
+            ],
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[, Rs]|(\.\d{2})/g, "") * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                },
+                    total3 = api
+                        .column(7)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total4 = api
+                        .column(8)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total5 = api
+                        .column(9)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total6 = api
+                        .column(10)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+
+                $(api.column(0).footer()).html('');
+                $(api.column(1).footer()).html('');
+                $(api.column(2).footer()).html('');
+
+
+                $(api.column(3).footer()).html(formatMoney(total3, TheDecimalPointForTheLocalCurrency));
+                $(api.column(4).footer()).html(formatMoney(total4, TheDecimalPointForTheLocalCurrency));
+                $(api.column(5).footer()).html(formatMoney(total5, TheDecimalPointForTheLocalCurrency));
+                $(api.column(6).footer()).html(formatMoney(total6, TheDecimalPointForTheLocalCurrency));
+
+
+
+            }
+
+
+        });
+        $('#tdataTableAccount').on('click', '.js-delete', function (e) {
+
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).removeData('bs.modal');
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#tdataTableAccount').on('click', '.js-modify', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#tdataTableAccount').on('click', '.js-reason', function (e) {
+            var d = e.target.getAttribute("data-content");
+
+            bootbox.alert(d);
+
+
+
+        });
+        $('#js-addnew').on('click', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#tdataTableAccount').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+            console.log('modal-containe');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+
+        $("#AccNo").focus().select();
+
+        $("#AccNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#AccountLevelID").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/SearchFromCostCenter';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+
+        $('#BtnAccNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/SearchFromCostCenter';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            });
+
+        });
+        $('#BtnClearAccNo').on('click', function () {
+            document.getElementById("AccNo").value = '';
+            document.getElementById("AccName").value = '';
+        });
+
+        $("#AccNo").blur(function () {
+            var AccountNumber = document.getElementById("AccNo").value;
+            if (AccountNumber == '') {
+                document.getElementById("AccName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccNo").value = '';
+                            document.getElementById("AccName").value = '';
+                            $("#AccNo").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("AccName").value = Data.ArabicName;
+                            }
+                            else {
+                                document.getElementById("AccName").value = Data.EnglishName;
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
+
+
+    });
+
+
+
+
+</script>
+
+}
+
+
+

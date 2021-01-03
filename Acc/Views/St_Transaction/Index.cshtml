@@ -1,0 +1,124 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.DailyTransactions;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.DailyTransactions</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_InitialInventory/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.InitialInventory</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_PurchaseOrderLocal/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.LocalPurchaseOrder</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_OfferPrice/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.OfferPrice</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_TransferVoucher/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.St_TransferVoucher</span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_PurchaseVoucherLocal/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.LocalPurchaseVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_SalesOrder/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SaleOrder</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_ReturnPurchaseVoucherLocal/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.LocalReturnPurchaseVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_SaleVoucherLocal/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.LocalSaleVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_InVoucher/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.InVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_ReturnSaleVoucherLocal/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.LocalReturnSaleVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_DebitCreditInVoucher/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.DebitCreditInVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_OutVoucher/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.OutVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_PurchaseOrderForeign/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.PurchaseOrderForeign</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_SpoiledVoucher/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SpoiledVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_PurchaseVoucherImport/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.PurchaseVoucherImport</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/St_DebitCreditOutVoucher/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.DebitCreditOutVoucher</span></a>
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

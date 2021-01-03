@@ -1,0 +1,739 @@
+﻿@model Acc.ViewModels.DefinitionAssetSiteVM
+@{
+    ViewBag.Title = @Resources.Resource.AssetsDepreciationDetailsReport;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetAsset(data) {
+        if (data.AssetID != null && data.AssetID != '') {
+            document.getElementById("AssetID").value = data.AssetID;
+        }
+        else {
+            document.getElementById("AssetID").value = '';
+        }
+
+    }
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.AssetsDepreciationDetailsReport</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(@Resources.Resource.Serial)
+                    @Html.TextBoxFor(m => m.VouchrNo, new { @id = "VouchrNo", @class = "form-control input-sml", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(@Resources.Resource.Date)
+                    @Html.TextBoxFor(model => model.VouchrDate, new { @id = "VouchrDate", @class = "form-control input-sml", @Value = Model.VouchrDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.Label(@Resources.Resource.Total)
+                    @Html.TextBoxFor(m => m.Total, new { @id = "Total", @class = "form-control input-sml", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AssetTypeID)
+                    @Html.DropDownListFor(m => m.AssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType, new { @id = "AssetTypeID", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                @Html.LabelFor(m => m.AssetID)
+                <div class="form-group  input-group">
+
+                    @Html.TextBoxFor(m => m.AssetID, new { @id = "AssetID", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAsset">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAsset">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ApproveConsumptionDate, new { @id = "ApproveConsumptionDate" }) @Resources.Resource.ApproveConsumptionDate /@Html.LabelFor(m => m.FromConsumptionDate)
+                    @Html.TextBoxFor(model => model.FromConsumptionDate, new { @id = "FromConsumptionDate", @class = "form-control input-sml", @Value = Model.FromConsumptionDate.ToString("dd/MM/yyyy"), @style = "max-width:480px" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToConsumptionDate)
+                    @Html.TextBoxFor(model => model.ToConsumptionDate, new { @id = "ToConsumptionDate", @class = "form-control input-sml", @Value = Model.ToConsumptionDate.ToString("dd/MM/yyyy"), @style = "max-width:480px" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ApproveLastConsumptionDate, new { @id = "ApproveLastConsumptionDate" }) @Resources.Resource.ApproveLastConsumptionDate / @Html.LabelFor(m => m.FromLastConsumptionDate)
+                    @Html.TextBoxFor(model => model.FromLastConsumptionDate, new { @id = "FromLastConsumptionDate", @class = "form-control input-sml", @Value = Model.FromLastConsumptionDate.ToString("dd/MM/yyyy"), @style = "max-width:480px" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ToLastConsumptionDate)
+                    @Html.TextBoxFor(model => model.ToLastConsumptionDate, new { @id = "ToLastConsumptionDate", @class = "form-control input-sml", @Value = Model.ToLastConsumptionDate.ToString("dd/MM/yyyy"), @style = "max-width:480px" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="form-group">
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.SumAssetCost)
+                        @Html.TextBoxFor(m => m.SumAssetCost, new { @id = "SumAssetCost", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.SumAnnualConsumption)
+                        @Html.TextBoxFor(m => m.SumAnnualConsumption, new { @id = "SumAnnualConsumption", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.SumValueofConsumption)
+                        @Html.TextBoxFor(m => m.SumValueofConsumption, new { @id = "SumValueofConsumption", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center;font-size : 9Pt">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.SumPreviousConsumption)
+                        @Html.TextBoxFor(m => m.SumPreviousConsumption, new { @id = "SumPreviousConsumption", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.SumCombinedConsum)
+                        @Html.TextBoxFor(m => m.SumCombinedConsum, new { @id = "SumCombinedConsum", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.SumBookValue)
+                        @Html.TextBoxFor(m => m.SumBookValue, new { @id = "SumBookValue", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn btn-primary btn-anim" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            @if (User.IsInRole("PrintRepAssetDepreciationPrintReport") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top : 10px">
+            <div class="form-group">
+                <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.AssetID</th>
+                            <th>@Resources.Resource.AssetName</th>
+                            <th>@Resources.Resource.AssetTypeID</th>
+                            <th>@Resources.Resource.AssetCost</th>
+                            <th>@Resources.Resource.AssetConsumRatio</th>
+                            <th>@Resources.Resource.AnnualConsumption</th>
+                            <th>@Resources.Resource.ValueofConsumption</th>
+                            <th>@Resources.Resource.LastConsumptionDate</th>
+                            <th>@Resources.Resource.PreviousConsumption</th>
+                            <th>@Resources.Resource.ConsumptionDate</th>
+                            <th>@Resources.Resource.CombinedConsum</th>
+                            <th>@Resources.Resource.BookValue</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+      
+        $('#ApproveConsumptionDate').click(function () {
+            document.getElementById('ApproveLastConsumptionDate').checked = false;
+        });
+        $('#ApproveLastConsumptionDate').click(function () {
+            document.getElementById('ApproveConsumptionDate').checked = false;
+        });
+            
+            $("#FromConsumptionDate").mask("99/99/9999");
+            $("#ToConsumptionDate").mask("99/99/9999");
+            $("#FromLastConsumptionDate").mask("99/99/9999");
+            $("#ToLastConsumptionDate").mask("99/99/9999");
+            $("#FromConsumptionDate").focus().select();
+        $("#FromConsumptionDate").blur(function () {
+            var dDate = document.getElementById("FromConsumptionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromConsumptionDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToConsumptionDate").blur(function () {
+            var dDate = document.getElementById("ToConsumptionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToConsumptionDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#FromConsumptionDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToConsumptionDate").focus().select();
+            }
+
+        });
+        $("#ToConsumptionDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromLastConsumptionDate").focus().select();
+            }
+
+        });
+        $("#FromLastConsumptionDate").blur(function () {
+            var dDate = document.getElementById("FromLastConsumptionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("FromLastConsumptionDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#ToLastConsumptionDate").blur(function () {
+            var dDate = document.getElementById("ToLastConsumptionDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("ToLastConsumptionDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#FromLastConsumptionDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ToLastConsumptionDate").focus().select();
+            }
+
+        });
+        $("#ToLastConsumptionDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#FromConsumptionDate").focus().select();
+            }
+
+        });
+        $('#BtnAsset').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAsset/GetAsset';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearAsset').on('click', function () {
+            document.getElementById("AssetID").value = '';
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/Asset/AssetDepreciationReport";
+        });
+        $(document).on('click', '#PrintPDF', function () {
+            var AssetTypeID = $("#AssetTypeID").val();
+            var AssetID = $("#AssetID").val();
+            var VouchrNo = $("#VouchrNo").val();
+
+            var FromConsumptionDate = $("#FromConsumptionDate").val();
+            var ToConsumptionDate = $("#ToConsumptionDate").val();
+            var FromLastConsumptionDate = $("#FromLastConsumptionDate").val();
+            var ToLastConsumptionDate = $("#ToLastConsumptionDate").val();
+            var VouchrDate = $("#VouchrDate").val();
+
+            var ApproveConsumptionDate = $("#ApproveConsumptionDate:checked").val();
+            var ApproveLastConsumptionDate = $("#ApproveLastConsumptionDate:checked").val();
+
+           
+
+
+
+            if (ApproveConsumptionDate) {
+                ApproveConsumptionDate = 1
+            }
+            else {
+                ApproveConsumptionDate = 0
+            }
+
+            if (ApproveLastConsumptionDate) {
+                ApproveLastConsumptionDate = 1
+
+            }
+            else {
+                ApproveLastConsumptionDate = 0
+
+            }
+
+
+            var words = FromConsumptionDate.split('/');
+            FromConsumptionDate = words[0] + words[1] + words[2];
+            words = ToConsumptionDate.split('/');
+            ToConsumptionDate = words[0] + words[1] + words[2];
+            words = FromLastConsumptionDate.split('/');
+            FromLastConsumptionDate = words[0] + words[1] + words[2];
+            words = ToLastConsumptionDate.split('/');
+            ToLastConsumptionDate = words[0] + words[1] + words[2];
+            words = VouchrDate.split('/');
+            VouchrDate = words[0] + words[1] + words[2];
+
+
+
+            if (AssetTypeID == '' || AssetTypeID == null) {
+                AssetTypeID = "0";
+            }
+
+            if (AssetID == '' || AssetID == null) {
+                AssetID = "0";
+            }
+
+
+            if (VouchrNo == '' || VouchrNo == null) {
+                VouchrNo = "0";
+            }
+
+            window.open('/PDFReport/GetAssetDepreciationTransactionReportPDF/' + AssetTypeID + "/" + AssetID + "/" + VouchrNo + "/" + VouchrDate + "/" +FromConsumptionDate + "/" + ToConsumptionDate + "/" + FromLastConsumptionDate + "/"+ToLastConsumptionDate + "/"+ ApproveConsumptionDate + "/" + ApproveLastConsumptionDate +  "/0", '_blank');
+
+        });
+            $(document).on('click', '#reload', function () {
+
+                var dFromConsumptionDate = document.getElementById("FromConsumptionDate").value;
+                var dToConsumptionDate = document.getElementById("ToConsumptionDate").value;
+                var dFromLastConsumptionDate = document.getElementById("FromLastConsumptionDate").value;
+                var dToLastConsumptionDate = document.getElementById("ToLastConsumptionDate").value;
+                if (!validatedate(dFromConsumptionDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (!validatedate(dToConsumptionDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (!validatedate(dFromLastConsumptionDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else if (!validatedate(dToLastConsumptionDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dialog = bootbox.dialog({
+                        title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                        message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                        closeButton: false
+                    });
+                    tabelMemRef.ajax.reload();
+                    dialog.modal('hide');
+
+                }
+            });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [5],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [6],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [7],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [8],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [9],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [10],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [11],
+                    "className": "dt-center"
+                }
+
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "POST",
+                url: "/Asset/GetAssetDepreciationTransactionReport",
+                "data": function (d) {
+
+                    d.AssetTypeID = $("#AssetTypeID").val();
+                    d.AssetID = $("#AssetID").val();
+                    d.VouchrNo = $("#VouchrNo").val();
+
+                    d.FromConsumptionDate = $("#FromConsumptionDate").val();
+                    d.ToConsumptionDate = $("#ToConsumptionDate").val();
+                    d.FromLastConsumptionDate = $("#FromLastConsumptionDate").val();
+                    d.ToLastConsumptionDate = $("#ToLastConsumptionDate").val();
+
+                    d.ApproveConsumptionDate = $("#ApproveConsumptionDate:checked").val();
+                    d.ApproveLastConsumptionDate = $("#ApproveLastConsumptionDate:checked").val();
+
+                },
+                dataSrc: ""
+            },
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                SumAssetCost = api.column(3).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                SumAnnualConsumption = api.column(5).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                SumValueofConsumption = api.column(6).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                SumPreviousConsumption = api.column(8).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                SumCombinedConsum = api.column(10).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                SumBookValue = api.column(11).data().reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+                var table = $('#tdataTable').DataTable();
+                document.getElementById("SumAssetCost").value = (formatMoney(SumAssetCost, TheDecimalPointForTheLocalCurrency));
+                document.getElementById("SumAnnualConsumption").value = (formatMoney(SumAnnualConsumption, TheDecimalPointForTheLocalCurrency));
+                document.getElementById("SumPreviousConsumption").value = (formatMoney(SumPreviousConsumption, TheDecimalPointForTheLocalCurrency));
+                document.getElementById("SumValueofConsumption").value = (formatMoney(SumValueofConsumption, TheDecimalPointForTheLocalCurrency));
+                document.getElementById("SumBookValue").value = (formatMoney(SumBookValue, TheDecimalPointForTheLocalCurrency));
+                document.getElementById("SumCombinedConsum").value = (formatMoney(SumCombinedConsum, TheDecimalPointForTheLocalCurrency));
+            },
+            columns: [
+                {
+                    data: "AssetID"
+                },
+                {
+                    data: "AssetName"
+
+                },
+                {
+                    data: "AssetTypeName"
+                },
+                {
+                    data: "AssetCost",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+
+                },
+                {
+                    data: "AssetConsumRatio"
+                },
+                {
+                    data: "AnnualConsumption",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ValueofConsumption",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+
+                },
+                {
+                    data: "LastConsumptionDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+
+                },
+                {
+                    data: "PreviousConsumption",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ConsumptionDate",
+                    render: function (data, type, r) {
+                        return moment(data).format('DD/MM/YYYY')
+                    }
+
+                },
+                {
+                    data: "CombinedConsum",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+
+                },
+                {
+                    data: "BookValue",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+
+                }
+
+            ]
+        });
+    });
+    </script>
+}
+
+
+
+
+

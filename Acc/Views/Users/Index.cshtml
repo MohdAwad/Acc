@@ -1,0 +1,473 @@
+﻿ @model  Acc.ViewModels.UserViewModel
+@{
+    ViewBag.Title = @Resources.Resource.Users;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light">@Resources.Resource.Users</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            @if (User.IsInRole("AddUser") || User.IsInRole("CoOwner"))
+            {
+                <a class="btn btn-primary btn-anim" id="btnSave"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.New</span></a>
+            }
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead id="HeadStyle">
+                    <tr>
+                        <th>@Resources.Resource.Email/@Resources.Resource.UserName</th>
+                        <th>@Resources.Resource.AccountStatus</th>
+                        <th>@Resources.Resource.ChangePassword</th>
+                        <th>@Resources.Resource.UpdatePermission</th>
+
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+
+	$(document).ready(function () {
+		$(document).on('click', '#btnSave', function () {
+			window.location = "/Users/Add";
+		});
+		$(document).on('click', '#CloseForm', function () {
+			window.location = "/CompanySettingsDash/Index";
+		});
+		var tabelMemRef = $("#tdataTable").DataTable({
+			"language": {
+				"emptyTable": '@Resources.Resource.EmptyTable',
+				"search": '@Resources.Resource.Search',
+				"loadingRecords": '@Resources.Resource.LoadingRecords',
+				"processing": '@Resources.Resource.Processing',
+				"zeroRecords": '@Resources.Resource.ZeroRecords',
+				"info": '@Resources.Resource.Info',
+				"infoEmpty": '@Resources.Resource.InfoEmpty',
+				"lengthMenu": '@Resources.Resource.LengthMenu',
+				"infoFiltered": '@Resources.Resource.InfoFiltered',
+				"paginate": {
+					"previous": '@Resources.Resource.Previous',
+					"next": '@Resources.Resource.Next',
+					"first": '@Resources.Resource.First',
+					"last": '@Resources.Resource.Last',
+				},
+				"aria": {
+					"sortAscending": '@Resources.Resource.SortAscending',
+					"sortDescending": '@Resources.Resource.SortDescending'
+				}
+			},
+			"scrollY": "500px",
+			"scrollX": true,
+			"ordering": false,
+			"autoWidth": false,
+			"paging": false,
+			"columnDefs": [
+				{ "targets": 0, "className": "dt-center" },
+				{ "width": 100, "targets": 1, "className": "dt-center", "orderable": false },
+				{ "width": 100, "targets": 2, "className": "dt-center", "orderable": false },
+				{ "width": 100, "targets": 3, "className": "dt-center", "orderable": false }
+			],
+			ajax: {
+				url: "/Users/GetUser",
+				dataSrc: ""
+			},
+			columns: [
+				{
+					data: "Email"
+
+				},
+				{
+					data: "Id",
+					render: function (data, type, r) {
+						if (r.AccountStatus == 0) {
+                            return "<a  class='btn btn-success btn-anim btn-sm js-modify' href='/Users/DeActivate/" + data + "'><i class='fa fa-eye'></i><span class='btn-text'>@Resources.Resource.Active</span> </a>";
+						}
+						else {
+                            return "<a  class='btn btn-anim btnDelete-lg btn-sm js-modify' href='/Users/Activate/" + data + "'><i class='fa fa-eye-slash'></i><span class='btn-text'>@Resources.Resource.NotActive</span> </a>";
+						}
+					}
+				},
+				{
+					data: "Id",
+					render: function (data) {
+						if ("@(User.IsInRole("UpdateUser") || User.IsInRole("CoOwner"))" == "True") {
+                            return "<a  class='btn btn-icon-anim btn-square btnDelete btn-sm js-modify' href='/Users/ChangeUserPassword/" + data + "'><i class='fa fa-lock' style='margin-top: 4px;'></i> </a>";
+						}
+						else {
+							return "";
+						}
+					}
+				},
+				{
+					data: "Id",
+					render: function (data) {
+						if ("@(User.IsInRole("UpdateUser") || User.IsInRole("CoOwner"))" == "True") {
+                            return "<a  class='btn btn-success btn-icon-anim btn-square btn-sm js-Pop' href='/Users/ModifyPermission/" + data + "'><i class='fa fa-edit' style='margin-top: 4px;'></i> </a>";
+						}
+						else {
+							return "";
+						}
+					}
+				}
+			]
+		});
+		$('#tdataTable').on('click', '.js-delete', function (e) {
+
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#tdataTable').on('click', '.js-modify', function (e) {
+
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#js-addnew').on('click', function (e) {
+
+			$('#modal-container').removeData('bs.modal');
+			e.preventDefault();
+			$(this).attr('data-target', '#modal-container');
+			$(this).attr('data-toggle', 'modal');
+		});
+		$('#tdataTable').on('click', '.modal-close-btn', function () {
+			$('#modal-container').modal('hide');
+		});
+		$('#modal-container').on('hidden.bs.modal', function () {
+			$(this).removeData('bs.modal');
+
+		});
+		$('#CancelModal').on('click', function () {
+			return false;
+		});
+		$(document).on('click', '#update', function () {
+			var dialog = bootbox.dialog({
+				title: '@Resources.Resource.PleaseWait',
+				message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+				closeButton: false
+			});
+
+			var dataToSave = {
+				Id: $("#Id").val(),
+				Email: $("#Email").val(), Password: $("#Password").val(), ConfirmPassword: $("#ConfirmPassword").val(),
+				UserType: $("#UserType").val(),
+				Name: $("#Name").val(), EVDBalance: $("#EVDBalance").val(), Phone: $("#Phone").val(),
+				Discount: $("#Discount").val()
+
+			};
+			$.ajax({
+				type: "POST",
+				url: "/Users/UpdateUser",
+				data: JSON.stringify(dataToSave),
+				contentType: 'application/json',
+				success: function (data) {
+
+					dialog.modal('hide');
+					if (data.Code == 0) {
+						toastr.error(data.Msg);
+					}
+					else if (data.Code == 1) {
+						$('#modal-container').modal('hide');
+						toastr.success(data.Msg);
+						tabelMemRef.ajax.reload();
+						//ClearForm();
+					}
+
+				},
+				error: function (data) {
+					dialog.modal('hide');
+					toastr.error(data);
+				}
+
+			});
+		});
+		$(document).on('click', '#save', function () {
+			var dialog = bootbox.dialog({
+				title: '@Resources.Resource.PleaseWait',
+				message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+				closeButton: false
+			});
+
+			var dataToSave = {
+				Email: $("#Email").val(), Password: $("#Password").val(), ConfirmPassword: $("#ConfirmPassword").val(),
+				UserType: $("#UserType").val(),
+				Name: $("#Name").val(), EVDBalance: $("#EVDBalance").val(), Phone: $("#Phone").val(),
+				Discount: $("#Discount").val()
+
+			};
+			$.ajax({
+				type: "POST",
+				url: "/Account/CreateUser",
+				data: JSON.stringify(dataToSave),
+				contentType: 'application/json',
+				success: function (data) {
+
+					dialog.modal('hide');
+					if (data.Code == 0) {
+						toastr.error(data.Msg);
+					}
+					else if (data.Code == 1) {
+						$('#modal-container').modal('hide');
+						toastr.success(data.Msg);
+						tabelMemRef.ajax.reload();
+						//ClearForm();
+					}
+
+				},
+				error: function (data) {
+					dialog.modal('hide');
+					toastr.error(data);
+				}
+
+			});
+		});
+		$(document).on('click', '#delete', function () {
+			var dialog = bootbox.dialog({
+				title: '@Resources.Resource.PleaseWait',
+				message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+				closeButton: false
+			});
+
+
+			var dataToSave = {
+				Email: $("#Email").val(), Password: $("#Password").val()
+			};
+			$.ajax({
+				type: "POST",
+				url: "/User/Remove",
+				data: JSON.stringify(dataToSave),
+				contentType: 'application/json',
+				success: function (data) {
+					$('#modal-container').modal('hide');
+					dialog.modal('hide');
+					toastr.success("@Resources.Resource.OperationCompletedSuccessfully");
+
+					tabelMemRef.ajax.reload();
+
+				},
+				error: function (data) {
+					dialog.modal('hide');
+					toastr.error("@Resources.Resource.SomthingWentWrong");
+				}
+
+			});
+		});
+		$(document).on('click', '#deactive', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						var dialog = bootbox.dialog({
+							title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+							message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+							closeButton: false
+						});
+						var dataToSave = {
+							Email: $("#Email").val(), Id: $("#Id").val()
+						};
+						$.ajax({
+							type: "POST",
+							url: "/Users/DeActivate",
+							data: JSON.stringify(dataToSave),
+							contentType: 'application/json',
+							success: function (data) {
+								$('#modal-container').modal('hide');
+								dialog.modal('hide');
+								toastr.success("@Resources.Resource.OperationCompletedSuccessfully");
+                                document.getElementById("Close").click();
+                                $('#tdataTable').DataTable().clear().draw();
+                                $('#tdataTable').DataTable().ajax.reload();
+							},
+							error: function (data) {
+								dialog.modal('hide');
+								toastr.error("@Resources.Resource.SomthingWentWrong");
+							}
+
+						});
+					}
+				}
+			});
+		});
+		$(document).on('click', '#active', function () {
+			bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+						var dialog = bootbox.dialog({
+							title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+							message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+							closeButton: false
+						});
+						var dataToSave = {
+							Email: $("#Email").val(), Id: $("#Id").val()
+						};
+						$.ajax({
+							type: "POST",
+							url: "/Users/Activate",
+							data: JSON.stringify(dataToSave),
+							contentType: 'application/json',
+							success: function (data) {
+								$('#modal-container').modal('hide');
+								dialog.modal('hide');
+								toastr.success("@Resources.Resource.OperationCompletedSuccessfully");
+                                document.getElementById("Close").click();
+                                $('#tdataTable').DataTable().clear().draw();
+                                $('#tdataTable').DataTable().ajax.reload();
+							},
+							error: function (data) {
+								dialog.modal('hide');
+								toastr.error("@Resources.Resource.SomthingWentWrong");
+							}
+
+						});
+					}
+				}
+			});
+		});
+		$(document).on('click', '#changepassword', function () {
+            if ($("#Password").val() == '') {
+				bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseAddAPassword</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+            else if ($("#ConfirmPassword").val() != $("#Password").val()) {
+                bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PasswordDoesNotMatch</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+			}
+			else {
+				bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+								closeButton: false
+							});
+
+                            var dataToSave = {
+                                Email: $("#Email").val(), Password: $("#Password").val(), ConfirmPassword: $("#ConfirmPassword").val(),
+                                Id: $("#Id").val()
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/Users/ChangeUserPassword",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        tabelMemRef.ajax.reload();
+                                        document.getElementById("Close").click();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+                            });
+						}
+					}
+				});
+			}
+		});
+	});
+</script>
+
+
+}
+
+

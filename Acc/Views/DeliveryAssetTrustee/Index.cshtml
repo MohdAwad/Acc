@@ -1,0 +1,581 @@
+﻿@model Acc.ViewModels.DefinitionAssetSiteVM
+@{
+    ViewBag.Title = @Resources.Resource.DeliveryAssetTrustee;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetAsset(data) {
+        if (data.AssetID != null && data.AssetID != '') {
+            document.getElementById("AssetID").value = data.AssetID;
+            document.getElementById("AssetName").value = data.AssetName;
+            document.getElementById("AssetTypeID").value = data.AssetTypeID;
+            document.getElementById("AssetTypeName").value = data.AssetTypeName;
+            document.getElementById("AdministrationID").value = data.AdministrationID;
+            document.getElementById("CircleID").value = data.CircleID;
+            document.getElementById("SectionID").value = data.SectionID;
+            document.getElementById("SiteID").value = data.SiteID;
+            document.getElementById("AdministrationName").value = data.AdministrationName;
+            document.getElementById("CircleName").value = data.CircleName;
+            document.getElementById("SectionName").value = data.SectionName;
+            document.getElementById("SiteName").value = data.SiteName;
+            document.getElementById("SerialID").value = data.SerialID;
+        }
+        else {
+            document.getElementById("AssetID").value = '';
+            document.getElementById("AssetName").value = '';
+            document.getElementById("AssetTypeID").value = '';
+            document.getElementById("AssetTypeName").value = '';
+            document.getElementById("AdministrationID").value = '';
+            document.getElementById("CircleID").value = '';
+            document.getElementById("SectionID").value = '';
+            document.getElementById("SiteID").value = '';
+            document.getElementById("AdministrationName").value = '';
+            document.getElementById("CircleName").value = '';
+            document.getElementById("SectionName").value = '';
+            document.getElementById("SiteName").value = '';
+            document.getElementById("SerialID").value = '';
+        }
+
+    }
+
+    var AccNumber = [];
+    $.getJSON('@Url.Action("GetAllDefinitionAsset", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AssetName, value: Data[i].AssetID, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#AssetID").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("AssetID").value = ui.item.value;
+                document.getElementById("AssetName").value = ui.item.label;
+
+            }
+        });
+    });
+</script>
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.DeliveryAssetTrustee</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DeliveryDate)
+                        @Html.TextBoxFor(model => model.DeliveryDate, new { @id = "DeliveryDate", @class = "form-control input-sml", @Value = Model.DeliveryDate.ToString("dd/MM/yyyy"), @style = "max-width:480px" })
+                        @Html.ValidationMessageFor(m => m.DeliveryDate)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    @Html.LabelFor(m => m.AssetID) <span style="color:red">*</span>
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.AssetID, new { @id = "AssetID", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAsset">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.AssetID)
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    @Html.Label(@Resources.Resource.AssetName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.AssetName, new { @id = "AssetName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAsset">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.AssetTypeID)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.AssetTypeName, new { @id = "AssetTypeName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AdministrationID)
+                        @Html.TextBoxFor(m => m.AdministrationName, new { @id = "AdministrationName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CircleID)
+                        @Html.TextBoxFor(m => m.CircleName, new { @id = "CircleName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SectionID)
+                        @Html.TextBoxFor(m => m.SectionName, new { @id = "SectionName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SiteID)
+                        @Html.TextBoxFor(m => m.SiteName, new { @id = "SiteName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.TrusteeID)<span style="color:red">*</span>
+                    @Html.DropDownListFor(m => m.TrusteeID, new SelectList(Model.AssetTrustee, "TrusteeID", "TrusteeName"), Resources.Resource.AssetTrustee, new { @id = "TrusteeID", @class = "form-control input-sml" })
+                </div>
+                <div class="col-lg-9">
+                    @Html.LabelFor(m => m.DeliveryNote)
+                    @Html.TextBoxFor(m => m.DeliveryNote, new { @id = "DeliveryNote", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.DeliveryNote)
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                @if (User.IsInRole("AddDeliveryAssetTrustee") || User.IsInRole("CoOwner"))
+                {
+                    <button type="submit" class="btn btn-primary btn-anim" id="SaveDeliveryAssetTrustee"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                }
+
+                <button type="submit" class="btn btn-warning btn-anim" id="Clear"> <i class="fa fa-circle-o"></i><span class="btn-text">@Resources.Resource.Clear</span></button>
+                <button type="button" class="btn btn-anim btnFav"  id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.AssetTypeID, new { @id = "AssetTypeID", @class = "form-control", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.AdministrationID, new { @id = "AdministrationID", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CircleID, new { @id = "CircleID", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.SectionID, new { @id = "SectionID", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.SiteID, new { @id = "SiteID", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.SerialID, new { @id = "SerialID", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+             $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.DeliveryAssetTrustee',
+                            ScreenUrl: "/DeliveryAssetTrustee/Index",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+
+        $("#DeliveryDate").focus().select();
+        $(document).on('click', '#Close', function () {
+            window.location = "/AssetType/AssetDash";
+        });
+        $("#DeliveryDate").mask("99/99/9999");
+        $("#DeliveryDate").blur(function () {
+            var dDate = document.getElementById("DeliveryDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("TransferDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $(document).on('click', '#SaveDeliveryAssetTrustee', function () {
+            var dDate = document.getElementById("DeliveryDate").value;
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#AssetID").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#AssetTypeID").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#TrusteeID").val() == '' || $("#TrusteeID").val() == 0) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+
+                            var DataToSave = {
+                                AssetID: $("#AssetID").val(),
+                                AssetTypeID: $("#AssetTypeID").val(),
+                                AdministrationID: $("#AdministrationID").val(),
+                                CircleID: $("#CircleID").val(),
+                                SectionID: $("#SectionID").val(),
+                                SiteID: $("#SiteID").val(),
+                                TrusteeID: $("#TrusteeID").val(),
+                                DeliveryDate: $("#DeliveryDate").val(),
+                                DeliveryNote: $("#DeliveryNote").val(),
+                                SerialID: $("#SerialID").val()
+                            }
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/DeliveryAssetTrustee/SaveDeliveryAssetTrustee",
+                                data: JSON.stringify(DataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                        bootbox.alert(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+
+                                        toastr.success(data.Msg);
+                                        bootbox.alert(data.Msg);
+
+                                        var today = new Date();
+                                        var dd = today.getDate();
+                                        var mm = today.getMonth() + 1;
+                                        var yyyy = today.getFullYear();
+                                        if (dd < 10) {
+                                            dd = '0' + dd;
+                                        }
+                                        if (mm < 10) {
+                                            mm = '0' + mm;
+                                        }
+                                        var today = dd + '/' + mm + '/' + yyyy;
+                                        document.getElementById("DeliveryDate").value = today;
+                                        document.getElementById("AssetID").value = '';
+                                        document.getElementById("AssetTypeID").value = '';
+                                        document.getElementById("AssetName").value = '';
+                                        document.getElementById("AssetTypeName").value = '';
+                                        document.getElementById("DeliveryNote").value = '';
+                                        document.getElementById("AdministrationID").value = '';
+                                        document.getElementById("CircleID").value = '';
+                                        document.getElementById("SectionID").value = '';
+                                        document.getElementById("SiteID").value = '';
+                                        document.getElementById("AdministrationName").value = '';
+                                        document.getElementById("CircleName").value = '';
+                                        document.getElementById("SectionName").value = '';
+                                        document.getElementById("SiteName").value = '';
+                                        document.getElementById("SerialID").value = '';
+                                        document.getElementById("TrusteeID").value = '';
+                                        $("#DeliveryDate").focus().select();
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                    bootbox.alert(data.Msg);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+
+        });
+        $('#BtnAsset').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchDefinitionAsset/GetAsset';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearAsset').on('click', function () {
+            document.getElementById("AssetID").value = '';
+            document.getElementById("AssetName").value = '';
+            document.getElementById("AssetTypeID").value = '';
+            document.getElementById("AssetTypeName").value = '';
+            document.getElementById("AdministrationID").value = '';
+            document.getElementById("CircleID").value = '';
+            document.getElementById("SectionID").value = '';
+            document.getElementById("SiteID").value = '';
+            document.getElementById("AdministrationName").value = '';
+            document.getElementById("CircleName").value = '';
+            document.getElementById("SectionName").value = '';
+            document.getElementById("SiteName").value = '';
+            document.getElementById("SerialID").value = '';
+        });
+        $("#DeliveryDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#AssetID").focus().select();
+
+        });
+        $("#DeliveryNote").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#DeliveryDate").focus().select();
+        });
+        $(document).on('click', '#Clear', function () {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("DeliveryDate").value = today;
+            document.getElementById("AssetID").value = '';
+            document.getElementById("AssetTypeID").value = '';
+            document.getElementById("AssetName").value = '';
+            document.getElementById("AssetTypeName").value = '';
+            document.getElementById("DeliveryNote").value = '';
+            document.getElementById("AdministrationID").value = '';
+            document.getElementById("CircleID").value = '';
+            document.getElementById("SectionID").value = '';
+            document.getElementById("SiteID").value = '';
+            document.getElementById("AdministrationName").value = '';
+            document.getElementById("CircleName").value = '';
+            document.getElementById("SectionName").value = '';
+            document.getElementById("SiteName").value = '';
+            document.getElementById("SerialID").value = '';
+            document.getElementById("TrusteeID").value = '';
+            $("#DeliveryDate").focus().select();
+        });
+        $("#AssetID").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#DeliveryNote").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchDefinitionAsset/GetAsset';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+       });
+        $("#AssetID").blur(function () {
+            var AccountNumber = document.getElementById("AssetID").value;
+            if (AccountNumber == '') {
+                document.getElementById("AssetName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAllDefinitionAsset", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AssetID").value = '';
+                            document.getElementById("AssetName").value = '';
+                            $("#AssetID").focus();
+                            document.getElementById("AssetTypeName").value = ' ';
+                            document.getElementById("AdministrationName").value = ' ';
+                            document.getElementById("CircleName").value = ' ';
+                            document.getElementById("SectionName").value = ' ';
+                            document.getElementById("SiteName").value =' ';
+
+                        }
+                        else {
+                            document.getElementById("AssetName").value = Data.AssetName;
+                            document.getElementById("AssetTypeName").value = Data.AssetTypeName;
+                            document.getElementById("AdministrationName").value = Data.AdministrationName;
+                            document.getElementById("CircleName").value = Data.CircleName;
+                            document.getElementById("SectionName").value = Data.SectionName;
+                            document.getElementById("SiteName").value = Data.SiteName;
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}
+
+
+
+
+

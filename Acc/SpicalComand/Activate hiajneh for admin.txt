@@ -1,0 +1,1 @@
+  insert into AspNetUserRoles (UserId,RoleId) values ((select Id from [AspNetUsers] where UserName='User1@Catnipsoft.com'),   (select Id from [AspNetRoles] where [Name]='Hiajneh') )

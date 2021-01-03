@@ -1,0 +1,155 @@
+﻿<style>
+    .LikLoad {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+
+@if (User.IsInRole("Hiajneh"))
+{
+    <div class="fixed-sidebar-left">
+        <ul class="nav navbar-nav side-nav nicescroll-bar">
+            <li class="navigation-header">
+                <span>@Resources.Resource.Accounting</span>
+                <i class="zmdi zmdi-more"></i>
+            </li>
+            <li>
+                <a href="/Home/Index" class="LikLoad"><i class="zmdi zmdi-landscape mr-20"></i>@Resources.Resource.Dashboard</a>
+            </li>
+            @if (User.IsInRole("CoOwner") || User.IsInRole("CoUser"))
+            {
+                <li>
+                    <a href="/CompanySettingsDash/Index" class="LikLoad"><i class="fa fa-th mr-20"></i>@Resources.Resource.CompanyMainSetup</a>
+                </li>
+                <li>
+                    <a href="/Operations/OperationDash" class="LikLoad"><i class="fa fa-gears mr-20"></i> @Resources.Resource.Operations </a>
+                </li>
+                <li>
+                    <a href="/ChartOfAccount/ChartDash" class="LikLoad"><i class="fa fa-edit mr-20"></i> @Resources.Resource.Accounts </a>
+                </li>
+                <li>
+                    <a href="/Transaction/TransDash" class="LikLoad"><i class="fa fa-dollar  mr-20"></i> @Resources.Resource.FinancialTransActions </a>
+                </li>
+                <li>
+                    <a href="/AssetType/AssetDash" class="LikLoad"><i class="fa fa-file-text mr-20"></i> @Resources.Resource.Assets </a>
+                </li>
+                <li>
+                    <a href="/Report/ReportDash" class="LikLoad"><i class="fa fa-file mr-20"></i> @Resources.Resource.Reports </a>
+                </li>
+            }
+            <li><hr class="light-grey-hr mb-10"></li>
+            <li class="navigation-header">
+                <span>@Resources.Resource.Warehouses</span>
+                <i class="zmdi zmdi-more"></i>
+            </li>
+            <li>
+                <a href="/St_DashBoardH/Index" class="LikLoad"><i class="zmdi zmdi-landscape mr-20"></i>@Resources.Resource.Dashboard</a>
+            </li>
+            <li>
+                <a href="/St_CompanySettingH/Index" class="LikLoad"><i class="fa fa-th mr-20"></i>@Resources.Resource.WarehouseSettings</a>
+            </li>
+            <li>
+                <a href="/St_TransactionH/Index" class="LikLoad"><i class="fa fa-dollar  mr-20"></i> @Resources.Resource.DailyTransactions </a>
+            </li>
+            <li>
+                <a href="/St_ManufacturingH/Index" class="LikLoad"><i class="fa fa-file-text  mr-20"></i> @Resources.Resource.Manufacturing </a>
+            </li>
+            <li>
+                <a href="/St_ReportH/Index" class="LikLoad"><i class="fa fa-file mr-20"></i> @Resources.Resource.Reports </a>
+            </li>
+        </ul>
+    </div>
+}
+else if (User.IsInRole("WorkWithStock"))
+{
+    <div class="fixed-sidebar-left">
+        <ul class="nav navbar-nav side-nav nicescroll-bar">
+            <li class="navigation-header">
+                <span>@Resources.Resource.Accounting</span>
+                <i class="zmdi zmdi-more"></i>
+            </li>
+            <li>
+                <a href="/Home/Index" class="LikLoad"><i class="zmdi zmdi-landscape mr-20"></i>@Resources.Resource.Dashboard</a>
+            </li>
+            @if (User.IsInRole("CoOwner") || User.IsInRole("CoUser"))
+            {
+                <li>
+                    <a href="/CompanySettingsDash/Index" class="LikLoad"><i class="fa fa-th mr-20"></i>@Resources.Resource.CompanyMainSetup</a>
+                </li>
+                <li>
+                    <a href="/Operations/OperationDash" class="LikLoad"><i class="fa fa-gears mr-20"></i> @Resources.Resource.Operations </a>
+                </li>
+                <li>
+                    <a href="/ChartOfAccount/ChartDash" class="LikLoad"><i class="fa fa-edit mr-20"></i> @Resources.Resource.Accounts </a>
+                </li>
+                <li>
+                    <a href="/Transaction/TransDash" class="LikLoad"><i class="fa fa-dollar  mr-20"></i> @Resources.Resource.FinancialTransActions </a>
+                </li>
+                <li>
+                    <a href="/AssetType/AssetDash" class="LikLoad"><i class="fa fa-file-text mr-20"></i> @Resources.Resource.Assets </a>
+                </li>
+                <li>
+                    <a href="/Report/ReportDash" class="LikLoad"><i class="fa fa-file mr-20"></i> @Resources.Resource.Reports </a>
+                </li>
+            }
+            <li><hr class="light-grey-hr mb-10"></li>
+            <li class="navigation-header">
+                <span>@Resources.Resource.Warehouses</span>
+                <i class="zmdi zmdi-more"></i>
+            </li>
+            <li>
+                <a href="/St_DashBoard/Index" class="LikLoad"><i class="zmdi zmdi-landscape mr-20"></i>@Resources.Resource.Dashboard</a>
+            </li>
+            <li>
+                <a href="/St_CompanySetting/Index" class="LikLoad"><i class="fa fa-th mr-20"></i>@Resources.Resource.WarehouseSettings</a>
+            </li>
+            <li>
+                <a href="/St_Transaction/Index" class="LikLoad"><i class="fa fa-dollar  mr-20"></i> @Resources.Resource.DailyTransactions </a>
+            </li>
+            <li>
+                <a href="/St_Manufacturing/Index" class="LikLoad"><i class="fa fa-file-text  mr-20"></i> @Resources.Resource.Manufacturing </a>
+            </li>
+            <li>
+                <a href="/St_Report/Index" class="LikLoad"><i class="fa fa-file mr-20"></i> @Resources.Resource.Reports </a>
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    <div class="fixed-sidebar-left">
+        <ul class="nav navbar-nav side-nav nicescroll-bar">
+            <li>
+                <a href="/Home/Index" class="LikLoad"><i class="zmdi zmdi-landscape mr-20"></i>@Resources.Resource.Dashboard</a>
+            </li>
+            @if (User.IsInRole("CoOwner") || User.IsInRole("CoUser"))
+            {
+                <li>
+                    <a href="/CompanySettingsDash/Index" class="LikLoad"><i class="fa fa-th mr-20"></i>@Resources.Resource.CompanyMainSetup</a>
+                </li>
+                <li>
+                    <a href="/Operations/OperationDash" class="LikLoad"><i class="fa fa-gears mr-20"></i> @Resources.Resource.Operations </a>
+                </li>
+                <li>
+                    <a href="/ChartOfAccount/ChartDash" class="LikLoad"><i class="fa fa-edit mr-20"></i> @Resources.Resource.Accounts </a>
+                </li>
+                <li>
+                    <a href="/Transaction/TransDash" class="LikLoad"><i class="fa fa-dollar  mr-20"></i> @Resources.Resource.FinancialTransActions </a>
+                </li>
+                <li>
+                    <a href="/AssetType/AssetDash" class="LikLoad"><i class="fa fa-file-text mr-20"></i> @Resources.Resource.Assets </a>
+                </li>
+                <li>
+                    <a href="/Report/ReportDash" class="LikLoad"><i class="fa fa-file mr-20"></i> @Resources.Resource.Reports </a>
+                </li>
+            }
+
+        </ul>
+    </div>
+}
+
+
+
+
+
+
+

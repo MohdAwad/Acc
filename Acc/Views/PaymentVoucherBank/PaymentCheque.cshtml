@@ -1,0 +1,142 @@
+﻿@model Acc.ViewModels.PaperFilterVM
+@{
+    ViewBag.Title = @Resources.Resource.PaymentChequeTransactions;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.PaymentChequeTransactions</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            @if (User.IsInRole("ShowPostdatedCheques") || User.IsInRole("CoOwner"))
+            {
+                <div class="col-lg-3 col-md-6">
+                    <a href="/PaymentVoucherBank/PostdatedCheques">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#E74C3C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.PostdatedCheque</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.PostdatedChequeCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sPostdatedChequeAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            @if (User.IsInRole("ShowReturnPostdatedCheques") || User.IsInRole("CoOwner"))
+            {
+
+                <div class="col-lg-3 col-md-6">
+                    <a href="/PaymentVoucherBank/ReturnPostdatedCheques">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#2980B9">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnPostdatedCheques</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.ReturnPostdatedChequeCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sReturnPostdatedChequeAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+            @if (User.IsInRole("ShowReturnPaidPostdatedCheques") || User.IsInRole("CoOwner"))
+            {
+
+                <div class="col-lg-3 col-md-6">
+                    <a href="/PaymentVoucherBank/ReturnPaidPostdatedCheques">
+                        <div class="panel  card-view">
+                            <div class="panel-heading" style="height:70px;line-height: 3;background-color:#1ABC9C">
+                                <div class="row">
+                                    <div class="col-xs-12 text-center" style="font:bold">
+                                        <div style="font-family: Verdana, Geneva, Tahoma, sans-serif;color:white">@Resources.Resource.ReturnPaidPostdatedCheques</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel-footer">
+                                <div class="pull-left" style="font:bold;font-size:small;font-family: Verdana, Geneva, Tahoma, sans-serif">
+                                    <div>@Resources.Resource.ChequeCount @Html.ValueFor(m => m.ReturnPaidPostdatedChequeCount)</div>
+                                    <div> @Resources.Resource.ChequeAmounts <span id="sReturnPaidPostdatedChequeAmount">0</span></div>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.PostdatedChequeAmount, new { @id = "PostdatedChequeAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ReturnPostdatedChequeAmount, new { @id = "ReturnPostdatedChequeAmount", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ReturnPaidPostdatedChequeAmount, new { @id = "ReturnPaidPostdatedChequeAmount", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+
+            var PostdatedChequeAmount = document.getElementById("PostdatedChequeAmount").value;
+            PostdatedChequeAmount = PostdatedChequeAmount.replace(",", "");
+            document.getElementById("PostdatedChequeAmount").value = formatMoney(PostdatedChequeAmount, TheDecimalPointForTheLocalCurrency);
+            var $sPostdatedChequeAmount = $('#sPostdatedChequeAmount');
+            $sPostdatedChequeAmount.html(formatMoney(PostdatedChequeAmount, TheDecimalPointForTheLocalCurrency));
+
+            var ReturnPostdatedChequeAmount = document.getElementById("ReturnPostdatedChequeAmount").value;
+            ReturnPostdatedChequeAmount = ReturnPostdatedChequeAmount.replace(",", "");
+            document.getElementById("ReturnPostdatedChequeAmount").value = formatMoney(ReturnPostdatedChequeAmount, TheDecimalPointForTheLocalCurrency);
+            var $sReturnPostdatedChequeAmount = $('#sReturnPostdatedChequeAmount');
+            $sReturnPostdatedChequeAmount.html(formatMoney(ReturnPostdatedChequeAmount, TheDecimalPointForTheLocalCurrency));
+
+            var ReturnPaidPostdatedChequeAmount = document.getElementById("ReturnPaidPostdatedChequeAmount").value;
+            ReturnPaidPostdatedChequeAmount = ReturnPaidPostdatedChequeAmount.replace(",", "");
+            document.getElementById("ReturnPaidPostdatedChequeAmount").value = formatMoney(ReturnPaidPostdatedChequeAmount, TheDecimalPointForTheLocalCurrency);
+            var $sReturnPaidPostdatedChequeAmount = $('#sReturnPaidPostdatedChequeAmount');
+            $sReturnPaidPostdatedChequeAmount.html(formatMoney(ReturnPaidPostdatedChequeAmount, TheDecimalPointForTheLocalCurrency));
+
+        });
+    </script>
+}
+

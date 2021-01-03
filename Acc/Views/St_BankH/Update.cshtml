@@ -1,0 +1,131 @@
+﻿
+@model Acc.ViewModels.St_BankHVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedDataBankAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("BankAccountNumber").value = data.AccountNumber;
+            document.getElementById("BankAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("BankAccountNumber").value = '';
+            document.getElementById("BankAccountName").value = '';
+        }
+    }
+    $(document).ready(function () {
+        $("#ArabicName").focus().select();
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+
+        });
+        $('#BtnClearBankAccountNumber').on('click', function () {
+            document.getElementById("BankAccoutNumber").value = '';
+            document.getElementById("BankAccoutName").value = '';
+        });
+
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-sm ">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+
+                <div class="col-lg-12">
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankID)
+
+                        @Html.TextBoxFor(m => m.BankID, new { @id = "BankID", @class = "form-control input-sml input-sm", @readonly = "readonly" })
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ArabicName) <span style="color:red">*</span>
+
+                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control  input-sm" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EnglishName)
+
+                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control  input-sm" })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.FundingAgencies)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.FundingAgencyID, new SelectList(Model.St_FundingAgencyH, "FundingAgencyID", "ArabicName"), new { @id = "FundingAgencyID", @class = "form-control  input-sm" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.FundingAgencyID, new SelectList(Model.St_FundingAgencyH, "FundingAgencyID", "EnglishName"), new { @id = "FundingAgencyID", @class = "form-control  input-sm" })
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.BankAccountNumber, new { @id = "BankAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnBankAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.BankAccountNumber)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.BankAccountName, new { @id = "BankAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearBankAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-success btn-anim" id="UpdateSt_BankH"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+

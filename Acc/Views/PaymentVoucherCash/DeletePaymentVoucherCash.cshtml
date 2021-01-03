@@ -1,0 +1,247 @@
+﻿@model Acc.ViewModels.TransactionFixedVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div style="padding-top: 20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Delete - @Resources.Resource.PaymentVoucherCash</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CompanyTransactionKindID)
+                        @Html.TextBoxFor(m => m.CompanyTransactionKindName, new { @id = "CompanyTransactionKindName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyID)
+                        @Html.TextBoxFor(m => m.CurrencyName, new { @id = "CurrencyName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyNewValue)
+                        @Html.ValidationMessageFor(m => m.CurrencyNewValue)
+                        @Html.TextBoxFor(m => m.CurrencyNewValue, new { @id = "CurrencyNewValue", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherNumber)
+                        @Html.TextBoxFor(m => m.Header.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherDate)
+                        @Html.TextBoxFor(model => model.Header.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.Header.VoucherDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Header.VoucherDate)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.FundAccountName)
+                        @Html.TextBoxFor(m => m.TransactionCredit.AccountNumber, new { @id = "FromAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.AccountCreditName, new { @id = "AccountCreditName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.PayeeAccount)
+                        @Html.TextBoxFor(m => m.TransactionDebit.AccountNumber, new { @id = "ToAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.AccountDebitName, new { @id = "AccountDebitName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-9">
+                    @Html.LabelFor(m => m.Header.Note)
+                    @Html.TextBoxFor(m => m.Header.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                </div>
+            </div>
+            @if (Model.WorkWithCostCenter)
+            {
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.FundCostName)
+                            @Html.TextBoxFor(m => m.TransactionCredit.CostCenter, new { @id = "FromCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.CostCenterCreditName, new { @id = "CostCenterCreditName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.PaidToCostCenter)
+                            @Html.TextBoxFor(m => m.TransactionDebit.CostCenter, new { @id = "ToCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.CostCenterDebitName, new { @id = "CostCenterDebitName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TotalAmount)
+                        @Html.TextBoxFor(m => m.sAmount, new { @id = "sAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Amount)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TotalForeign)
+                        @Html.TextBoxFor(m => m.sForeignAmount, new { @id = "sForeignAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-anim btnDelete-lg" id="DeletePaymentVoucherCash"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.Amount, new { @id = "Amount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ForeignAmount, new { @id = "ForeignAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.HiddenFor(m => m.Header.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNo" })
+@Html.HiddenFor(m => m.CurrencyID, new { @id = "CurrencyID" })
+@Html.HiddenFor(m => m.Header.CompanyYear, new { @id = "CompanyYear" })
+@Html.HiddenFor(m => m.Header.TransactionKindNo, new { @id = "TransactionKindNo" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/PaymentVoucherCash/Index";
+        });
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        document.getElementById("sForeignAmount").value = formatMoney(document.getElementById("ForeignAmount").value, TheDecimalPointForTheForeignCurrency);
+        document.getElementById("sAmount").value = formatMoney(document.getElementById("Amount").value, TheDecimalPointForTheLocalCurrency);
+        $(document).on('click', '#DeletePaymentVoucherCash', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                            closeButton: false
+                        });
+                        var dataToDelete = {
+
+                            VoucherNumber: $("#VoucherNumber").val(),
+                            TransactionKindNo: $("#TransactionKindNo").val(),
+                            CompanyYear: $("#CompanyYear").val(),
+                            CompanyTransactionKindNo: $("#CompanyTransactionKindNo").val()
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/TransAction/DeleteTransActionTrans",
+                            data: JSON.stringify(dataToDelete),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    $('#modal-container').modal('hide');
+                                    toastr.success(data.Msg);
+                                    $('#modal-container').modal('hide');
+                                    window.location = "/PaymentVoucherCash/Index";
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+
+        });
+    });
+    </script>
+}
+

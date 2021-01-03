@@ -1,0 +1,169 @@
+﻿@model  Acc.ViewModels.ChartOfAccountVM
+@{
+    ViewBag.Title = @Resources.Resource.DeleteAccount;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">
+                        @Resources.Resource.DeleteAccount
+                     </h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AccountNumber)
+                        @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.AccountNumber)
+                    </div>
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountTypeID)
+
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            if (User.IsInRole("CoOwner") || User.IsInRole("UpdateAcountType"))
+                            {
+                                @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "ArabicName"), new { @id = "AccountTypeID", @class = "form-control input-sml", @disabled = "disabled" })
+                                @Html.HiddenFor(m => m.AccountKind, new { @id = "AccountTypeID" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "ArabicName"),new { @class = "form-control input-sml", @disabled = "disabled" })
+                                @Html.HiddenFor(m => m.AccountKind, new { @id = "AccountTypeID" })
+
+                            }
+
+                        }
+                        else
+                        {
+                            if (User.IsInRole("CoOwner") || User.IsInRole("UpdateAcountType"))
+                            {
+                                @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "EnglishName"), new { @id = "AccountTypeID", @class = "form-control input-sml", @disabled = "disabled" })
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "EnglishName"), new { @class = "form-control input-sml", @disabled = "disabled" })
+                                @Html.HiddenFor(m => m.AccountKind, new { @id = "AccountTypeID" })
+                            }
+
+                        }
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountKind)
+                        @if (User.IsInRole("CoOwner") || User.IsInRole("UpdateAccountKid"))
+                        {
+                            @Html.DropDownListFor(m => m.AccountKind, new List<SelectListItem>
+                                                      {
+                                                       new SelectListItem{ Text=Resources.Resource.AnAccount, Value = "0",Selected=true },
+                                                       new SelectListItem{ Text=Resources.Resource. Client, Value = "1",Selected=false },
+
+                                                       new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false },
+                                                        new SelectListItem{ Text=Resources.Resource.Approval, Value = "3",Selected=false }
+
+                                                         }, new { @id = "AccountKind", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.AccountKind, new List<SelectListItem>
+                                                                                        {
+                                                                                         new SelectListItem{ Text=Resources.Resource.AnAccount, Value = "0",Selected=true },
+                                                                                         new SelectListItem{ Text=Resources.Resource. Client, Value = "1",Selected=false },
+
+                                                                                         new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false },
+                                                                                          new SelectListItem{ Text=Resources.Resource.Approval, Value = "3",Selected=false }
+
+                                                                                           }, new { @class = "form-control input-sml", @disabled = "disabled" })
+                            @Html.HiddenFor(m => m.AccountKind, new { @id = "AccountKind" })
+                        }
+
+
+                        @Html.ValidationMessageFor(model => model.AccountKind, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CurrencyID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), new { @id = "CurrencyID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), new { @id = "CurrencyID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+
+
+                    </div>
+
+
+                </div>
+                <div class="col-lg-6">
+                    @if (User.IsInRole("CoOwner") || User.IsInRole("UpdateAccountName"))
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ArabicName)
+                            @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.ArabicName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EnglishName)
+                            @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.EnglishName)
+                        </div>
+                    }
+                    else
+
+                    {
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ArabicName)
+                            @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.ArabicName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.EnglishName)
+                            @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.EnglishName)
+                        </div>
+                    }
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Note)
+                        @Html.TextAreaFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Note)
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn  btn-anim btnDelete-lg" id="DeleteAccount"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

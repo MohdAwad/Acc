@@ -1,0 +1,146 @@
+﻿@model Acc.ViewModels.St_WarehouseSearchVM
+@{
+    ViewBag.Title = @Resources.Resource.SearchItemUnits;
+
+
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.SearchItemUnits</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <table id="tdataTableDetail" class="table table-bordered" style="width:100%;cursor:pointer">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.UnitCode</th>
+                            <th>@Resources.Resource.UnitName</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="btnClose"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+	$(document).ready(function () {
+        var tabelMemRefDetail = $("#tdataTableDetail").DataTable({
+            "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                  },
+            "scrollY": "400px",
+            "scrollX":      true,
+            "scrollCollapse": true,
+              "paging":   false,
+             "ordering": false,
+            "info": false,
+            "columnDefs": [
+                    {
+                        "targets": [ 0 ],
+                        "className": "dt-center"
+                },
+                 {
+                        "targets": [ 1 ],
+                        "className": "dt-center"
+                    }
+                       ],
+
+        dom: 'Bfrtip',
+
+				buttons: [
+
+
+				],
+
+
+				ajax: {
+                    url: "/MultiUse/GetSt_ItemUnit/",
+					"type": "POST",
+					"data": function (d) {
+						d.id = 0;
+
+
+					},
+					dataSrc: ""
+				},
+				columns: [
+					{
+                        data: "ItemUnitCode"
+
+					},
+					{
+                        data: "ItemUnitName"
+
+                    }
+
+				]
+			});
+
+        $('#tdataTableDetail tbody').on('click', 'tr', function () {
+            // alert('@(ViewBag.ID)');
+            if ('@(ViewBag.ID)' == "ItemUnitCode") {
+                GetSelectedOtherUnitItem(tabelMemRefDetail.row(this).data());
+                $('#btnClose').trigger('click');
+            }
+
+
+        });
+
+
+
+	});
+
+
+</script>
+
+
+
+
+

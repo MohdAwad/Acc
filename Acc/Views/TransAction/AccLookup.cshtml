@@ -1,0 +1,38 @@
+﻿@Html.DevExpress().GridLookup(settings =>
+{
+    settings.Name = "AccLookUpGrid";
+    settings.GridViewProperties.CallbackRouteValues = new { Controller = "TransAction", Action = "AccLookup" };
+    settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.None;
+    settings.Properties.SelectionMode = GridLookupSelectionMode.Single;
+
+    settings.Properties.TextFormatString = "{0}";
+    
+
+    settings.GridViewClientSideEvents.BeginCallback = "OnBeginCallback";
+
+
+
+    settings.Properties.IncrementalFilteringDelay = 500;
+    settings.Properties.IncrementalFilteringMode = IncrementalFilteringMode.Contains;
+
+  //  settings.Properties.ClientSideEvents.KeyDown = "LookUpOnKeyDown";
+    //settings.Properties.ClientSideEvents.LostFocus = "OnLostFocus";
+    settings.Width = System.Web.UI.WebControls.Unit.Percentage(100);
+    settings.KeyFieldName = "AccountNumber";
+  
+     settings.Columns.Add("AccountNumber");
+    settings.Columns.Add("ArabicName");
+    settings.Columns.Add("EnglishName");
+    settings.GridViewProperties.BeforeGetCallbackResult = (s, e) =>
+    {
+        MVCxGridView g = s as MVCxGridView;
+        var a = 0;
+    };
+    settings.PreRender = (s, e) =>
+    {
+        MVCxGridView g = s as MVCxGridView;
+        var a = 0;
+    };
+
+    settings.GridViewClientSideEvents.FocusedRowChanged = "GetAccount_OnClickViewSelected";
+}).BindList(Model).Bind(ViewData["ID"]).GetHtml()

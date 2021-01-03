@@ -1,0 +1,498 @@
+﻿@model Acc.ViewModels.ResettingAccountsVM
+@{
+     ViewBag.Title = @Resources.Resource.ResettingAccounts;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    table.dataTable th.dt-center {
+        font-size: 8pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 8pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after {
+        display: none !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+     function GetSelectedAccount(data) {
+          if (data.AccountNumber != null && data.AccountNumber != '') {
+              document.getElementById("AccountNumber").value = data.AccountNumber;
+            document.getElementById("AccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("AccountNumber").value = '';
+            document.getElementById("AccountName").value = '';
+        }
+
+    }
+
+      var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber};
+                AccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#AccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("AccountNumber").value = ui.item.value;
+                document.getElementById("AccountName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+<div class="panel card-view" style="margin-top:10px;">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ResettingAccounts</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+
+        <div class="col-lg-12" style="margin-top:10px;">
+            <div class="col-lg-4">
+                <table id="tdataTableAccountType" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>@Resources.Resource.AccountType</th>
+
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="col-lg-8">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        @Html.Label(Resources.Resource.PreviousYear)
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.FromYear, new { @id = "FromYear", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        @Html.Label(Resources.Resource.CurrentYear)
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.ToYear, new { @id = "ToYear", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        @Html.Label(Resources.Resource.AccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccNo">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        @Html.Label(Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.AccountName, new { @id = "AccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccNo">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <a class="btn btn-info btn-anim btnSearch" id="reload"> <i class="fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></a>
+                    <a class="btn btn-primary btn-anim" id="PostData"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></a>
+                </div>
+                <div class="col-lg-12">
+                    <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>@Resources.Resource.Debit</th>
+                                <th>@Resources.Resource.Credit</th>
+                                <th>@Resources.Resource.AccountNumber</th>
+                                <th>@Resources.Resource.AccountName</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+ 
+@section Scripts {
+
+
+    <script>
+        $(document).ready(function () {
+            $("#AccountNumber").focus().select();
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+            var SelectedType;
+            var rows_selected = [];
+            var tdataTableAccountTypeRef = $("#tdataTableAccountType").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "searching": false,
+                "scrollY": "500px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "bInfo": false,
+                "paging": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "orderable": false,
+                        "checkboxes": {
+                            "selectRow": true
+                        }
+                    }
+
+                ],
+
+                "select": {
+                    "style": "multi"
+                }, dom: 'Bfrtip',
+                buttons: [
+
+                ],
+
+                ajax: {
+                    url: "/ResettingAccounts/GetAllAccountType",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+
+                        data: "iRow"
+                    },
+
+                    {
+
+                        data: "ArabicName"
+                    }
+
+
+                ]
+
+
+            });
+            $(document).on('click', '#reload', function () {
+
+                var dialog = bootbox.dialog({
+                    title: '@Resources.Resource.PleaseWait',
+                    message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Search...</p>',
+                    closeButton: false
+                });
+
+
+                var selectedIds = tdataTableAccountTypeRef.columns().checkboxes.selected()[0];
+                rows_selected = [];
+                $.each(selectedIds, function (index, rowId) {
+                    var data = tdataTableAccountTypeRef.row(rowId).data();
+                    rows_selected.push(data);
+
+                });
+                SelectedType = {
+                    rows_selected
+                };
+
+
+
+                tabelMemRef.ajax.reload();
+                //$('#tdataTable').DataTable().clear().draw();
+                // $('#tdataTable').DataTable().ajax.reload();
+                dialog.modal('hide');
+                //$('#tdataTable').DataTable().ajax.reload();
+
+            });
+            $('#BtnAccNo').on('click', function () {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/AccountNumberSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            });
+            $('#BtnClearAccNo').on('click', function () {
+                document.getElementById("AccountNumber").value = '';
+                document.getElementById("AccountName").value = '';
+            });
+            var tabelMemRef = $("#tdataTable").DataTable({
+
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "searching": false,
+                "scrollY": "500px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+
+                "bInfo": false,
+                dom: 'Bfrtip',
+                buttons: [
+
+                ],
+
+
+                ajax: {
+
+
+                    "type": "POST",
+                    url: "/ResettingAccounts/GetAccount",
+                    "data": function (d) {
+                        return $.extend({}, d, {
+                            AccountType: rows_selected,
+                            AccountNumber: $("#AccountNumber").val(),
+                            AccountName: $("#AccountName").val()
+
+                        });
+                    },
+
+
+
+
+
+
+
+                    dataSrc: ""
+                },
+
+                columns: [
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+
+
+                    },
+
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+
+
+                    },
+                    {
+                        data: "AccountNumber"
+
+
+
+                    },
+                    {
+                        data: "ArabicName"
+
+                    }
+
+
+
+
+
+
+                ]
+
+
+
+
+
+            });
+            $(document).on('click', '#PostData', function () {
+
+                var dialog = bootbox.dialog({
+                    title: '@Resources.Resource.PleaseWait',
+                    message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Save...</p>',
+                    closeButton: false
+                });
+
+
+                var dataToSave = [];
+                tabelMemRef.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                    var data = this.data();
+                    dataToSave.push(data);
+
+                });
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ResettingAccounts/UpdateOpeneinBalance",
+                    data: JSON.stringify(dataToSave),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        dialog.modal('hide');
+                        if (data.Code == 0) {
+                            toastr.error(data.Msg);
+                        }
+                        else if (data.Code == 1) {
+                            $('#modal-container').modal('hide');
+                            toastr.success(data.Msg);
+                            tabelMemRef.ajax.reload();
+
+                        }
+
+                    },
+                    error: function (data) {
+                        dialog.modal('hide');
+                        toastr.error(data);
+                    }
+
+                });
+
+
+                //$('#tdataTable').DataTable().ajax.reload();
+
+            });
+            $(document).on('click', '.js-Pop', function (e) {
+                $('#modal-container').removeData('bs.modal');
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+
+            });
+            $('#modal-container').on('hidden.bs.modal', function () {
+                $(this).removeData('bs.modal');
+
+            });
+            $('#CancelModal').on('click', function () {
+                return false;
+            });
+            $("#AccountNumber").blur(function () {
+                var AccountNumber = document.getElementById("AccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("AccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccountNumber").value = '';
+                            document.getElementById("AccountName").value = '';
+                            $("#AccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("AccountName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+
+        });
+    </script>
+}

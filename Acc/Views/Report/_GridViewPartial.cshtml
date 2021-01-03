@@ -1,0 +1,228 @@
+ 
+
+    @{
+        var grid = Html.DevExpress().GridView(settings =>
+        {
+            settings.Name = "GridView";
+            settings.CallbackRouteValues = new { Controller = "Report", Action = "GetTransActionDetails"  };
+            settings.SettingsExport.EnableClientSideExportAPI = true;
+            settings.SettingsExport.ExcelExportMode = DevExpress.Export.ExportType.WYSIWYG;
+            settings.Settings.ShowFilterRow = true;
+            settings.Settings.ShowFilterRowMenu = true;
+            settings.SettingsSearchPanel.Visible = false;
+            settings.Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+            settings.Toolbars.Add(t =>
+            {
+                t.SettingsAdaptivity.Enabled = false;
+                t.SettingsAdaptivity.EnableCollapseRootItemsToIcons = false;
+                if(User.IsInRole("PrintRepTransActionDetails") || User.IsInRole("CoOwner"))
+                {
+                    t.Items.Add(GridViewToolbarCommand.ExportToXlsx);
+                    t.Items.Add(GridViewToolbarCommand.ExportToXls);
+                }
+            });
+            settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Visible;
+            settings.SettingsPager.PageSize = 100;
+
+            if (Resources.Resource.CurLang == "Arb")
+            {
+                settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+            }
+            else
+            {
+                settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+            }
+
+            settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+            settings.SettingsBehavior.ConfirmDelete = true;
+            settings.CommandColumn.Visible = false;
+            settings.CommandColumn.ShowNewButton = false;
+            settings.CommandColumn.ShowDeleteButton = false;
+            settings.CommandColumn.ShowEditButton = false;
+            settings.KeyFieldName = "iRowID";
+            settings.Settings.ShowHeaderFilterButton = false;
+            settings.Settings.ShowFooter = true;
+            settings.Settings.ShowGroupPanel = true;
+            settings.SettingsBehavior.AllowSelectByRowClick = true;
+            settings.SettingsSearchPanel.Visible = false;
+            settings.PreRender = (sender, e) => {
+                var gridView = (MVCxGridView)sender;
+                gridView.SearchPanelFilter = "";
+            };
+            settings.Columns.Add(column =>
+            {
+                column.Width = 200;
+                column.FieldName = "TransName";
+                column.Caption = Resources.Resource.TransName;
+
+
+            });
+
+            settings.Columns.Add(column =>
+            {
+                column.Width = 200;
+                column.FieldName = "VoucherDate";
+                column.Caption = Resources.Resource.VoucherDate;
+                column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+                column.Settings.AllowAutoFilter = DefaultBoolean.False;
+                column.ColumnType = MVCxGridViewColumnType.DateEdit;
+                column.PropertiesEdit.DisplayFormatString = "dd/MM/yyyy";
+                DateEditProperties deProp = column.PropertiesEdit as DateEditProperties;
+                deProp.DisplayFormatInEditMode = true;
+                deProp.DisplayFormatString = "dd/MM/yyyy";
+                deProp.EditFormat = EditFormat.Custom;
+                deProp.EditFormatString = "dd/MM/yyyy";
+
+            });
+
+
+            settings.Columns.Add("VoucherNumber").Width=200 ;
+
+            settings.Columns.Add(column =>
+            {
+                column.FieldName = "Debit";
+                column.Width = 200;
+                column.Caption = Resources.Resource.Debit;
+                column.Settings.ShowEditorInBatchEditMode = true;
+                column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+                column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+                (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+                (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+                if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n2}";
+                }
+                else
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n3}";
+                }
+
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+                (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            });
+
+            settings.Columns.Add(column =>
+            {
+                column.FieldName = "Credit";
+                column.Width = 200;
+                column.Caption = Resources.Resource.Credit;
+                column.Settings.ShowEditorInBatchEditMode = true;
+                column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+                column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+                (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+                (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+                if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n2}";
+                }
+                else
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n3}";
+                }
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+                (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            });
+            settings.Columns.Add(column =>
+            {
+                column.FieldName = "DebitForeign";
+                column.Width = 200;
+                column.Caption = Resources.Resource.DebitForeign;
+                column.Settings.ShowEditorInBatchEditMode = true;
+                column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+                column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+                (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+                (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+                if (ViewBag.TheDecimalPointForTheForeignCurrency == 2)
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n2}";
+                }
+                else
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n3}";
+                }
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+                (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+
+            });
+
+
+            settings.Columns.Add(column =>
+            {
+                column.FieldName = "CreditForeign";
+                column.Width = 200;
+                column.Caption = Resources.Resource.CreditForeign;
+                column.Settings.ShowEditorInBatchEditMode = true;
+                column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+                column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+                (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+                (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+                if (ViewBag.TheDecimalPointForTheForeignCurrency == 2)
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n2}";
+                }
+                else
+                {
+                    (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n3}";
+                }
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+                (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+                (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            });
+            settings.Columns.Add("AccountNumber").Width=100 ;
+            settings.Columns.Add("AccountName").Width=200 ;
+            settings.Columns.Add(column =>
+            {
+                column.FieldName = "CostCenter";
+                column.Width = 200;
+                column.Caption = Resources.Resource.CostCenter;
+                column.Visible = ViewBag.WorkWithCostCenter;
+            });
+            settings.Columns.Add(column =>
+            {
+                column.FieldName = "CostCenterName";
+                column.Width = 200;
+                column.Caption = Resources.Resource.CostCenterName;
+                column.Visible = ViewBag.WorkWithCostCenter;
+            });
+            settings.Columns.Add("Note").Width= 350;
+            if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+            {
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "Debit").DisplayFormat = "{0:n2}";
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "Credit").DisplayFormat = "{0:n2}";
+            }
+            else
+            {
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "Debit").DisplayFormat = "{0:n3}";
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "Credit").DisplayFormat = "{0:n3}";
+            }
+
+            if (ViewBag.TheDecimalPointForTheForeignCurrency == 2)
+            {
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "DebitForeign").DisplayFormat = "{0:n2}";
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "CreditForeign").DisplayFormat = "{0:n2}";
+            }
+            else
+            {
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "DebitForeign").DisplayFormat = "{0:n3}";
+                settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "CreditForeign").DisplayFormat = "{0:n3}";
+            }
+
+
+            settings.ClientSideEvents.BeginCallback = "OnBeginCallback";
+        });
+
+
+        if (ViewData["EditError"] != null)
+        {
+            grid.SetEditErrorText((string)ViewData["EditError"]);
+        }
+    }
+    @grid.Bind(Model).GetHtml()
+ 

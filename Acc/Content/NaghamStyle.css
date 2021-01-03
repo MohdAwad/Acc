@@ -1,0 +1,90 @@
+﻿
+
+.btnSearch {
+    background-color: #D16587 !important
+}
+
+.btnEmail {
+    background-color: #008B8B !important;
+}
+
+.btnExport {
+    background-color: #E41B17 !important
+}
+
+.btnFav {
+    background-color:#382D2C !important;    
+}
+
+.btnDetail {
+    transition-duration: 0.4s;
+}
+
+    .btnDetail:hover {
+        background-color: white !important;
+        border: 1px solid #D16587 !important;
+    }
+
+.btnDetail {
+    background-color: #D16587 !important
+}
+
+.btnDelete-lg {
+    transition-duration: 0.4s;
+}
+
+.btnDelete-lg {
+    background-color: #E41B17 !important;
+}
+.btnDelete {
+    transition-duration: 0.4s;
+}
+
+    .btnDelete:hover {
+        background-color: white !important;
+        border: 1px solid #E41B17 !important;
+    }
+
+.btnDelete {
+    background-color: #E41B17 !important
+}
+
+.btnAttach {
+    transition-duration: 0.4s;
+}
+
+
+    .btnAttach:hover {
+        background-color: white !important;
+        border: 1px solid #382D2C !important;
+    }
+
+.btnAttach {
+    background-color: #382D2C !important
+}
+
+
+.btnFreez {
+    transition-duration: 0.4s;
+}
+
+
+    .btnFreez:hover {
+        background-color: white !important;
+        border: 1px solid #E41B17 !important;
+    }
+
+.btnFreez {
+    background-color: #E41B17 !important
+}
+thead {
+    background-color: darkcyan !important;
+}
+
+th {
+    color: white !important;
+}
+
+
+
+

@@ -1,0 +1,1286 @@
+﻿@model Acc.ViewModels.St_ItemCardHVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Delete - @Resources.Resource.ItemCard</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="pills-struct mt-40">
+            <ul role="tablist" class="nav nav-pills" id="myTabs_6">
+                <li class="active" id="sCardInformation" role="presentation"><a data-toggle="tab" role="tab" style="background: #34495E"  href="#CardInformation" aria-expanded="true">@Resources.Resource.CardInformation</a></li>
+                <li role="presentation" id="sFinancial" class=""><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#Financial" aria-expanded="false">@Resources.Resource.Financial</a></li>
+                <li role="presentation" id="sRelatedItem" class=""><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#RelatedItem" aria-expanded="false">@Resources.Resource.RelatedItem</a></li>
+                <li role="presentation" id="sSimilarItem" class=""><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#SimilarItem" aria-expanded="false">@Resources.Resource.SimilarItem</a></li>
+                <li role="presentation" id="sManufacturing" class="" style="display:none;"><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#Manufacturing" aria-expanded="false">@Resources.Resource.Manufacturing</a></li>
+                <li role="presentation" id="sSubColors" class="" style="display:none;"><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#SubColors" aria-expanded="false">@Resources.Resource.SubColors</a></li>
+                <li role="presentation" id="sItemPicture" class=""><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#ItemPicture" aria-expanded="false">@Resources.Resource.ItemPicture</a></li>
+                <li role="presentation" id="sItemGallary" class=""><a data-toggle="tab" style="background: #34495E"  id="profile_tab_6" role="tab" href="#ItemGallary" aria-expanded="false">@Resources.Resource.ItemFiles</a></li>
+
+            </ul>
+            <div class="tab-content" id="myTabContent_6">
+                <div id="CardInformation" class="tab-pane fade active in" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.ItemGroups)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.GroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "ArabicName"), new { @id = "ComboGroupCode", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.GroupCode, new SelectList(Model.St_ItemGroupH, "GroupCode", "EnglishName"), new { @id = "ComboGroupCode", @class = "form-control input-sml", @disabled = "disabled" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.ItemCode)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ItemCode, new { @id = "ItemCode", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            @Html.Label(Resources.Resource.ArabicName)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ArabicName, new { @id = "ItemNameArabic", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            @Html.Label(Resources.Resource.EnglishName)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.EnglishName, new { @id = "ItemNameEnglish", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.NumberOfPieces)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.NumberOfPieces, new { @id = "NumberOfPieces", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.CBM)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CBM, new { @id = "CBM", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.Unit)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.ItemUnitNo, new SelectList(Model.St_ItemUnitH, "ItemUnitCode", "ArabicName"), Resources.Resource.Units, new { @id = "ComboItemUnitNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.ItemUnitNo, new SelectList(Model.St_ItemUnitH, "ItemUnitCode", "EnglishName"), Resources.Resource.Units, new { @id = "ComboItemUnitNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.Style)
+                                @Html.DropDownListFor(m => m.StyleNo, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.Style, Value = "0",Selected=true },
+                                    new SelectListItem{ Text=Resources.Resource.Modern, Value = "1",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. Classic, Value = "2",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. NewClassic, Value = "3",Selected=false }
+                                }, new { @id = "StyleNo", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.ItemLevel)
+                                @Html.DropDownListFor(m => m.ItemLevelNo, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.ItemLevel, Value = "0",Selected=true },
+                                    new SelectListItem{ Text=Resources.Resource.Light, Value = "1",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. Middle, Value = "2",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. Heavy, Value = "3",Selected=false }
+                                }, new { @id = "ItemLevelNo", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.ItemType)
+                                @Html.DropDownListFor(m => m.ItemTypeNo, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.ForeignImport, Value = "1",Selected=true },
+                                    new SelectListItem{ Text=Resources.Resource. LocalImport, Value = "2",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. Manufacturing, Value = "3",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. Investment, Value = "4",Selected=false }
+                                }, new { @id = "ItemTypeNo", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.ReOrderLimit)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ReOrderLimit, new { @id = "ReOrderLimit", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.OrderQuantity)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.OrderQuantity, new { @id = "OrderQuantity", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.SupplierAccountNo)
+                                <div class="form-group">
+                                    @Html.TextBoxFor(m => m.SupplierAccountNumber, new { @id = "SupplierAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.SupplierAccountName)
+                                <div class="form-group">
+                                    @Html.TextBoxFor(m => m.SupplierAccountName, new { @id = "SupplierAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 panel panel-default card-view">
+                            <div class="form-group mb-30">
+                                <div class="panel-heading" style="background-color: #34495E">
+                                    <div class="pull-left">
+                                        <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ShowOnline</h6>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ShowOnline" id="AccordingToQuantityOnline" value="1" disabled>
+                                    <label for="AccordingToQuantityOnline">
+                                        @Resources.Resource.AccordingToQuantity
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    @Html.TextBoxFor(m => m.QuantityOnline, new { @id = "QuantityOnline", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ShowOnline" id="AsRequested" value="2" disabled>
+                                    <label for="AsRequested">
+                                        @Resources.Resource.AsRequested
+                                    </label>
+                                </div>
+
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ShowOnline" id="StopOnline" value="3" checked="" disabled>
+                                    <label for="StopOnline">
+                                        @Resources.Resource.StopOnline
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-1" style="width: 10px;">
+                        </div>
+                        <div class="col-lg-3 panel panel-default card-view">
+                            <div class="form-group mb-30">
+                                <div class="checkbox checkbox-primary">
+                                    <input id="StopItem" type="checkbox" disabled>
+                                    <label for="StopItem">
+                                        @Resources.Resource.StopItem
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="SaleOfOfferedArticleIsPermitted" type="checkbox" disabled>
+                                    <label for="SaleOfOfferedArticleIsPermitted">
+                                        @Resources.Resource.SaleOfOfferedArticleIsPermitted
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="FabricChangeIsAllowed" type="checkbox" disabled>
+                                    <label for="FabricChangeIsAllowed">
+                                        @Resources.Resource.FabricChangeIsAllowed
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="AllowWoodToChangeColor" type="checkbox" disabled>
+                                    <label for="AllowWoodToChangeColor">
+                                        @Resources.Resource.AllowWoodToChangeColor
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="ApprovingTheWarehouseQuantityLessThan" type="checkbox" disabled>
+                                    <label for="ApprovingTheWarehouseQuantityLessThan">
+                                        @Resources.Resource.ApprovingTheWarehouseQuantityLessThan
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    @Html.TextBoxFor(m => m.QuantityManufacturing, new { @id = "QuantityManufacturing", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-1" style="width: 10px;">
+                        </div>
+                        <div class="col-lg-5">
+                            <table id="tdataTableWarehouse" class="table table-hover table-bordered mb-0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>@Resources.Resource.StockName</th>
+                                        <th>@Resources.Resource.StockCode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="Financial" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+
+                            @Html.Label(Resources.Resource.SalePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.SalePrice, new { @id = "SalePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.TaxType)
+                                @Html.DropDownListFor(m => m.TaxTypeNo, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.Taxable, Value = "1",Selected=true },
+                                    new SelectListItem{ Text=Resources.Resource. TaxableByZero, Value = "2",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "3",Selected=false }
+                                }, new { @id = "TaxTypeNo", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TaxRate)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TaxRate, new { @id = "TaxRate", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.LocalCost)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.LocalCost, new { @id = "LocalCost", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.LastLocalPurchasePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.LastLocalPurchasePrice, new { @id = "LastLocalPurchasePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.ForeignCost)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ForeignCost, new { @id = "ForeignCost", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.LastForeignPurchasePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.LastForeignPurchasePrice, new { @id = "LastForeignPurchasePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.CostRate)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CostRate, new { @id = "CostRate", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TotalQuantitySold)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TotalQuantitySold, new { @id = "TotalQuantitySold", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TotalValueSold)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TotalValueSold, new { @id = "TotalValueSold", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TheNumberOfDaysTheCardIsOpened)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TheNumberOfDaysTheCardIsOpened, new { @id = "TheNumberOfDaysTheCardIsOpened", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TheTargetMonthlyAmount)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TheTargetMonthlyAmount, new { @id = "TheTargetMonthlyAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="RelatedItem" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <table id="tdataTableRelatedItem" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.ItemCode</th>
+                                    <th>@Resources.Resource.ItemName</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="SimilarItem" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <table id="tdataTableSimilarItem" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.ItemCode</th>
+                                    <th>@Resources.Resource.ItemName</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="Manufacturing" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.FactoryName)
+                                <div class="form-group">
+                                    @if (Resources.Resource.CurLang == "Arb")
+                                    {
+                                        @Html.DropDownListFor(m => m.FactoryNo, new SelectList(Model.St_FactoryH, "FactoryID", "ArabicName"), Resources.Resource.Factories, new { @id = "ComboFactoryNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(m => m.FactoryNo, new SelectList(Model.St_FactoryH, "FactoryID", "EnglishName"), Resources.Resource.Factories, new { @id = "ComboFactoryNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.WageRate)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.WageRate, new { @id = "WageRate", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.NumberOfWorkingDays)
+                                @Html.DropDownListFor(m => m.NumberOfWorkingDays, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.NumberOfWorkingDays, Value = "0",Selected=true },
+                                    new SelectListItem{ Text="1", Value = "1",Selected=false },
+                                    new SelectListItem{ Text="2", Value = "2",Selected=false },
+                                    new SelectListItem{ Text="3", Value = "3",Selected=false },
+                                    new SelectListItem{ Text="4", Value = "4",Selected=false },
+                                    new SelectListItem{ Text="5", Value = "5",Selected=false },
+                                    new SelectListItem{ Text="6", Value = "6",Selected=false },
+                                    new SelectListItem{ Text="7", Value = "7",Selected=false },
+                                    new SelectListItem{ Text="8", Value = "8",Selected=false },
+                                    new SelectListItem{ Text="9", Value = "9",Selected=false },
+                                    new SelectListItem{ Text="10", Value = "10",Selected=false },
+                                    new SelectListItem{ Text="11", Value = "11",Selected=false },
+                                    new SelectListItem{ Text="12", Value = "12",Selected=false },
+                                    new SelectListItem{ Text="13", Value = "13",Selected=false },
+                                    new SelectListItem{ Text="14", Value = "14",Selected=false },
+                                    new SelectListItem{ Text="15", Value = "15",Selected=false },
+                                    new SelectListItem{ Text="16", Value = "16",Selected=false },
+                                    new SelectListItem{ Text="17", Value = "17",Selected=false },
+                                    new SelectListItem{ Text="18", Value = "18",Selected=false },
+                                    new SelectListItem{ Text="19", Value = "19",Selected=false },
+                                    new SelectListItem{ Text="20", Value = "20",Selected=false },
+                                    new SelectListItem{ Text="21", Value = "21",Selected=false },
+                                    new SelectListItem{ Text="22", Value = "22",Selected=false },
+                                    new SelectListItem{ Text="23", Value = "23",Selected=false },
+                                    new SelectListItem{ Text="24", Value = "24",Selected=false },
+                                    new SelectListItem{ Text="25", Value = "25",Selected=false },
+                                    new SelectListItem{ Text="26", Value = "26",Selected=false },
+                                    new SelectListItem{ Text="27", Value = "27",Selected=false },
+                                    new SelectListItem{ Text="28", Value = "28",Selected=false },
+                                    new SelectListItem{ Text="29", Value = "29",Selected=false },
+                                    new SelectListItem{ Text="30", Value = "30",Selected=false },
+                                    new SelectListItem{ Text="31", Value = "31",Selected=false },
+                                    new SelectListItem{ Text="32", Value = "32",Selected=false },
+                                    new SelectListItem{ Text="33", Value = "33",Selected=false },
+                                    new SelectListItem{ Text="34", Value = "34",Selected=false },
+                                    new SelectListItem{ Text="35", Value = "35",Selected=false },
+                                    new SelectListItem{ Text="36", Value = "36",Selected=false },
+                                    new SelectListItem{ Text="37", Value = "37",Selected=false },
+                                    new SelectListItem{ Text="38", Value = "38",Selected=false },
+                                    new SelectListItem{ Text="39", Value = "39",Selected=false },
+                                    new SelectListItem{ Text="40", Value = "40",Selected=false },
+                                    new SelectListItem{ Text="41", Value = "41",Selected=false },
+                                    new SelectListItem{ Text="42", Value = "42",Selected=false },
+                                    new SelectListItem{ Text="43", Value = "43",Selected=false },
+                                    new SelectListItem{ Text="44", Value = "44",Selected=false },
+                                    new SelectListItem{ Text="45", Value = "45",Selected=false },
+                                    new SelectListItem{ Text="46", Value = "46",Selected=false },
+                                    new SelectListItem{ Text="47", Value = "47",Selected=false },
+                                    new SelectListItem{ Text="48", Value = "48",Selected=false },
+                                    new SelectListItem{ Text="49", Value = "49",Selected=false },
+                                    new SelectListItem{ Text="50", Value = "50",Selected=false },
+                                    new SelectListItem{ Text="51", Value = "51",Selected=false },
+                                    new SelectListItem{ Text="52", Value = "52",Selected=false },
+                                    new SelectListItem{ Text="53", Value = "53",Selected=false },
+                                    new SelectListItem{ Text="54", Value = "54",Selected=false },
+                                    new SelectListItem{ Text="55", Value = "55",Selected=false },
+                                    new SelectListItem{ Text="56", Value = "56",Selected=false },
+                                    new SelectListItem{ Text="57", Value = "57",Selected=false },
+                                    new SelectListItem{ Text="58", Value = "58",Selected=false },
+                                    new SelectListItem{ Text="59", Value = "59",Selected=false },
+                                    new SelectListItem{ Text="60", Value = "60",Selected=false },
+                                    new SelectListItem{ Text="61", Value = "61",Selected=false },
+                                    new SelectListItem{ Text="62", Value = "62",Selected=false },
+                                    new SelectListItem{ Text="63", Value = "63",Selected=false },
+                                    new SelectListItem{ Text="64", Value = "64",Selected=false },
+                                    new SelectListItem{ Text="65", Value = "65",Selected=false },
+                                    new SelectListItem{ Text="66", Value = "66",Selected=false },
+                                    new SelectListItem{ Text="67", Value = "67",Selected=false },
+                                    new SelectListItem{ Text="68", Value = "68",Selected=false },
+                                    new SelectListItem{ Text="69", Value = "69",Selected=false },
+                                    new SelectListItem{ Text="70", Value = "70",Selected=false },
+                                    new SelectListItem{ Text="71", Value = "71",Selected=false },
+                                    new SelectListItem{ Text="72", Value = "72",Selected=false },
+                                    new SelectListItem{ Text="73", Value = "73",Selected=false },
+                                    new SelectListItem{ Text="74", Value = "74",Selected=false },
+                                    new SelectListItem{ Text="75", Value = "75",Selected=false },
+                                    new SelectListItem{ Text="76", Value = "76",Selected=false },
+                                    new SelectListItem{ Text="77", Value = "77",Selected=false },
+                                    new SelectListItem{ Text="78", Value = "78",Selected=false },
+                                    new SelectListItem{ Text="79", Value = "79",Selected=false },
+                                    new SelectListItem{ Text="80", Value = "80",Selected=false },
+                                    new SelectListItem{ Text="81", Value = "81",Selected=false },
+                                    new SelectListItem{ Text="82", Value = "82",Selected=false },
+                                    new SelectListItem{ Text="83", Value = "83",Selected=false },
+                                    new SelectListItem{ Text="84", Value = "84",Selected=false },
+                                    new SelectListItem{ Text="85", Value = "85",Selected=false },
+                                    new SelectListItem{ Text="86", Value = "86",Selected=false },
+                                    new SelectListItem{ Text="87", Value = "87",Selected=false },
+                                    new SelectListItem{ Text="88", Value = "88",Selected=false },
+                                    new SelectListItem{ Text="89", Value = "89",Selected=false },
+                                    new SelectListItem{ Text="90", Value = "90",Selected=false },
+                                    new SelectListItem{ Text="91", Value = "91",Selected=false },
+                                    new SelectListItem{ Text="92", Value = "92",Selected=false },
+                                    new SelectListItem{ Text="93", Value = "93",Selected=false },
+                                    new SelectListItem{ Text="94", Value = "94",Selected=false },
+                                    new SelectListItem{ Text="95", Value = "95",Selected=false },
+                                    new SelectListItem{ Text="96", Value = "96",Selected=false },
+                                    new SelectListItem{ Text="97", Value = "97",Selected=false },
+                                    new SelectListItem{ Text="98", Value = "98",Selected=false },
+                                    new SelectListItem{ Text="99", Value = "99",Selected=false },
+                                    new SelectListItem{ Text="100", Value = "100",Selected=false },
+                                    new SelectListItem{ Text="101", Value = "101",Selected=false },
+                                    new SelectListItem{ Text="102", Value = "102",Selected=false },
+                                    new SelectListItem{ Text="103", Value = "103",Selected=false },
+                                    new SelectListItem{ Text="104", Value = "104",Selected=false },
+                                    new SelectListItem{ Text="105", Value = "105",Selected=false },
+                                    new SelectListItem{ Text="106", Value = "106",Selected=false },
+                                    new SelectListItem{ Text="107", Value = "107",Selected=false },
+                                    new SelectListItem{ Text="108", Value = "108",Selected=false },
+                                    new SelectListItem{ Text="109", Value = "109",Selected=false },
+                                    new SelectListItem{ Text="110", Value = "110",Selected=false },
+                                    new SelectListItem{ Text="111", Value = "111",Selected=false },
+                                    new SelectListItem{ Text="112", Value = "112",Selected=false },
+                                    new SelectListItem{ Text="113", Value = "113",Selected=false },
+                                    new SelectListItem{ Text="114", Value = "114",Selected=false },
+                                    new SelectListItem{ Text="115", Value = "115",Selected=false },
+                                    new SelectListItem{ Text="116", Value = "116",Selected=false },
+                                    new SelectListItem{ Text="117", Value = "117",Selected=false },
+                                    new SelectListItem{ Text="118", Value = "118",Selected=false },
+                                    new SelectListItem{ Text="119", Value = "119",Selected=false },
+                                    new SelectListItem{ Text="120", Value = "120",Selected=false }
+                                }, new { @id = "NumberOfWorkingDays", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.NumberOfStages)
+                                @Html.DropDownListFor(m => m.NumberOfStages, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.NumberOfStages, Value = "0",Selected=true },
+                                    new SelectListItem{ Text="1", Value = "1",Selected=false },
+                                    new SelectListItem{ Text="2", Value = "2",Selected=false },
+                                    new SelectListItem{ Text="3", Value = "3",Selected=false },
+                                    new SelectListItem{ Text="4", Value = "4",Selected=false },
+                                    new SelectListItem{ Text="5", Value = "5",Selected=false },
+                                    new SelectListItem{ Text="6", Value = "6",Selected=false },
+                                    new SelectListItem{ Text="7", Value = "7",Selected=false },
+                                    new SelectListItem{ Text="8", Value = "8",Selected=false },
+                                    new SelectListItem{ Text="9", Value = "9",Selected=false },
+                                    new SelectListItem{ Text="10", Value = "10",Selected=false }
+                                }, new { @id = "NumberOfStages", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-12">
+                            @Html.Label(Resources.Resource.Note)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.FactoryNotes, new { @id = "FactoryNotes", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <table id="tdataTableManufacturingStages" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.FactoryCode</th>
+                                    <th>@Resources.Resource.FactoryName</th>
+                                    <th>@Resources.Resource.NumberOfDays</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-12" style="margin-top :10px">
+                        <table id="tdataTableRawMaterial" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.ItemCode</th>
+                                    <th>@Resources.Resource.ItemName</th>
+                                    <th>@Resources.Resource.Quantity</th>
+                                    <th>@Resources.Resource.Cost</th>
+                                    <th>@Resources.Resource.NetTotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-4">
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.TotalQuantity)
+                                @Html.TextBoxFor(m => m.sTotalQuantity, new { @id = "sTotalQuantity", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.Total)
+                                @Html.TextBoxFor(m => m.sNetTotal, new { @id = "sNetTotal", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                        </div>
+                    </div>
+                </div>
+                <div id="SubColors" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <table id="tdataTableSubItemColor" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.ColorName</th>
+                                    <th>@Resources.Resource.ColorNumber</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="ItemPicture" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <a href="~/ItemLogo/@Model.ItemLogo" target="_blank">
+                                <img style="width:500px;height:350px;object-fit:contain;" src="~/ItemLogo/@Model.ItemLogo" id="ItemLogo" class="img-responsive img-rounded" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+                </div>
+                <div id="ItemGallary" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12" style="margin-top:10px;">
+                        <table id="tdataTableItemGallary" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.Name</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button type="button" class="btn btn-anim btnDelete-lg" id="Delete"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+        <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TotalQuantity, new { @id = "TotalQuantity", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TotalCost, new { @id = "TotalCost", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.NetTotal, new { @id = "NetTotal", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ShowOnline, new { @id = "ShowOnline", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.StopItem, new { @id = "bStopItem", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.SaleOfOfferedArticleIsPermitted, new { @id = "bSaleOfOfferedArticleIsPermitted", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.ApprovingTheWarehouseQuantityLessThan, new { @id = "bApprovingTheWarehouseQuantityLessThan", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.FabricChangeIsAllowed, new { @id = "bFabricChangeIsAllowed", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.AllowWoodToChangeColor, new { @id = "bAllowWoodToChangeColor", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ItemSerial, new { @id = "ItemSerial", @class = "form-control input-sml", @type = "Number", @min = "1", @max = "99999", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.sTotalCost, new { @id = "sTotalCost", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+    $(document).ready(function () {
+        document.getElementById('StopItem').checked = document.getElementById("bStopItem").checked;
+        document.getElementById('SaleOfOfferedArticleIsPermitted').checked = document.getElementById("bSaleOfOfferedArticleIsPermitted").checked;
+        document.getElementById('ApprovingTheWarehouseQuantityLessThan').checked = document.getElementById("bApprovingTheWarehouseQuantityLessThan").checked;
+        document.getElementById('FabricChangeIsAllowed').checked = document.getElementById("bFabricChangeIsAllowed").checked;
+        document.getElementById('AllowWoodToChangeColor').checked = document.getElementById("bAllowWoodToChangeColor").checked;
+        if (document.getElementById("ShowOnline").value == 1) {
+            document.getElementById('AccordingToQuantityOnline').checked = true;
+        }
+        else if (document.getElementById("ShowOnline").value == 2) {
+            document.getElementById('AsRequested').checked = true;
+        }
+        else if (document.getElementById("ShowOnline").value == 3) {
+            document.getElementById('StopOnline').checked = true;
+        }
+        var SelectedValue = $("#ItemTypeNo").val();
+        if (SelectedValue == 1) {
+            document.getElementById("sManufacturing").style.display = 'none';
+            document.getElementById("sSubColors").style.display = 'block';
+        }
+        else if (SelectedValue == 2) {
+            document.getElementById("sSubColors").style.display = 'none';
+            document.getElementById("sManufacturing").style.display = 'none';
+        }
+        else if (SelectedValue == 3) {
+            document.getElementById("sSubColors").style.display = 'none';
+            document.getElementById("sManufacturing").style.display = 'block';
+        }
+        else if (SelectedValue == 4) {
+            document.getElementById("sSubColors").style.display = 'none';
+            document.getElementById("sManufacturing").style.display = 'none';
+        }
+        var TheDecimalPointForTheLocalCurrency = $("#TheDecimalPointForTheLocalCurrency").val();
+        if (TheDecimalPointForTheLocalCurrency == '' || TheDecimalPointForTheLocalCurrency == null) {
+            TheDecimalPointForTheLocalCurrency = 3;
+        }
+        function formatMoneyLocalCurrencyFraction(number, decPlaces, decSep, thouSep) {
+            decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? TheDecimalPointForTheLocalCurrency : decPlaces,
+                decSep = typeof decSep === "undefined" ? "." : decSep;
+            thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+            var sign = number < 0 ? "-" : "";
+            var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+            var j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return sign +
+                (j ? i.substr(0, j) + thouSep : "") +
+                i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+                (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+        }
+        document.getElementById("sTotalQuantity").value = formatMoneyLocalCurrencyFraction(document.getElementById("TotalQuantity").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sTotalCost").value = formatMoneyLocalCurrencyFraction(document.getElementById("TotalCost").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sNetTotal").value = formatMoneyLocalCurrencyFraction(document.getElementById("NetTotal").value, TheDecimalPointForTheLocalCurrency);
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $($.fn.dataTable.tables(true)).DataTable()
+                .columns.adjust();
+        });
+        $(document).on('click', '#Delete', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                            closeButton: false
+                        });
+                        var dataToSave = {
+                            ItemCode: $("#ItemCode").val()
+                        };
+                        $.ajax({
+                            type: "POST",
+                            url: "/St_ItemCardH/DeleteSt_ItemCardH",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+
+                                    toastr.success(data.Msg);
+                                    $('#modal-container').modal('hide');
+                                    window.location = "/St_ItemCardH/Index";
+                                }
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+                        });
+                    }
+                }
+            });
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/St_ItemCardH/Index";
+        });
+        var tabelMemRefWarehouse = $("#tdataTableWarehouse").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCardH/GetAllSt_WarehouseHByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "StockName"
+                },
+
+                {
+                    data: "StockCode"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefSubItemColor = $("#tdataTableSubItemColor").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "300px",
+            "fixedHeader": true,
+            "columnDefs": [
+
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCardH/GetAllSt_SubColorByItemCodeView/@Model.ItemCode",
+                dataSrc: ""
+            },
+            columns: [
+                {
+
+                    data: "SubItemColorName"
+                },
+
+                {
+                    data: "SubItemColorCode"
+
+                }
+            ]
+        });
+        var tabelMemRefItemGallary = $("#tdataTableItemGallary").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "columnDefs": [
+                    { "width": "100%", "targets": 0, "className": "dt-center" }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+
+                ajax: {
+                    url: "/Attach/GetAllItemsFiles/@Model.ItemCode",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+
+                        data: "FileName"
+                    }
+                ]
+        });
+        var tabelMemRefRelatedItem = $("#tdataTableRelatedItem").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "width" : "20%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "width": "80%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCardH/GetAllSt_RelatedItemByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "RelatedItemCode"
+                },
+
+                {
+                    data: "RelatedItemName"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefSimilarItem = $("#tdataTableSimilarItem").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "20%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "80%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCardH/GetAllSt_SimilarItemByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "SimilarItemCode"
+                },
+
+                {
+                    data: "SimilarItemName"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefManufacturingStages = $("#tdataTableManufacturingStages").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "10%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "80%"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center",
+                    "Width": "10%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCardH/GetAllSt_ManufacturingStagesByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "ManufacturingStageFactoryNo"
+                },
+
+                {
+                    data: "ManufacturingStageFactoryName"
+
+                },
+                {
+                    data: "NumberOfDays"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefRawMaterial = $("#tdataTableRawMaterial").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "20%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "50%"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center",
+                    "Width": "10%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCardH/GetAllSt_RawMaterialByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "RawMaterialCode"
+                },
+
+                {
+                    data: "RawMaterialName"
+
+                },
+                {
+                    data: "Quantity",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "Cost",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "Total",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+            ]
+
+
+        });
+    });
+    </script>
+}
+

@@ -1,0 +1,127 @@
+﻿
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+        settings.Name = "Offer2ItemGrid";
+        settings.CallbackRouteValues = new { Controller = "St_ItemCard", Action = "GridViewItemOffer2" };
+        settings.SettingsEditing.BatchEditSettings.KeepChangesOnCallbacks = DefaultBoolean.False;
+        settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+        settings.SettingsCommandButton.NewButton.Text = "<span class='btn btn-success btn-sml btn-icon-anim ' style='padding: 4px;'><i class='fa fa-plus-circle' ></i></span>";
+        settings.SettingsCommandButton.DeleteButton.Text = "<span class='btn btn-danger btn-sml btn-icon-anim  ' style='padding: 4px;'><i class='fa fa-minus-circle'  ></i></span>";
+        settings.SettingsEditing.BatchEditSettings.HighlightDeletedRows = false;
+        settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+        settings.ClientSideEvents.BatchEditConfirmShowing = "function(s, e){ e.cancel = true; }";
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsEditing.ShowModelErrorsForEditors = true;
+        settings.ClientSideEvents.BeginCallback = "OnBeginCallbackOffer2Item";
+        settings.ClientSideEvents.EndCallback = "OnEndCallbackOffer2Item";
+        settings.Settings.ShowFilterBar = GridViewStatusBarMode.Hidden;
+        settings.Settings.ShowPreview = false;
+        settings.Settings.ShowFilterRowMenu = false;
+        settings.Settings.ShowTitlePanel = false;
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+        }
+        else
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+        }
+        settings.SettingsEditing.NewItemRowPosition = GridViewNewItemRowPosition.Bottom;
+        settings.CommandColumn.ShowDeleteButton = true;
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel ||
+            e.ButtonType == ColumnCommandButtonType.Delete)
+                e.Visible = false;
+        };
+        settings.Theme = "iOS";
+        settings.KeyFieldName = "ItemOfferRowNumber";
+        settings.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.CommandColumn.ShowNewButton = true;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.SettingsBehavior.AllowSort = false;
+        settings.SettingsBehavior.AllowDragDrop = false;
+        settings.ClientSideEvents.Init = "OnInitOffer2Item";
+        settings.ClientSideEvents.BatchEditEndEditing = "Grid_BatchEditEndEditingOffer2Item";
+        settings.ClientSideEvents.BatchEditStartEditing = "Grid_BatchEditStartEditingOffer2Item";
+        settings.ClientSideEvents.BatchEditRowDeleting = "Grid_DeleteRowEventOffer2Item";
+        settings.KeyboardSupport = true;
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel)
+                e.Visible = false;
+        };
+
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "ItemOfferQuantitySold";
+            column.Width = 100;
+            column.Caption = Resources.Resource.Quantity;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 0;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "ItemOfferUnitPrice";
+            column.Width = 100;
+            column.Caption = Resources.Resource.UnitPrice;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "ItemOfferTotalPrice";
+            column.Width = 100;
+            column.Caption = Resources.Resource.TotalPrice;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.InitNewRow += (s, e) =>
+        {
+            e.NewValues["ItemOfferQuantitySold"] = 0;
+            e.NewValues["ItemOfferUnitPrice"] = 0;
+            e.NewValues["ItemOfferTotalPrice"] = 0;
+        };
+        settings.CustomJSProperties = (s, e) =>
+        {
+            if (ViewData["ErrorFlag"] != null)
+                e.Properties.Add("cpErrorFlag", (bool)ViewData["ErrorFlag"]);
+        };
+    });
+    if (ViewData["EditError"] != null)
+    {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()
+
+
+

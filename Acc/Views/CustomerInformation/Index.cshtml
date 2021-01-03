@@ -1,0 +1,621 @@
+﻿@model  Acc.ViewModels.ChartOfAccountClientVM
+@{
+    ViewBag.Title = @Resources.Resource.CustomerDefinition;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CustomerDefinition</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.Label(Resources.Resource.AccountFather)
+                    @Html.DropDownListFor(m => m.AccountFather, new SelectList(Model.CustomerFatherAccount, "AccountNumber", "AccountName"), new { @id = "AccountFather", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountTypeID)
+
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "ArabicName"), new { @id = "AccountTypeID", @class = "form-control input-sml" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "EnglishName"), new { @id = "AccountTypeID", @class = "form-control input-sml" })
+                    }
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountKind)
+                    @Html.DropDownListFor(m => m.AccountKind, new List<SelectListItem>
+                                                     {
+                                                      new SelectListItem{ Text=Resources.Resource.AnAccount, Value = "0",Selected=true },
+                                                      new SelectListItem{ Text=Resources.Resource. Client, Value = "1",Selected=false },
+
+                                                      new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false },
+                                                       new SelectListItem{ Text=Resources.Resource.Approval, Value = "3",Selected=false }
+               }, new { @id = "AccountKind", @class = "form-control input-sml", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.AccountKind, "", new { @class = "text-danger" })
+                    @Html.HiddenFor(m => m.AccountKind, new { @id = "AccountKind" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AccountNumber)
+                    @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.AccountNumber)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ArabicName)<span style="color:red">*</span>
+                    @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.ArabicName)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.EnglishName)
+                    @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.EnglishName)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Note)
+                    @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.Note)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CurrencyID)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), new { @id = "CurrencyID", @class = "form-control input-sml" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), new { @id = "CurrencyID", @class = "form-control input-sml" })
+                    }
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FSalesID)
+                    @Html.DropDownListFor(m => m.FSalesID, new SelectList(Model.Sale, "SalesID", "SalesName"),
+                        Resources.Resource.Sales, new { @id = "SalesID", @class = "form-control input-sml" })
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CityID)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.CityID, new SelectList(Model.CustomerCity, "CustomerCityID", "ArabicName"),
+                                                    Resources.Resource.CustomerCity, new { @id = "CityID", @class = "form-control input-sml" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.CityID, new SelectList(Model.CustomerCity, "CustomerCityID", "EnglishName"),
+                                                    Resources.Resource.CustomerCity, new { @id = "CityID", @class = "form-control input-sml" })
+                    }
+                    @Html.ValidationMessageFor(m => m.CityID)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AreaID)
+                    @if (Resources.Resource.CurLang == "Arb")
+                    {
+                        @Html.DropDownListFor(m => m.AreaID, new SelectList(Model.CustomerArea, "CustomerAreaID", "ArabicName"), new { @id = "AreaID", @class = "form-control input-sml" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.AreaID, new SelectList(Model.CustomerArea, "CustomerAreaID", "EnglishName"), new { @id = "AreaID", @class = "form-control input-sml" })
+                    }
+                    @Html.ValidationMessageFor(m => m.AreaID)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, new { Email = "Email", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.Email)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Telephone)
+                    @Html.TextBoxFor(m => m.Telephone, new { @id = "Telephone", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.Telephone)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Mobile)
+                    @Html.TextBoxFor(m => m.Mobile, new { @id = "Mobile", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.Mobile)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TeleFax)
+                    @Html.TextBoxFor(m => m.TeleFax, new { @id = "TeleFax", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.TeleFax)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.Website)
+                    @Html.TextBoxFor(m => m.Website, new { @id = "Website", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.Website)
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.NextTo)
+                    @Html.TextBoxFor(m => m.NextTo, new { @id = "NextTo", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.NextTo)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.StreetName)
+                    @Html.TextBoxFor(m => m.StreetName, new { @id = "StreetName", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.StreetName)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.BuildingNo)
+                    @Html.TextBoxFor(m => m.BuildingNo, new { Email = "BuildingNo", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.BuildingNo)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.FloorNo)
+                    @Html.TextBoxFor(m => m.FloorNo, new { @id = "FloorNo", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.FloorNo)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.KnownTo)
+                    @Html.TextBoxFor(m => m.KnownTo, new { @id = "KnownTo", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.KnownTo)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.TradeName)
+                    @Html.TextBoxFor(m => m.TradeName, new { @id = "TradeName", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.TradeName)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.CommercialRecord)
+                    @Html.TextBoxFor(m => m.CommercialRecord, new { @id = "CommercialRecord", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.CommercialRecord)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ProfessionLicence)
+                    @Html.TextBoxFor(m => m.ProfessionLicence, new { @id = "ProfessionLicence", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.ProfessionLicence)
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.NationalNumberOfTheFacility)
+                    @Html.TextBoxFor(m => m.NationalNumberOfTheFacility, new { @id = "NationalNumberOfTheFacility", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.NationalNumberOfTheFacility)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AuthorizedSignatory)
+                    @Html.TextBoxFor(m => m.AuthorizedSignatory, new { Email = "AuthorizedSignatory", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.AuthorizedSignatory)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.PaymnetMethodTypeID)
+                    @Html.DropDownListFor(m => m.PaymnetMethodTypeID, new List<SelectListItem>
+                                                     {
+                                                      new SelectListItem{ Text=Resources.Resource.Cash, Value = "0",Selected=true },
+                                                      new SelectListItem{ Text=Resources.Resource. Debt, Value = "1",Selected=false }
+                    }, new { @id = "PaymnetMethodTypeID", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(model => model.PaymnetMethodTypeID, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DebitLimit)
+                    @Html.TextBoxFor(m => m.DebitLimit, new { @id = "DebitLimit", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.DebitLimit)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DebitPeriod)
+                    @Html.TextBoxFor(m => m.DebitPeriod, new { @id = "DebitPeriod", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.DebitPeriod)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.DiscountPercentage)
+                    @Html.TextBoxFor(m => m.DiscountPercentage, new { @id = "DiscountPercentage", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.DiscountPercentage)
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TaxCaseID)
+                    @Html.DropDownListFor(m => m.TaxCaseID, new List<SelectListItem>
+                                                     {
+                                                      new SelectListItem{ Text=Resources.Resource.Taxable, Value = "0",Selected=true },
+                                                      new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "1",Selected=false }
+                    }, new { @id = "TaxCaseID", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(model => model.TaxCaseID, "", new { @class = "text-danger" })
+
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.UpperLimitForUncollectedCheques)
+                    @Html.TextBoxFor(m => m.UpperLimitForUncollectedCheques, new { @id = "UpperLimitForUncollectedCheques", @class = "form-control input-sml" })
+                    @Html.ValidationMessageFor(m => m.UpperLimitForUncollectedCheques)
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-anim" id="SaveChildAccountClient"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-warning btn-anim" id="Clear"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Clear</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(m => m.LevelZero, new { @id = "LevelZero" })
+@Html.HiddenFor(m => m.AccountLevel, new { @id = "AccountLevel" })
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/ChartOfAccount/ChartDash";
+        });
+        $(document).on('click', '#Clear', function () {
+            document.getElementById("ArabicName").value = '';
+            document.getElementById("EnglishName").value = '';
+            document.getElementById("Note").value = '';
+            document.getElementById("AccountTypeID").selectedIndex = "0";
+            document.getElementById("CurrencyID").selectedIndex = "0";
+            document.getElementById("CityID").selectedIndex = "0";
+            var AreaID = $('#AreaID');
+            AreaID.empty();
+            document.getElementById("Website").value = '';
+            document.getElementById("Email").value = '';
+            document.getElementById("Telephone").value = '';
+            document.getElementById("Mobile").value = '';
+            document.getElementById("TeleFax").value = '';
+            document.getElementById("NextTo").value = '';
+            document.getElementById("StreetName").value = '';
+            document.getElementById("BuildingNo").value = '';
+            document.getElementById("FloorNo").value = '';
+            document.getElementById("KnownTo").value = '';
+            document.getElementById("TradeName").value = '';
+            document.getElementById("CommercialRecord").value = '';
+            document.getElementById("ProfessionLicence").value = '';
+            document.getElementById("NationalNumberOfTheFacility").value = '';
+            document.getElementById("AuthorizedSignatory").value = '';
+            document.getElementById("DebitLimit").value = '0';
+            document.getElementById("DebitPeriod").value = '0';
+            document.getElementById("UpperLimitForUncollectedCheques").value = '0';
+            document.getElementById("PaymnetMethodTypeID").selectedIndex = "0";
+            document.getElementById("TaxCaseID").selectedIndex = "0";
+            document.getElementById("AccountFather").selectedIndex = "0";
+            var SelectedValue = $("#AccountFather").val();
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxFatherAccount", "CustomerInformation")', { id: SelectedValue }, function (Data) {
+                    if (Data != null) {
+                        $("#AccountNumber").mask(Data.LevelZero);
+                        document.getElementById("AccountNumber").value = Data.AccountNumber;
+                        document.getElementById("AccountLevel").value = Data.AccountLevel;
+                    }
+                });
+            }
+            $("#ArabicName").focus().select();
+        });
+        $("#AccountNumber").mask('@Model.LevelZero');
+        $('#CityID').change(function () {
+            var AreaID = $('#AreaID');
+            AreaID.empty();
+            if ('@Resources.Resource.CurLang' == 'Arb') {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetAreaIDByCityID/" + document.getElementById("CityID").value,
+                    success: function (data) {
+                        AreaID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.CustomerArea'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            AreaID.append($('<option/>', {
+                                value: region.CustomerAreaID,
+                                text: region.ArabicName
+                            }));
+                        });
+
+                        dialog.modal('hide');
+
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+            else {
+                $.ajax({
+                    method: "GET",
+                    url: "/ChartOfAccount/GetAreaIDByCityID/" + document.getElementById("CityID").value,
+                    success: function (data) {
+                        AreaID.append($('<option/>', {
+                            value: 0,
+                            text: '@Resources.Resource.CustomerArea'
+                        }));
+
+
+                        $.each(data, function (id, region) {
+                            AreaID.append($('<option/>', {
+                                value: region.CustomerAreaID,
+                                text: region.EnglishName
+                            }));
+                        });
+                        dialog.modal('hide');
+                    },
+                    error: function (xhr, AJAXOptions, thrownError) {
+                        dialog.modal('hide');
+                        alert('Failed to retrieve .');
+                    }
+                });
+            }
+        });
+        $("#ArabicName").focus().select();
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Note").focus().select();
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Email").focus().select();
+        });
+        $("#Email").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Telephone").focus().select();
+        });
+        $("#Telephone").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Mobile").focus().select();
+        });
+        $("#Mobile").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TeleFax").focus().select();
+        });
+        $("#TeleFax").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Website").focus().select();
+        });
+        $("#Website").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#NextTo").focus().select();
+        });
+        $("#NextTo").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#StreetName").focus().select();
+        });
+        $("#StreetName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#BuildingNo").focus().select();
+        });
+        $("#BuildingNo").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#FloorNo").focus().select();
+        });
+        $("#FloorNo").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#KnownTo").focus().select();
+        });
+        $("#KnownTo").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#TradeName").focus().select();
+        });
+        $("#TradeName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#CommercialRecord").focus().select();
+        });
+        $("#CommercialRecord").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ProfessionLicence").focus().select();
+        });
+        $("#ProfessionLicence").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#NationalNumberOfTheFacility").focus().select();
+        });
+        $("#NationalNumberOfTheFacility").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#AuthorizedSignatory").focus().select();
+        });
+        $("#AuthorizedSignatory").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#DebitLimit").focus().select();
+        });
+        $("#DebitLimit").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#DebitPeriod").focus().select();
+        });
+        $("#DebitPeriod").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#DiscountPercentage").focus().select();
+        });
+        $("#DiscountPercentage").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#UpperLimitForUncollectedCheques").focus().select();
+        });
+        $("#UpperLimitForUncollectedCheques").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+        });
+        $('#AccountFather').change(function () {
+            var SelectedValue = $("#AccountFather").val();
+            if (SelectedValue != null && SelectedValue != '') {
+                $.getJSON('@Url.Action("GetMaxFatherAccount", "CustomerInformation")', { id: SelectedValue }, function (Data) {
+                    if (Data != null) {
+                        $("#AccountNumber").mask(Data.LevelZero);
+                        document.getElementById("AccountNumber").value = Data.AccountNumber;
+                        document.getElementById("AccountLevel").value = Data.AccountLevel;
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#SaveChildAccountClient', function () {
+            if ($("#AccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var AreaID = $("#AreaID").val();
+                            if (AreaID >= 1) {
+                                AreaID = $("#AreaID").val();
+                            }
+                            else {
+                                AreaID = 0;
+                            }
+                            var CityID = $("#CityID").val();
+                            if (CityID >= 1) {
+                                CityID = $("#CityID").val();
+                            }
+                            else {
+                                CityID = 0;
+                            }
+                            var FSalesID = $("#SalesID").val();
+                            if (FSalesID >= 1) {
+                                FSalesID = $("#SalesID").val();
+                            }
+                            else {
+                                FSalesID = 0;
+                            }
+                            var dataToSave = {
+
+                                AccountTypeID: $("#AccountTypeID").val(), AccountKind: $("#AccountKind").val(), AccountNumber: $("#AccountNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), AccountLevel: $("#AccountLevel").val(),
+                                AccountFather: $("#AccountFather").val(), AccountFatherName: document.getElementById("AccountFather").options[document.getElementById("AccountFather").selectedIndex].text,
+                                CurrencyID: $("#CurrencyID").val(),
+                                Website: $("#Website").val(), Email: $("#Email").val(), Telephone: $("#Telephone").val(),
+                                Mobile: $("#Mobile").val(), TeleFax: $("#TeleFax").val(), CityID,
+                                AreaID: AreaID, NextTo: $("#NextTo").val(), StreetName: $("#StreetName").val(),
+                                BuildingNo: $("#BuildingNo").val(), FloorNo: $("#FloorNo").val(), KnownTo: $("#KnownTo").val(),
+                                TradeName: $("#TradeName").val(), CommercialRecord: $("#CommercialRecord").val(), ProfessionLicence: $("#ProfessionLicence").val(),
+                                NationalNumberOfTheFacility: $("#NationalNumberOfTheFacility").val(), AuthorizedSignatory: $("#AuthorizedSignatory").val(),
+                                PaymnetMethodTypeID: $("#PaymnetMethodTypeID").val(), TaxCaseID: $("#TaxCaseID").val(), UpperLimitForUncollectedCheques: $("#UpperLimitForUncollectedCheques").val(),
+                                DebitLimit: $("#DebitLimit").val(), DebitPeriod: $("#DebitPeriod").val(), DiscountPercentage: $("#DiscountPercentage").val(), FSalesID: FSalesID
+
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/ChartOfAccount/SaveChildAccountClient",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        document.getElementById("CityID").selectedIndex = "0";
+                                        var AreaID = $('#AreaID');
+                                        AreaID.empty();
+                                        document.getElementById("Website").value = '';
+                                        document.getElementById("Email").value = '';
+                                        document.getElementById("Telephone").value = '';
+                                        document.getElementById("Mobile").value = '';
+                                        document.getElementById("TeleFax").value = '';
+                                        document.getElementById("NextTo").value = '';
+                                        document.getElementById("StreetName").value = '';
+                                        document.getElementById("BuildingNo").value = '';
+                                        document.getElementById("FloorNo").value = '';
+                                        document.getElementById("KnownTo").value = '';
+                                        document.getElementById("TradeName").value = '';
+                                        document.getElementById("CommercialRecord").value = '';
+                                        document.getElementById("ProfessionLicence").value = '';
+                                        document.getElementById("NationalNumberOfTheFacility").value = '';
+                                        document.getElementById("AuthorizedSignatory").value = '';
+                                        document.getElementById("DebitLimit").value = '0';
+                                        document.getElementById("DebitPeriod").value = '0';
+                                        document.getElementById("DiscountPercentage").value = '0';
+                                        document.getElementById("UpperLimitForUncollectedCheques").value = '0';
+                                        document.getElementById("AccountFather").selectedIndex = "0";
+                                        document.getElementById("AccountTypeID").selectedIndex = "0";
+                                        document.getElementById("CurrencyID").selectedIndex = "0";
+                                        document.getElementById("PaymnetMethodTypeID").selectedIndex = "0";
+                                        document.getElementById("TaxCaseID").selectedIndex = "0";
+                                        var SelectedValue = $("#AccountFather").val();
+                                        if (SelectedValue != null && SelectedValue != '') {
+                                            $.getJSON('@Url.Action("GetMaxFatherAccount", "CustomerInformation")', { id: SelectedValue }, function (Data) {
+                                                if (Data != null) {
+                                                    $("#AccountNumber").mask(Data.LevelZero);
+                                                    document.getElementById("AccountNumber").value = Data.AccountNumber;
+                                                    document.getElementById("AccountLevel").value = Data.AccountLevel;
+                                                }
+                                            });
+                                        }
+                                        $("#ArabicName").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+}
+
+

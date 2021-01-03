@@ -1,0 +1,108 @@
+﻿@using Acc.ViewModels
+@model LoginViewModel
+@{
+    ViewBag.Title = @Resources.Resource.Login;
+    Layout = "~/Views/Shared/Layout_Login.cshtml";
+}
+@Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    <section id="loginForm">
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+        {
+            @Html.AntiForgeryToken()
+
+
+
+
+
+            <div class="form-group" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+                <label class="control-label mb-10" for="exampleInputEmail_2" style="font-weight:bold;font-size:medium">@Resources.Resource.Email</label>
+                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = Resources.Resource.Email, @type = "email" })
+
+            </div>
+            <div class="form-group" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+                <label class=" control-label mb-10" for="exampleInputpwd_2" style="font-weight:bold;font-size:medium">@Resources.Resource.Password</label>
+                @*<a class="capitalize-font txt-primary block mb-10 pull-right font-12" href="forgot-password.html">forgot password ?</a>*@
+                <div class="clearfix"></div>
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = Resources.Resource.Password, @id = "Password" })
+            </div>
+
+            <div class="form-group">
+                <label class=" control-label mb-10" for="exampleInputpwd_2" style="font-weight:bold;font-size:medium">@Resources.Resource.Year</label>
+                @Html.DropDownListFor(m => m.Year, new SelectList(Model.AccYear, "Year", "Year"), new { @id = "Year", @class = "form-control" })
+
+
+            </div>
+
+            <div>
+                <label>  @Html.CheckBoxFor(m => m.RememberMe, new { @class = "checkbox", @id = "RememberMe" })&nbsp; @Resources.Resource.RememberMe</label>
+            </div>
+
+
+
+
+
+            <div class="form-group text-center" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+                <button type="submit" class="btn btn-primary btn-rounded btn-icon left-icon" id="MakeLogin"> <i class="fa fa-key"></i> <span>@Resources.Resource.Login</span></button>
+
+
+            </div>
+
+
+
+
+        }
+    </section>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+    // Check javascript has loaded
+    $(document).ready(function(){
+    // Click event of the showPassword button
+        document.getElementById("Password").value = "@Model.Password";
+
+        $('#MakeLogin').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '@Resources.Resource.PleaseWait',
+                message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.LoadingMsg...</p>'
+            });
+            dialog.init(function () {
+                setTimeout(function () {
+                    dialog.find('.bootbox-body').html('SeniorsSoft!');
+                }, 6000);
+            });
+        });
+
+    $('#showPassword').on('click', function(){
+    // Get the password field
+        var passwordField = $('#Password');
+       // Get the current type of the password field will be password or text
+       // Get the current type of the password field will be password or text
+        var passwordFieldType = passwordField.attr('type');
+
+    // Check to see if the type is a password field
+    if (passwordFieldType == 'password')
+      {
+        // Change the password field to text
+        passwordField.attr('type', 'text');
+        // Change the Text on the show password button to Hide
+        var icon = $("#showicon");
+
+        $(this).attr('class', 'fa fa-eye-slash');
+          $(this).val('Hide');
+       }
+    else {
+        // If the password field type is not a password field then set it to password
+       passwordField.attr('type', 'password');
+        // Change the value of the show password button to Show
+        var icon = $("#showicon");
+
+        $(this).attr('class', 'fa fa-eye');
+        $(this).val('Show');
+    }
+    });
+    });
+
+    </script>
+}

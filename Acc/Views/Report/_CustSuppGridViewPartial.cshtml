@@ -1,0 +1,116 @@
+@{
+    var grid = Html.DevExpress().GridView(settings => {
+        settings.Name = "GridView";
+        settings.Theme = "iOS";
+        settings.Width = 1200;
+        settings.CallbackRouteValues = new { Controller = "Report", Action = "CustSuppGridViewPartial" };
+
+        settings.SettingsExport.EnableClientSideExportAPI = true;
+        settings.SettingsExport.ExcelExportMode = DevExpress.Export.ExportType.WYSIWYG;
+        settings.Settings.ShowFilterRow = true;
+        settings.Settings.ShowFilterRowMenu = true;
+        settings.SettingsSearchPanel.Visible = false;
+        settings.Settings.AutoFilterCondition = AutoFilterCondition.Contains;
+        settings.Toolbars.Add(t => {
+            t.SettingsAdaptivity.Enabled = false;
+            t.SettingsAdaptivity.EnableCollapseRootItemsToIcons = false;
+            if (User.IsInRole("PrintRepCustSuppBalances") || User.IsInRole("CoOwner"))
+            {
+                t.Items.Add(GridViewToolbarCommand.ExportToXls);
+                t.Items.Add(GridViewToolbarCommand.ExportToXlsx);
+            }
+
+        });
+        settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Visible;
+        settings.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+
+        if (Resources.Resource.CurLang == "Arb")
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Right;
+        }
+        else
+        {
+            settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Left;
+        }
+
+
+        settings.SettingsEditing.Mode = GridViewEditingMode.EditFormAndDisplayRow;
+        settings.SettingsBehavior.ConfirmDelete = true;
+
+        settings.CommandColumn.Visible = false;
+        settings.CommandColumn.ShowNewButton = false;
+        settings.CommandColumn.ShowDeleteButton = false;
+        settings.CommandColumn.ShowEditButton = false;
+
+        settings.KeyFieldName = "AccountNumber";
+
+
+        settings.Settings.ShowHeaderFilterButton = false;
+        settings.Settings.ShowFooter = true;
+
+        settings.Settings.ShowGroupPanel = true;
+        settings.SettingsBehavior.AllowSelectByRowClick = true;
+        settings.SettingsSearchPanel.Visible = false;
+        settings.PreRender = (sender, e) => {
+            var gridView = (MVCxGridView)sender;
+            gridView.SearchPanelFilter = "";
+        };
+
+
+        settings.Columns.Add("AccountNumber").Width= 200;
+        settings.Columns.Add("AccountName").Width= 200;
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Balance";
+            column.Width = 200;
+            column.Caption = Resources.Resource.Balance;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+            {
+                (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n2}";
+            }
+            else
+            {
+                (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "{0:n3}";
+            }
+
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = -10000000000;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+
+
+        });
+        settings.Columns.Add("Telephone") .Width=200 ;
+        settings.Columns.Add("Mobile") .Width= 200;
+        settings.Columns.Add("TeleFax").Width= 200;
+        settings.Columns.Add("Email") .Width= 200;
+        settings.Columns.Add("CustomerCity").Width= 200;
+        settings.Columns.Add("CustomerArea").Width= 200;
+        settings.Columns.Add("StreetName").Width= 200;
+        settings.Columns.Add("SaleName").Width= 200;
+        settings.Columns.Add("SupplierCountry").Width = 200;
+        settings.Columns.Add("SupplierCity").Width = 200;
+        settings.Columns.Add("NameOfPersonInCharge").Width = 200;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "Balance").DisplayFormat = "{0:n2}";
+        }
+        else
+        {
+            settings.TotalSummary.Add(DevExpress.Data.SummaryItemType.Sum, "Balance").DisplayFormat = "{0:n3}";
+        }
+
+        settings.ClientSideEvents.BeginCallback = "OnBeginCallback";
+
+    });
+    if (ViewData["EditError"] != null){
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()

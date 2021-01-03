@@ -1,0 +1,633 @@
+﻿
+@{
+    var grid = Html.DevExpress().GridView(settings =>
+    {
+        settings.Name = "ItemsGrid";
+        settings.CallbackRouteValues = new { Controller = "St_SaleVoucherLocal", Action = "GridViewItems" };
+        settings.SettingsEditing.BatchEditSettings.KeepChangesOnCallbacks = DefaultBoolean.False;
+        settings.SettingsEditing.Mode = GridViewEditingMode.Batch;
+        settings.SettingsCommandButton.NewButton.Text = "<span class='btn btn-success btn-sml btn-icon-anim ' style='padding: 4px;'><i class='fa fa-plus-circle' ></i></span>";
+        settings.SettingsCommandButton.DeleteButton.Text = "<span class='btn btn-danger btn-sml btn-icon-anim  ' style='padding: 4px;'><i class='fa fa-minus-circle'  ></i></span>";
+        settings.SettingsEditing.BatchEditSettings.HighlightDeletedRows = false;
+        settings.SettingsEditing.BatchEditSettings.ShowConfirmOnLosingChanges = false;
+        settings.ClientSideEvents.BatchEditConfirmShowing = "function(s, e){ e.cancel = true; }";
+        settings.CommandColumn.Visible = true;
+        settings.CommandColumn.ShowNewButtonInHeader = true;
+        settings.SettingsEditing.ShowModelErrorsForEditors = true;
+        settings.ClientSideEvents.BeginCallback = "OnBeginCallback";
+        settings.ClientSideEvents.EndCallback = "OnEndCallback";
+        settings.Settings.ShowFilterBar = GridViewStatusBarMode.Hidden;
+        settings.Settings.ShowPreview = false;
+        settings.Settings.ShowFilterRowMenu = false;
+        settings.Settings.ShowTitlePanel = false;
+
+        settings.Styles.Header.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+        settings.SettingsEditing.NewItemRowPosition = GridViewNewItemRowPosition.Bottom;
+        settings.Settings.HorizontalScrollBarMode = ScrollBarMode.Visible;
+        settings.CommandColumn.ShowDeleteButton = true;
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel ||
+            e.ButtonType == ColumnCommandButtonType.Delete)
+                e.Visible = false;
+        };
+        settings.Theme = "iOS";
+        settings.KeyFieldName = "RowNumber";
+        settings.SettingsPager.Mode = GridViewPagerMode.ShowAllRecords;
+        settings.Settings.ShowGroupPanel = false;
+        settings.Settings.ShowFilterRow = false;
+        settings.CommandColumn.ShowNewButton = true;
+        settings.SettingsBehavior.ConfirmDelete = true;
+        settings.SettingsBehavior.AllowSort = false;
+        settings.SettingsBehavior.AllowDragDrop = false;
+        settings.ClientSideEvents.Init = "OnInit";
+        settings.ClientSideEvents.BatchEditEndEditing = "Grid_BatchEditEndEditing";
+        settings.ClientSideEvents.BatchEditStartEditing = "Grid_BatchEditStartEditing";
+        settings.ClientSideEvents.BatchEditRowDeleting = "Grid_DeleteRowEvent";
+        settings.KeyboardSupport = true;
+        settings.CommandButtonInitialize = (s, e) =>
+        {
+            if (e.ButtonType == ColumnCommandButtonType.Update || e.ButtonType == ColumnCommandButtonType.Cancel)
+                e.Visible = false;
+        };
+
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "ItemCode";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 200;
+            column.Caption = Resources.Resource.ItemCode;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.EditorProperties().TextBox(txtbox =>
+            {
+                txtbox.ClientSideEvents.Init = "AutoCompleteItems";
+            });
+        });
+        settings.Columns.Add(column =>
+        {
+            column.Width = 250;
+            column.FieldName = "ItemName";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Caption = Resources.Resource.ItemName;
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.Width = 150;
+            column.FieldName = "ItemUnitName";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Caption = Resources.Resource.Unit;
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Quantity";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 100;
+            column.Caption = Resources.Resource.Quantity;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "Bonus";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 120;
+            column.Caption = Resources.Resource.Bonus;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TaxRate";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 120;
+            column.Caption = Resources.Resource.TaxRate;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceLocalBeforDiscount";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 120;
+            column.Caption = Resources.Resource.Price;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalLineDiscountLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 120;
+            column.Caption = Resources.Resource.Discount;
+            column.Settings.ShowEditorInBatchEditMode = true;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "LineDiscountPercentage";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 120;
+            column.Caption = Resources.Resource.DiscountPercentage;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = false;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 100;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceLocalAfterLineDiscount";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 150;
+            column.Caption = Resources.Resource.PriceAfterLineDisc;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalLocalAfterLineDiscount";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 150;
+            column.Caption = Resources.Resource.NetTotal;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+        });
+
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalTaxAfterLineDiscountLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.TaxValueBeforeDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceAfterLineDiscountBeforDiscountAllLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.PricePieceIncludeTax;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalDiscountLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.ItemShareOfTheTotalDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalLocalAfterDiscount";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.NetTotalAfterDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "CostPieceLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.CostPriceAfterTotalDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalTaxLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.TaxValueAfterTotalDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceTotalLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.PricePieceIncludeTaxAfterTtotalDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalLocal";
+            column.HeaderStyle.Wrap = DefaultBoolean.True;
+            column.CellStyle.HorizontalAlign = System.Web.UI.WebControls.HorizontalAlign.Center;
+            column.Width = 5;
+            column.Caption = Resources.Resource.TotalIncludesTaxAfterTtotalDiscount;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalLocalBeforDiscount";
+            column.Width = 5;
+            column.Caption = "TotalLocalBeforDiscount";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalAfterLineDiscountBeforDiscountAllLocal";
+            column.Width = 5;
+            column.Caption = "TotalAfterLineDiscountBeforDiscountAllLocal";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "DiscountPercentage";
+            column.Width = 5;
+            column.Caption = "DiscountPercentage";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "TotalCostLocal";
+            column.Width = 5;
+            column.Caption = "TotalCostLocal";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceLineDiscountLocal";
+            column.Width = 5;
+            column.Caption = "PricePieceLineDiscountLocal";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceTaxAfterLineDiscountLocal";
+            column.Width = 5;
+            column.Caption = "PricePieceTaxAfterLineDiscountLocal";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceDiscountLocal";
+            column.Width = 5;
+            column.Caption = "PricePieceDiscountLocal";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceLocalAfterDiscount";
+            column.Width = 5;
+            column.Caption = "PricePieceLocalAfterDiscount";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.FieldName = "PricePieceTaxLocal";
+            column.Width = 5;
+            column.Caption = "PricePieceTaxLocal";
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.ColumnType = MVCxGridViewColumnType.SpinEdit;
+            (column.PropertiesEdit as SpinEditProperties).NumberType = SpinEditNumberType.Float;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatInEditMode = true;
+            (column.PropertiesEdit as SpinEditProperties).DisplayFormatString = "0.000";
+            (column.PropertiesEdit as SpinEditProperties).DecimalPlaces = 3;
+            (column.PropertiesEdit as SpinEditProperties).MinValue = 0;
+            (column.PropertiesEdit as SpinEditProperties).MaxValue = 10000000000;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.ReadOnly = true;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.Columns.Add(column =>
+        {
+            column.Width = 5;
+            column.FieldName = "SimilarItemCode";
+            column.Caption = Resources.Resource.SimilarItem;
+            column.ReadOnly = true;
+            column.Settings.ShowEditorInBatchEditMode = false;
+            column.Settings.AllowHeaderFilter = DefaultBoolean.False;
+            column.Settings.AllowAutoFilter = DefaultBoolean.False;
+            column.CellStyle.CssClass = "hideColumn";
+            column.HeaderStyle.CssClass = "hideColumn";
+        });
+        settings.InitNewRow += (s, e) =>
+        {
+            e.NewValues["Quantity"] = 0;
+            e.NewValues["Bonus"] = 0;
+            e.NewValues["PricePieceLocalBeforDiscount"] = 0;
+            e.NewValues["TotalLineDiscountLocal"] = 0;
+            e.NewValues["PricePieceLocalAfterLineDiscount"] = 0;
+            e.NewValues["TotalLocalAfterLineDiscount"] = 0;
+            e.NewValues["TaxRate"] = 0;
+            e.NewValues["TotalTaxAfterLineDiscountLocal"] = 0;
+            e.NewValues["PricePieceAfterLineDiscountBeforDiscountAllLocal"] = 0;
+            e.NewValues["TotalDiscountLocal"] = 0;
+            e.NewValues["CostPieceLocal"] = 0;
+            e.NewValues["TotalTaxLocal"] = 0;
+            e.NewValues["PricePieceTaxLocal"] = 0;
+            e.NewValues["TotalLocal"] = 0;
+            e.NewValues["TotalLocalBeforDiscount"] = 0;
+            e.NewValues["LineDiscountPercentage"] = 0;
+            e.NewValues["TotalAfterLineDiscountBeforDiscountAllLocal"] = 0;
+            e.NewValues["DiscountPercentage"] = 0;
+            e.NewValues["TotalCostLocal"] = 0;
+            e.NewValues["PricePieceLineDiscountLocal"] = 0;
+            e.NewValues["PricePieceTaxAfterLineDiscountLocal"] = 0;
+            e.NewValues["PricePieceDiscountLocal"] = 0;
+            e.NewValues["PricePieceLocalAfterDiscount"] = 0;
+            e.NewValues["PricePieceTotalLocal"] = 0;
+        };
+        settings.CustomJSProperties = (s, e) =>
+        {
+            if (ViewData["ErrorFlag"] != null)
+                e.Properties.Add("cpErrorFlag", (bool)ViewData["ErrorFlag"]);
+        };
+    });
+    if (ViewData["EditError"] != null)
+    {
+        grid.SetEditErrorText((string)ViewData["EditError"]);
+    }
+}
+@grid.Bind(Model).GetHtml()
+
+

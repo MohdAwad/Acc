@@ -1,0 +1,263 @@
+﻿@model Acc.ViewModels.CompanyTransationKindVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+}
+    <style>
+        .modal-body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .modal-footer {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .modal-title {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            var AutoSerial = document.getElementById("AutoSerial").checked;
+            if (AutoSerial) {
+                document.getElementById('MonthlySerial').checked = false;
+                document.getElementById('Symbol').readOnly = true;
+                document.getElementById('Serial').readOnly = true;
+            }
+            else{
+                document.getElementById('Symbol').readOnly = false;
+                document.getElementById('Serial').readOnly = false;
+                document.getElementById('AutoSerial').checked = false;
+            };
+             var CompanyTransactionKind = $("#CompanyTransactionKindID").val();
+                if (CompanyTransactionKind != null && CompanyTransactionKind != '') {
+                    $.getJSON('@Url.Action("CheckCompanyTransactionKindBeforDelete", "CompanyTransactionKind")', { id: CompanyTransactionKind }, function (Data) {
+                        if (Data != null) {
+                            var checkCompanyTransactionKind = Data;
+                            if (checkCompanyTransactionKind == 0) {
+							}
+							else {
+                                document.getElementById('AutoSerial').disabled  = true;
+                                document.getElementById('MonthlySerial').disabled = true;
+                                document.getElementById('Symbol').readOnly = true;
+                                document.getElementById('Serial').readOnly = true;
+							}
+                        };
+                    });
+				}
+				else {
+                }
+            $("#ArabicName").focus().select();
+            $("#ArabicName").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#EnglishName").focus().select();
+
+            });
+            $("#EnglishName").keyup(function (event) {
+                if (event.keyCode == 13) {
+                    if (document.getElementById('Symbol').readOnly == false) {
+                        $("#Symbol").focus().select();
+                    }
+                    else {
+                        $("#ArabicName").focus().select();
+                    }
+
+                }
+
+            });
+            $('#AutoSerial').click(function () {
+                document.getElementById('AutoSerial').checked = true;
+            document.getElementById('MonthlySerial').checked = false;
+            document.getElementById('Symbol').value = "";
+            document.getElementById('Year').value = "0";
+            document.getElementById('Month').value = "0";
+            document.getElementById('Serial').value = "0";
+            document.getElementById('Example').value = "";
+            document.getElementById('Symbol').readOnly = true;
+            document.getElementById('Serial').readOnly = true;
+
+        });
+            $('#MonthlySerial').click(function () {
+                document.getElementById('MonthlySerial').checked = true;
+            document.getElementById('Symbol').readOnly = false;
+            document.getElementById('Serial').readOnly = false;
+            document.getElementById('AutoSerial').checked = false;
+            $("#Symbol").focus().select();
+            document.getElementById('Month').value = "2";
+            document.getElementById('Year').value = "2";
+            document.getElementById('Example').value = new Date().getFullYear().toString().substr(-2) + "01";
+        });
+            $("#Symbol").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#Serial").focus().select();
+            });
+            $("#Serial").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#ArabicName").focus().select();
+            });
+            $("#Symbol").blur(function () {
+                var SerialNumber = '';
+                var Serial = document.getElementById("Serial").value;
+                var i;
+                for (i = 1; i <= Serial; i++) {
+                    if (i < Serial) {
+                        SerialNumber = SerialNumber + '0';
+                    }
+                    else if (i = Serial) {
+                        SerialNumber = SerialNumber + '1'
+                    }
+                }
+                document.getElementById("Example").value = document.getElementById("Symbol").value + new Date().getFullYear().toString().substr(-2) + '01' + SerialNumber;
+            });
+            $("#Serial").blur(function () {
+                var SerialNumber = '';
+                var Serial = document.getElementById("Serial").value;
+                var i;
+                for (i = 1; i <= Serial; i++) {
+                    if (i < Serial) {
+                        SerialNumber = SerialNumber + '0';
+                    }
+                    else if (i = Serial) {
+                        SerialNumber = SerialNumber + '1'
+                    }
+                }
+                document.getElementById("Example").value = document.getElementById("Symbol").value + new Date().getFullYear().toString().substr(-2) + '01' + SerialNumber;
+            });
+            var SelectedValue = $("#TransactionKindID").val();
+            if (SelectedValue == '10' || SelectedValue == '11' || SelectedValue == '12' || SelectedValue == '13'
+                || SelectedValue == '19' || SelectedValue == '20' || SelectedValue == '21' || SelectedValue == '22') {
+                document.getElementById('AutoSerial').checked = true;
+                document.getElementById('MonthlySerial').checked = false;
+                document.getElementById('MonthlySerial').disabled = true;
+                document.getElementById('Symbol').value = "";
+                document.getElementById('Year').value = "0";
+                document.getElementById('Month').value = "0";
+                document.getElementById('Serial').value = "0";
+                document.getElementById('Example').value = "";
+                document.getElementById('Symbol').readOnly = true;
+                document.getElementById('Serial').readOnly = true;
+            }
+            else {
+                document.getElementById('MonthlySerial').disabled = false;
+            }
+        });
+    </script>
+    <div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #34495E">
+                    <div class="pull-left">
+                        <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Update</h6>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-body">
+                    @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.CompanyTransactionKindID)
+
+                                @Html.TextBoxFor(m => m.CompanyTransactionKindID, new { @id = "CompanyTransactionKindID", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Symbol)
+
+                                @Html.TextBoxFor(m => m.Symbol, new { @id = "Symbol", @class = "form-control input-sml" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionKindID)
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.TransactionKindID, new SelectList(Model.TransactionKind, "TransactionKindID", "ArabicName"), new { @id = "TransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.TransactionKindID, new SelectList(Model.TransactionKind, "TransactionKindID", "EnglishName"), new { @id = "TransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Year)
+
+                                @Html.TextBoxFor(m => m.Year, new { @id = "Year", @class = "form-control input-sml", @readonly = "readonly", @type = "Number", @min = "0" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ArabicName) <span style="color:red"> * </span>
+
+                                @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Month)
+
+                                @Html.TextBoxFor(m => m.Month, new { @id = "Month", @class = "form-control input-sml", @readonly = "readonly", @type = "Number", @min = "0" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.EnglishName)
+
+                                @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Serial)
+
+                                @Html.TextBoxFor(m => m.Serial, new { @id = "Serial", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.CheckBoxFor(m => m.AutoSerial, new { @id = "AutoSerial" })
+                                @Html.ValidationMessageFor(m => m.AutoSerial)
+                                @Html.Label(Resources.Resource.AutoSerial, new { @style = "color:red" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Example)
+
+                                @Html.TextBoxFor(m => m.Example, new { @id = "Example", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.CheckBoxFor(m => m.MonthlySerial, new { @id = "MonthlySerial" })
+                                @Html.ValidationMessageFor(m => m.MonthlySerial)
+                                @Html.Label(Resources.Resource.MonthlySerial, new { @style = "color:red" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn btn-success btn-anim" id="UpdateCompanyTransactionKind"> <i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span></button>
+                        <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+

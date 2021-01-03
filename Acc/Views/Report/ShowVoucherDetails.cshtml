@@ -1,0 +1,505 @@
+﻿@model Acc.ViewModels.AccountingDetailsReportVM
+@{
+    ViewBag.Title = @Resources.Resource.VoucherDetails;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+
+        $(document).on('click', '#PrintVoucherPDF', function () {
+
+
+            window.open('/PDFReport/GetVoucherDetailsPDF/@Model.VoucherNumber/@Model.TransactionKindNo/@Model.CompanyTransactionKindNo/@Model.CompanyYear', '_blank');
+        });
+
+        $(document).on('click', '#PrintServicePDF', function () {
+
+
+            window.open('/PDFReport/GetServiceDetails/@Model.VoucherNumber/@Model.TransactionKindNo/@Model.CompanyTransactionKindNo/@Model.CompanyYear', '_blank');
+          });
+
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        if (WorkWithCostCenter) {
+            var tabelMemRef = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [3],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [4],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [5],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [6],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [7],
+                        "className": "dt-center"
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+
+                ],
+                ajax: {
+                    "type": "GET",
+                    url: "/Report/GetVoucherDetails/@Model.VoucherNumber/@Model.TransactionKindNo/@Model.CompanyTransactionKindNo/@Model.CompanyYear",
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CreditDebitForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+                    },
+                    {
+                        data: "AccountNumber"
+
+                    },
+                    {
+                        data: "AccountName",
+                    },
+                    {
+                        data: "CostCenter"
+                    },
+                    {
+                        data: "CostCenterName"
+                    },
+                    {
+                        data: "Note"
+                    }
+
+                ]
+            });
+        }
+        else {
+            var tabelMemRef = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [3],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [4],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [5],
+                        "className": "dt-center"
+                    }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+                ajax: {
+                    "type": "GET",
+                    url: "/Report/GetVoucherDetails/@Model.VoucherNumber/@Model.TransactionKindNo/@Model.CompanyTransactionKindNo/@Model.CompanyYear",
+
+                    dataSrc: ""
+                },
+                columns: [
+
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CreditDebitForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+                    },
+                    {
+                        data: "AccountNumber"
+
+                    },
+                    {
+                        data: "AccountName",
+                    },
+                    {
+                        data: "Note"
+                    }
+
+                ]
+            });
+        }
+
+        var tabelMemRefService = $("#tdataTableDetailService").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "150px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            "columnDefs": [
+                {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [5],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [6],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [7],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [8],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [9],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [10],
+                    "className": "dt-center"
+                }
+            ],
+            dom: 'Bfrtip',
+            buttons: [
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/Report/GetServiceDetails/@Model.VoucherNumber/@Model.TransactionKindNo/@Model.CompanyTransactionKindNo/@Model.CompanyYear",
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "ServiceNo"
+
+                },
+                {
+                    data: "ServiceName"
+
+                },
+                {
+                    data: "Qty"
+
+                },
+                {
+                    data: "Price",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "LocalDiscount",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "PriceAfterLineDisc",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "TotalDiscValue",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "NetAfterTotalDisc",
+                    render: function (data, type, r) {
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                    }
+                },
+                {
+                    data: "ServiceNot"
+
+                },
+                {
+                    data: "Note",
+                },
+                {
+                    data: "Tax"
+                }
+
+            ]
+        });
+
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">
+                        @Resources.Resource.VoucherDetails
+                    </h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a href="#Recipt" data-toggle="tab" aria-expanded="true">@Resources.Resource.Receipt</a>
+                    </li>
+                    <li class="">
+                        <a href="#Service" data-toggle="tab" aria-expanded="false">@Resources.Resource.Services</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade active in" id="Recipt">
+                        <div class="col-lg-12">
+                            <table id="tdataTableDetail" class="table table-hover table-bordered mb-0" width="100%">
+                                <thead>
+                                    <tr>
+                                        @if (Model.WorkWithCostCenter)
+                                        {
+                                            <th>@Resources.Resource.Debit</th>
+                                            <th>@Resources.Resource.Credit</th>
+                                            <th>@Resources.Resource.ForeignAmount</th>
+                                            <th>@Resources.Resource.AccountNumber</th>
+                                            <th>@Resources.Resource.AccountName</th>
+                                            <th>@Resources.Resource.CostCenter</th>
+                                            <th>@Resources.Resource.CostCenterName</th>
+                                            <th>@Resources.Resource.Note</th>
+
+                                        }
+                                        else
+                                        {
+                                            <th>@Resources.Resource.Debit</th>
+                                            <th>@Resources.Resource.Credit</th>
+                                            <th>@Resources.Resource.ForeignAmount</th>
+                                            <th>@Resources.Resource.AccountNumber</th>
+                                            <th>@Resources.Resource.AccountName</th>
+                                            <th>@Resources.Resource.Note</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="panel-footer">
+                                <button type="submit" class="btn btn-warning btn-anim" id="PrintVoucherPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+                                <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="Service">
+                        <div class="col-lg-12">
+                            <table id="tdataTableDetailService" class="table table-hover table-bordered mb-0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>@Resources.Resource.ServiceNo</th>
+                                        <th>@Resources.Resource.ServiceName</th>
+                                        <th>@Resources.Resource.Qty</th>
+                                        <th>@Resources.Resource.Price</th>
+                                        <th>@Resources.Resource.LocalDiscount</th>
+                                        <th>@Resources.Resource.TotalLocal</th>
+                                        <th>@Resources.Resource.TotalDiscValue</th>
+                                        <th>@Resources.Resource.NetAfterTotalDisc</th>
+                                        <th>@Resources.Resource.Note</th>
+                                        <th>@Resources.Resource.ServiceNot</th>
+                                        <th>@Resources.Resource.Tax</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                            <div class="panel-footer">
+                                <button type="submit" class="btn btn-warning btn-anim" id="PrintServicePDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+                                <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+
+
+
+
+
+
+

@@ -1,0 +1,556 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.CostCenterChart;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #ChartOfAccountList_H {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    #ChartOfAccountList_D {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+    .HeaderStyle {
+        color: black !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CostCenterChart</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            @if (User.IsInRole("CoOwner") || User.IsInRole("AddmainaccountChartofcostcenter"))
+            {
+                <button type="button" class="btn btn-primary btn-anim js-Part" id="AddNewFather" href="/CostCenter/AddNewFatherAccount/0"><i class="fa  fa-bookmark"></i><span class="btn-text">@Resources.Resource.CreateFatherCostCenter</span></button>
+                <button type="button" class="btn btn-success btn-anim js-Part" id="AddNew" href="#"><i class="fa fa-leaf"></i><span class="btn-text">@Resources.Resource.CreateSubCostCenter</span></button>
+            }
+            @if (User.IsInRole("CoOwner") || User.IsInRole("UpdateChartofcostcenter") || User.IsInRole("UpdateCostKid") || User.IsInRole("UpdateAcountType"))
+            {
+                <button type="button" class="btn btn-warning btn-anim js-Part" id="Update"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.UpdateCostCenter</span></button>
+            }
+            @if (User.IsInRole("CoOwner") || User.IsInRole("DeleteChartofcostcenter"))
+            {
+                <button type="button" class="btn  btn-anim btnDelete-lg js-Part" id="Delete"><i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.DeleteCostCenter</span></button>
+            }
+            <button type="button" class="btn btn-anim" id="Refresh" style="background-color:#D16587"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Refresh</span></button>
+            <button type="submit" class="btn btn-anim btnFav"  id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+
+        <script type="text/javascript">
+            function OnNodeDblClick(s, e) {
+                document.getElementById("AddNew").click();
+            }
+            function OnGetNodeDblClickValues(values) {
+                document.getElementById("Update").click();
+            }
+            function OnFocusedNodeChange(s, e) {
+                var nodeKey = s.GetFocusedNodeKey();
+                OnGetSelectedNodeKeyValues(nodeKey);
+            }
+            function OnGetSelectedNodeKeyValues(values) {
+                $("#AddNew").attr("href", "/CostCenter/AddNewChildAccount/" + values);
+                $("#Update").attr("href", "/CostCenter/UpdateAccount/" + values);
+                $("#Delete").attr("href", "/CostCenter/DeleteAccount/" + values);
+            }
+        </script>
+
+        <div class="col-lg-12" style="margin-top: 10px">
+            @{ Html.BeginForm(); }
+            @Html.Action("TreeListPartial")
+            @{ Html.EndForm(); }
+        </div>
+
+        <div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-content">
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+    $(document).ready(function () {
+             $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.CostCenterChart',
+                            ScreenUrl: "/CostCenter/Index",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/ChartOfAccount/ChartDash";
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        $(document).on('click', '.js-Part', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        function OnGridFocusedNodeChanged(s, e) {
+            s.GetFocusedNodeKey();
+
+            console.log(s.GetFocusedNodeKey());
+        }
+        function OnGetSelectedNodeKeyValues(values) {
+            console.log(values);
+
+        }
+        $(document).on('click', '#Refresh', function () {
+            ChartOfAccountList.PerformCallback('refresh');
+        });
+        $(document).on('click', '#SaveChildAccount', function () {
+            if ($("#CostNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                CostNumber: $("#CostNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), CostLevel: $("#CostLevel").val(),
+                                CostFather: $("#CostFather").val(), CostFatherName: $("#CostFatherName").val(), StoppedCost: $("#StoppedCost:checked").val()
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/CostCenter/SaveChildAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+
+                                        document.getElementById("CostNumber").value = '';
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        $("#CostNumber").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#UpdateAccount', function () {
+            if ($("#CostNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                CostNumber: $("#CostNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedCost: $("#StoppedCost:checked").val(),
+
+
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/CostCenter/UpdateAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        $(document).on('click', '#DeleteAccount', function () {
+            if ($("#CostNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                                closeButton: false
+                            });
+                            var dataToSave = {
+
+                                CostNumber: $("#CostNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                StoppedCost: $("#StoppedCost:checked").val(),
+
+
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/CostCenter/DeleteAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("Close").click();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+
+            }
+        });
+        $(document).on('click', '#SaveFatherAccount', function () {
+            if ($("#CostNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#ArabicName").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+
+                            var dataToSave = {
+
+                                CostNumber: $("#CostNumber").val(),
+                                ArabicName: $("#ArabicName").val(), EnglishName: $("#EnglishName").val(), Note: $("#Note").val(),
+                                LevelZero: $("#LevelZero").val(), CostLevel: $("#CostLevel").val()
+
+
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/CostCenter/SaveFatherAccount",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+
+                                        ChartOfAccountList.PerformCallback('refresh');
+                                        document.getElementById("CostNumber").value = '';
+                                        document.getElementById("ArabicName").value = '';
+                                        document.getElementById("EnglishName").value = '';
+                                        document.getElementById("Note").value = '';
+                                        $("#CostNumber").focus().select();
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+}
+
+
+
+

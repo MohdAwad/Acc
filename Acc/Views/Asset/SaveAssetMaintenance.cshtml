@@ -1,0 +1,645 @@
+﻿@model Acc.ViewModels.AssetMaintenanceVM
+@{
+    ViewBag.Title = @Resources.Resource.AssetMaintenance;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetAsset(data) {
+        if (data.AssetID != null) {
+            document.getElementById("AssetID").value = data.AssetID;
+            document.getElementById("AssetName").value = data.AssetName;
+            document.getElementById("CreditAccountNo").value = data.CreditAccountNo;
+            document.getElementById("CreditAccountName").value = data.CreditAccountName;
+            document.getElementById("GrundToDate").value = moment(data.GuaranteedDate).format('DD/MM/YYYY');
+            document.getElementById("FAssetTypeID").value = data.FAssetTypeID;
+            document.getElementById("CreditAccountNo").value = data.CreditAccountNo;
+            document.getElementById("CreditAccountName").value = data.CreditAccountName;
+        }
+        else {
+            document.getElementById("AssetID").value = '';
+            document.getElementById("AssetName").value = '';
+            document.getElementById("CreditAccountNo").value = '';
+            document.getElementById("CreditAccountName").value = '';
+            document.getElementById("GrundToDate").value = '';
+            document.getElementById("FAssetTypeID").value = '0';
+            document.getElementById("CreditAccountNo").value = '';
+            document.getElementById("CreditAccountName").value = '';
+        }
+
+    }
+    function GetConsumptionComplexNo(data) {
+
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("CreditAccountNo").value = data.AccountNumber;
+            document.getElementById("CreditAccountName").value = data.AccountName;
+
+        }
+        else {
+            document.getElementById("CreditAccountNo").value = '';
+            document.getElementById("CreditAccountName").value = '';
+        }
+
+    }
+    function GetSelectedCreditCostAccNo(data) {
+
+        if (data.CostNumber != null && data.AccNo != '') {
+            document.getElementById("CreditCostNo").value = data.CostNumber;
+            document.getElementById("CreditCostName").value = data.CostName;
+        }
+        else {
+            document.getElementById("CreditCostNo").value = '';
+            document.getElementById("CreditCostName").value = '';
+        }
+
+    }
+
+   var AssetNumber = [];
+    $.getJSON('@Url.Action("GetAllAsset", "MultiUse")', { id: 0 }, function (Data) {
+        AssetNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AssetName, value: Data[i].AssetID, stop: Data[i].StoppedAccount };
+                AssetNumber.push(r);
+            }
+    });
+   var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    var CostCenter = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostCenter = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedAccount };
+                CostCenter.push(r);
+            }
+    });
+    $(function () {
+        $("#CreditAccountNo").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("CreditAccountNo").value = ui.item.value;
+                document.getElementById("CreditAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#CreditCostNo").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("CreditCostNo").value = ui.item.value;
+                document.getElementById("CreditCostName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#AssetID").autocomplete({
+            source: AssetNumber,
+            select: function (event, ui) {
+                document.getElementById("AssetID").value = ui.item.value;
+                document.getElementById("AssetName").value = ui.item.label;
+            }
+        });
+    });
+
+
+
+</script>
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.AssetMaintenance</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AssetID)<i class="text-danger">*</i>
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.AssetID, new { @id = "AssetID", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnGetAsset">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.AssetID)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AssetName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.AssetName, new { @id = "AssetName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearGetAsset">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.FAssetTypeID)
+                        @Html.DropDownListFor(m => m.FAssetTypeID, new SelectList(Model.AssetType, "AssetTypeID", "Name"), Resources.Resource.AssetType, new { @id = "FAssetTypeID", @class = "form-control input-sml", @disabled = "disabled" })
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.ConsumptionComplexNo)
+                        @Html.TextBoxFor(m => m.CreditAccountNo, new { @id = "CreditAccountNo", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.CreditAccountNo)
+                    </div>
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.ConsumptionComplexName)
+                        @Html.TextBoxFor(m => m.CreditAccountName, new { @id = "CreditAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    @if (Model.WorkWithCostCenter)
+                    {
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ConsumptionComplexCostNo)
+                            @Html.TextBoxFor(m => m.CreditCostNo, new { @id = "CreditCostNo", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.CreditCostNo)
+                        </div>
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.ConsumptionComplexCostName)
+                            @Html.TextBoxFor(m => m.CreditCostName, new { @id = "CreditCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    }
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TrDate)
+                        @Html.TextBoxFor(model => model.TrDate, new { @id = "TrDate", @class = "form-control input-sml", @Value = Model.TrDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.TrDate)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TrKind)
+                        @Html.DropDownListFor(m => m.TrKind, new List<SelectListItem>
+                                                         {
+                                                      new SelectListItem{ Text=Resources.Resource. IncreaseTheEfficiency, Value = "1",Selected=false },
+                                                           new SelectListItem{ Text=Resources.Resource. Periodic, Value = "2",Selected=false },
+                                                          new SelectListItem{ Text=Resources.Resource.MaintenanceContract, Value = "3",Selected=false }
+                   }, new { @id = "TrKind", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(model => model.TrKind, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MaintenanceNo)
+                        @Html.TextBoxFor(m => m.MaintenanceNo, new { @id = "MaintenanceNo", @class = "form-control input-sml" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PayValue)
+                        @Html.TextBoxFor(m => m.PayValue, new { @id = "PayValue", @class = "form-control input-sml" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.GrundToDate)
+                        @Html.TextBoxFor(model => model.GrundToDate, new { @id = "GrundToDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.GrundToDate)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MaintenanceVoucherNo)
+                        @Html.TextBoxFor(m => m.MaintenanceVoucherNo, new { @id = "MaintenanceVoucherNo", @class = "form-control input-sml" })
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.VoucherDate)
+                        @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.VoucherDate)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.MaintenanceNote)
+                        @Html.TextBoxFor(m => m.MaintenanceNote, new { @id = "MaintenanceNote", @class = "form-control input-sml" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-anim" id="save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="submit" class="btn btn-warning btn-anim" id="Clear"> <i class="fa fa-circle-o"></i><span class="btn-text">@Resources.Resource.Clear</span></button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(m => m.CompanyID, new { @id = "CompanyID" })
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/Asset/AssetMaintenance";
+        });
+        $("#VoucherDate").mask("99/99/9999");
+        $("#GrundToDate").mask("99/99/9999");
+        $("#TrDate").mask("99/99/9999");
+        function Clear() {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("AssetID").value = '';
+            document.getElementById("AssetName").value = '';
+            document.getElementById("CreditAccountNo").value = '';
+            document.getElementById("CreditAccountName").value = '';
+            document.getElementById("GrundToDate").value = today;
+            document.getElementById("FAssetTypeID").value = '0';
+            document.getElementById("TrDate").value = today;
+            document.getElementById("VoucherDate").value = today;
+            document.getElementById("MaintenanceNo").value = '';
+            document.getElementById("PayValue").value = '0';
+            document.getElementById("MaintenanceVoucherNo").value = '';
+            document.getElementById("MaintenanceNote").value = '';
+            document.getElementById("TrKind").value = '1';
+        }
+        $(document).on('click', '#Clear', function () {
+            Clear();
+        });
+        $(document).on('click', '#save', function () {
+            var dVoucherDate = document.getElementById("VoucherDate").value;
+            var dGrundToDate = document.getElementById("GrundToDate").value;
+            var dTrDate = document.getElementById("TrDate").value;
+            if (!validatedate(dVoucherDate) && dVoucherDate != null && dVoucherDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dGrundToDate) && dGrundToDate != null && dGrundToDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (!validatedate(dTrDate) && dTrDate != null && dTrDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else
+                if ($("#AssetID").val() == 0) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else
+                    if ($("#AssetID").val() == '') {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else
+                        if ($("#AssetName").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            bootbox.confirm({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    confirm: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                            closeButton: false
+                                        });
+                                        var dataToSave = {
+                                            AssetID: $("#AssetID").val(),
+                                            AssetName: $("#AssetName").val(),
+
+                                            FAssetTypeID: $("#FAssetTypeID").val(), TrDate: $("#TrDate").val(), TrKind: $("#TrKind").val(),
+                                            PayValue: $("#PayValue").val(),
+
+                                            GrundToDate: $("#GrundToDate").val(), MaintenanceNo: $("#MaintenanceNo").val()
+                                            , MaintenanceVoucherNo: $("#MaintenanceVoucherNo").val(), VoucherDate: $("#VoucherDate").val()
+                                            , MaintenanceNote: $("#MaintenanceNote").val(), CreditAccountNo: $("#CreditAccountNo").val()
+                                            , CreditAccountName: $("#CreditAccountName").val(), MaintenanceNote: $("#MaintenanceNote").val()
+
+
+                                        };
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/Asset/MaintenanceAsset",
+                                            data: JSON.stringify(dataToSave),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    $('#modal-container').modal('hide');
+                                                    toastr.success(data.Msg);
+
+                                                    Clear();
+                                                }
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+
+                                        });
+                                    }
+                                }
+                            });
+
+
+                        }
+
+        });
+        $('#BtnGetAsset').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAsset/GetAsset';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearGetAsset').on('click', function () {
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("AssetID").value = '';
+            document.getElementById("AssetName").value = '';
+            document.getElementById("CreditAccountNo").value = '';
+            document.getElementById("CreditAccountName").value = '';
+            document.getElementById("GrundToDate").value = today;
+            document.getElementById("FAssetTypeID").value = '0';
+        });
+        $("#AssetID").focus().select();
+        $("#TrDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#MaintenanceNo").focus().select();
+            }
+        });
+        $("#MaintenanceNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PayValue").focus().select();
+            }
+        });
+        $("#PayValue").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#GrundToDate").focus().select();
+            }
+        });
+        $("#GrundToDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#MaintenanceVoucherNo").focus().select();
+            }
+        });
+        $("#MaintenanceVoucherNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#VoucherDate").focus().select();
+            }
+        });
+        $("#VoucherDate").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#MaintenanceNote").focus().select();
+            }
+        });
+        $("#MaintenanceNote").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#AssetID").focus().select();
+            }
+        });
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("VoucherDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#GrundToDate").blur(function () {
+            var dDate = document.getElementById("GrundToDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("GrundToDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+        $("#TrDate").blur(function () {
+            var dDate = document.getElementById("TrDate").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("TrDate").value = '01/01/' + new Date().getFullYear()
+            }
+        });
+
+
+         $("#AssetID").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#TrDate").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAsset/GetAsset';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+       });
+
+
+        $("#AssetID").blur(function () {
+            var AccountNumber = document.getElementById("AssetID").value;
+            if (AccountNumber == '') {
+                document.getElementById("AssetName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAllAsset", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AssetID").value = '';
+                            document.getElementById("AssetName").value = '';
+                            $("#AssetID").focus();
+                            document.getElementById("AssetTypeName").value = ' ';
+
+                        }
+                        else {
+                            document.getElementById("AssetName").value = Data.AssetName;
+                            document.getElementById("AssetTypeName").value = Data.AssetTypeName;
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}
+
+
+
+
+

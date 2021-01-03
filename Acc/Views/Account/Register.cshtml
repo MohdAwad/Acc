@@ -1,0 +1,131 @@
+﻿@model Acc.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = @Resources.Resource.Register;
+    Layout = "~/Views/Shared/Layout_Register.cshtml";
+}
+
+<div class="form-horizontal" , role="form">
+
+
+    @Html.AntiForgeryToken()
+
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+
+        <div class="col-md-12">
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @placeholder = Resources.Resource.Email, @id = "Email" })
+        </div>
+    </div>
+
+
+
+    <div class="form-group" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+
+        <div class="col-md-12">
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control", @placeholder = Resources.Resource.Password, @id = "Password" })
+        </div>
+    </div>
+    <div class="form-group" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+
+        <div class="col-md-12">
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @placeholder = Resources.Resource.ConfirmPassword, @id = "ConfirmPassword" })
+        </div>
+    </div>
+
+
+
+    <div class="form-group" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+
+        <div class="col-md-12" style="font-family: Verdana, Geneva, Tahoma, sans-serif">
+            <input type="submit" value="@Resources.Resource.CreateNew" class="btn btn-lg btn-success btn-block" id="save" />
+            @*<div class="form-group  ">
+
+                    @Html.CheckBoxFor(m => m.CreateDomain, new { @id = "CreateDomain" })
+                    @Html.ValidationMessageFor(m => m.CreateDomain)
+                    @Html.Label(Resources.Resource.CreateDomain)
+                </div>*@
+        </div>
+        <div class="col-md-12" style="margin-top:5px;font-family: Verdana, Geneva, Tahoma, sans-serif">
+
+            @Html.ActionLink(Resources.Resource.Login, "Login", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })
+        </div>
+    </div>
+
+</div>
+@*}*@
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval");
+    <script>
+
+		$(document).ready(function () {
+
+
+	  $(document).on('click', '#save', function () {
+		//  document.getElementById("save").disabled = true;
+		if ($("#Email").val() == '' || $("#Password").val() == '' || $("#ConfirmPassword").val() == ''  ) {
+			bootbox.alert({
+				message: '@Resources.Resource.PleasefillalRequiredfields',
+				size: 'small'
+			});
+
+
+		}
+
+		else {
+
+		document.getElementById("save").disabled = true;
+		var dialog = bootbox.dialog({
+				   title: '<div class="panel panel-info"> <div class="panel-heading"> @Resources.Resource.PleaseWait </dvi> </dvi>',
+				  message: '<p><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.YourAccountIsBeingCreated...</p>',
+				  closeButton: false
+			});
+
+		var dataToSave = {
+			Email: $("#Email").val(),
+			Password: $("#Password").val(), ConfirmPassword: $("#ConfirmPassword").val()/*,CreateDomain:$("#CreateDomain:checked").val(),*/
+		};
+		$.ajax({
+			type: "POST",
+			url: "/Account/RegisterJson",
+			data: JSON.stringify(dataToSave),
+			contentType: 'application/json',
+					success: function (data) {
+						dialog.modal('hide');
+						if (data.Code == 0) {
+							toastr.error(data.Msg);
+                            document.getElementById("save").disabled = false;
+                            bootbox.alert({
+                                message: data.Msg,
+                                className: 'rubberBand animated'
+                            });
+						}
+						else if (data.Code == 1) {
+							$('#modal-container').modal('hide');
+						  //  toastr.success(data.Msg);
+							var url = "/Home/Home";
+							window.location.href = url;
+
+						}
+
+					},
+					error: function (data) {
+						dialog.modal('hide');
+						toastr.error(data);
+						document.getElementById("save").disabled = false;
+						//document.getElementById("save").enable = true;
+					}
+
+			});
+		}
+
+
+
+		});
+
+		});
+    </script>
+
+}

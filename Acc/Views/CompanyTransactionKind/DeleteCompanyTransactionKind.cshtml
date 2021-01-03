@@ -1,0 +1,139 @@
+﻿@model Acc.ViewModels.CompanyTransationKindVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+}
+
+    <style>
+        .modal-body {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .modal-footer {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+
+        .modal-title {
+            font-family: Verdana, Geneva, Tahoma, sans-serif
+        }
+    </style>
+    <div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #34495E">
+                    <div class="pull-left">
+                        <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.Delete</h6>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-body">
+                    @Html.ValidationSummary(true, "Please Fix The Foloing Error!")
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.CompanyTransactionKindID)
+
+                                @Html.TextBoxFor(m => m.CompanyTransactionKindID, new { @id = "CompanyTransactionKindID", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Symbol)
+
+                                @Html.TextBoxFor(m => m.Symbol, new { @id = "Symbol", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.TransactionKindID)
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.TransactionKindID, new SelectList(Model.TransactionKind, "TransactionKindID", "ArabicName"), new { @id = "TransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.TransactionKindID, new SelectList(Model.TransactionKind, "TransactionKindID", "EnglishName"), new { @id = "TransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Year)
+
+                                @Html.TextBoxFor(m => m.Year, new { @id = "Year", @class = "form-control input-sml", @readonly = "readonly", @type = "Number", @min = "0" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ArabicName) <span style="color:red"> * </span>
+
+                                @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Month)
+
+                                @Html.TextBoxFor(m => m.Month, new { @id = "Month", @class = "form-control input-sml", @readonly = "readonly", @type = "Number", @min = "0" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.EnglishName)
+
+                                @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Serial)
+
+                                @Html.TextBoxFor(m => m.Serial, new { @id = "Serial", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.CheckBoxFor(m => m.AutoSerial, new { @id = "AutoSerial", @disabled = "disabled" })
+                                @Html.ValidationMessageFor(m => m.AutoSerial)
+                                @Html.Label(Resources.Resource.AutoSerial, new { @style = "color:red" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.Example)
+
+                                @Html.TextBoxFor(m => m.Example, new { @id = "Example", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                @Html.CheckBoxFor(m => m.MonthlySerial, new { @id = "MonthlySerial", @disabled = "disabled" })
+                                @Html.ValidationMessageFor(m => m.MonthlySerial)
+                                @Html.Label(Resources.Resource.MonthlySerial, new { @style = "color:red" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <div class="col-lg-12">
+                        <button type="submit" class="btn  btn-anim btnDelete-lg" id="DeleteCompanyTransactionKind"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+                        <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+

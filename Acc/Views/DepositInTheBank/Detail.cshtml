@@ -1,0 +1,368 @@
+﻿@model Acc.ViewModels.TransActionBankVM
+@{
+    ViewBag.Title = @Resources.Resource.Detail;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div style="padding-top: 20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Detail - @Resources.Resource.DepositInTheBank</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.CompanyTransactionKindID)
+                    <div class="form-group">
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CompanyTransactionKindID, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), new { @id = "CompanyTransactionKindID", @class = "form-control input-sml", @disabled = "disabled" })
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyID)
+                        @Html.TextBoxFor(m => m.CurrencyName, new { @id = "CurrencyName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyNewValue)
+                        @Html.ValidationMessageFor(m => m.CurrencyNewValue)
+                        @Html.TextBoxFor(m => m.CurrencyNewValue, new { @id = "CurrencyNewValue", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherNumber)
+                        @Html.TextBoxFor(m => m.Header.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml",  @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherDate)
+                        @Html.TextBoxFor(model => model.Header.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.Header.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false", @readonly = "@readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BankAcc)
+                        @Html.TextBoxFor(m => m.TransactionDebit.AccountNumber, new { @id = "BankAcc", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.BankName, new { @id = "BankName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.BankCostCenter)
+                            @Html.TextBoxFor(m => m.TransactionDebit.CostCenter, new { @id = "BankCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.BankCostCenterName, new { @id = "BankCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                }
+
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.DepositAmmount)
+                        @Html.TextBoxFor(m => m.sAmount, new { @id = "sAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Amount)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.ForeignDepositAmmount)
+                        @Html.TextBoxFor(m => m.sForeignAmount, new { @id = "sForeignAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.Note)
+                        @Html.TextBoxFor(m => m.Header.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Header.Note)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-12">
+                    <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                        <thead>
+                            <tr>
+                                @if (Model.WorkWithCostCenter)
+                                {
+                                    <th>@Resources.Resource.Amount</th>
+                                    <th>@Resources.Resource.ForeignAmount</th>
+                                    <th>@Resources.Resource.AccountNumber</th>
+                                    <th>@Resources.Resource.AccountName</th>
+                                    <th>@Resources.Resource.CostNumber</th>
+                                    <th>@Resources.Resource.CostCenterName</th>
+                                    <th>@Resources.Resource.Note</th>
+
+                                }
+                                else
+                                {
+                                    <th>@Resources.Resource.Amount</th>
+                                    <th>@Resources.Resource.ForeignAmount</th>
+                                    <th>@Resources.Resource.AccountNumber</th>
+                                    <th>@Resources.Resource.AccountName</th>
+                                    <th>@Resources.Resource.Note</th>
+                                }
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            @if (User.IsInRole("PrintDepositInTheBank") || User.IsInRole("CoOwner"))
+            {
+                <button type="button" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.Amount, new { @id = "Amount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ForeignAmount, new { @id = "ForeignAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.HiddenFor(m => m.Header.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNo" })
+@Html.HiddenFor(m => m.CurrencyID, new { @id = "CurrencyID" })
+@Html.HiddenFor(m => m.Header.CompanyYear, new { @id = "CompanyYear" })
+@Html.HiddenFor(m => m.Header.TransactionKindNo, new { @id = "TransactionKindNo" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        $(document).on('click', '#Close', function () {
+            window.location = "/DepositInTheBank/Index";
+        });
+        $(document).on('click', '#PrintPDF', function () {
+            window.open('/PDFReport/GetDepositInTheBankTransPDF/@Model.Header.VoucherNumber/@Model.Header.CompanyTransactionKindNo/@Model.Header.TransactionKindNo/@Model.Header.CompanyYear', '_blank');
+        });
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        document.getElementById("sAmount").value = formatMoney(document.getElementById("Amount").value, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sForeignAmount").value = formatMoney(document.getElementById("ForeignAmount").value, TheDecimalPointForTheForeignCurrency);
+        if (WorkWithCostCenter) {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "className": "dt-center",
+                        "targets": "_all",
+                        "orderable": false,
+
+                    }],
+
+                dom: 'Bfrtip',
+
+
+                ajax: {
+                    "type": "GET",
+                    url: "/DepositInTheBank/GetDepositInTheBankTrans/@Model.Header.VoucherNumber/@Model.Header.CompanyTransactionKindNo/@Model.Header.TransactionKindNo",
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CreditForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+                    },
+                    {
+                        data: "AccountNumber"
+
+                    },
+                    {
+                        data: "AccountName"
+
+                    },
+                    {
+                        data: "CostCenter"
+
+                    },
+                    {
+                        data: "CostCenterName"
+
+                    },
+                    {
+                        data: "Note"
+                    }
+                ]
+
+            });
+        }
+        else {
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "className": "dt-center",
+                        "targets": "_all",
+                        "orderable": false,
+
+                    }],
+
+                dom: 'Bfrtip',
+
+
+                ajax: {
+                    "type": "GET",
+                    url: "/DepositInTheBank/GetDepositInTheBankTrans/@Model.Header.VoucherNumber/@Model.Header.CompanyTransactionKindNo/@Model.Header.TransactionKindNo",
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CreditForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+                    },
+                    {
+                        data: "AccountNumber"
+
+                    },
+                    {
+                        data: "AccountName"
+
+                    },
+                    {
+                        data: "Note"
+                    }
+                ]
+
+            });
+        }
+    });
+    </script>
+}
+

@@ -1,0 +1,269 @@
+﻿@model Acc.ViewModels.DefinitionBankVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Delete - @Resources.Resource.DefinitionBanks</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.BankID)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.BankID, new { @id = "BankID", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.BankAccountNumber)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.BankAccountNumber, new { @id = "BankAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.BankAccountName, new { @id = "BankAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.ChequeUnderCollectionAccountNumber)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.ChequeUnderCollectionAccountNumber, new { @id = "ChequeUnderCollectionAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.ChequeUnderCollectionAccountName, new { @id = "ChequeUnderCollectionAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.PostdatedChequeAccountNumber)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.PostdatedChequeAccountNumber, new { @id = "PostdatedChequeAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.PostdatedChequeAccountName, new { @id = "PostdatedChequeAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.DefinitionBank.BillsOfExchangeAccountNumber)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.DefinitionBank.BillsOfExchangeAccountNumber, new { @id = "BillsOfExchangeAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.BillsOfExchangeAccountName, new { @id = "BillsOfExchangeAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <button type="submit" class="btn btn-anim btnDelete-lg" id="DeleteDefinitionBank"><i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/DefinitionBank/Index";
+        });
+        $(document).on('click', '#DeleteDefinitionBank', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var AccountNumber = $("#BankAccountNumber").val();
+                        if (AccountNumber != null && AccountNumber != '') {
+                            $.getJSON('@Url.Action("CheckDefinitionBankBeforDelete", "DefinitionBank")', { id: AccountNumber }, function (Data) {
+                                if (Data != null) {
+                                    var checkAccountNumber = Data;
+                                    if (checkAccountNumber == '') {
+                                        var AccountNumber = $("#ChequeUnderCollectionAccountNumber").val();
+                                        if (AccountNumber != null && AccountNumber != '') {
+                                            $.getJSON('@Url.Action("CheckDefinitionBankBeforDelete", "DefinitionBank")', { id: AccountNumber }, function (Data) {
+                                                if (Data != null) {
+                                                    var checkAccountNumber = Data;
+                                                    if (checkAccountNumber == '') {
+                                                        var AccountNumber = $("#PostdatedChequeAccountNumber").val();
+                                                        if (AccountNumber != null && AccountNumber != '') {
+                                                            $.getJSON('@Url.Action("CheckDefinitionBankBeforDelete", "DefinitionBank")', { id: AccountNumber }, function (Data) {
+                                                                if (Data != null) {
+                                                                    var checkAccountNumber = Data;
+                                                                    if (checkAccountNumber == '') {
+                                                                        var AccountNumber = $("#BillsOfExchangeAccountNumber").val();
+                                                                        if (AccountNumber != null && AccountNumber != '') {
+                                                                            $.getJSON('@Url.Action("CheckDefinitionBankBeforDelete", "DefinitionBank")', { id: AccountNumber }, function (Data) {
+                                                                                if (Data != null) {
+                                                                                    var checkAccountNumber = Data;
+                                                                                    if (checkAccountNumber == '') {
+                                                                                        var dialog = bootbox.dialog({
+                                                                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                                                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                                                                            closeButton: false
+                                                                                        });
+                                                                                        var dataToSave = {
+                                                                                            BankID: $("#BankID").val()
+                                                                                        };
+
+                                                                                        $.ajax({
+                                                                                            type: "POST",
+                                                                                            url: "/DefinitionBank/DeleteDefinitionBank",
+                                                                                            data: JSON.stringify(dataToSave),
+                                                                                            contentType: 'application/json',
+                                                                                            success: function (data) {
+
+                                                                                                dialog.modal('hide');
+                                                                                                if (data.Code == 0) {
+                                                                                                    toastr.error(data.Msg);
+                                                                                                    bootbox.alert(data.Msg);
+                                                                                                }
+                                                                                                else if (data.Code == 1) {
+                                                                                                    $('#modal-container').modal('hide');
+                                                                                                    toastr.success(data.Msg);
+                                                                                                    $('#modal-container').modal('hide');
+                                                                                                    window.location = "/DefinitionBank/Index";
+                                                                                                }
+
+                                                                                            },
+                                                                                            error: function (data) {
+                                                                                                dialog.modal('hide');
+                                                                                                toastr.error(data);
+                                                                                                bootbox.alert(data.Msg);
+                                                                                            }
+                                                                                        });
+
+
+                                                                                    }
+                                                                                    else {
+                                                                                        bootbox.alert({
+                                                                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+                                                                                            className: 'rubberBand animated',
+                                                                                            buttons: {
+                                                                                                ok: {
+                                                                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                                                                    className: 'btn-primary'
+                                                                                                }
+                                                                                            }
+                                                                                        });
+                                                                                    }
+                                                                                };
+                                                                            });
+                                                                        }
+                                                                        else {
+                                                                        }
+                                                                    }
+                                                                    else {
+                                                                        bootbox.alert({
+                                                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+                                                                            className: 'rubberBand animated',
+                                                                            buttons: {
+                                                                                ok: {
+                                                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                                                    className: 'btn-primary'
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                };
+                                                            });
+                                                        }
+                                                        else {
+                                                        }
+                                                    }
+                                                    else {
+                                                        bootbox.alert({
+                                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+                                                            className: 'rubberBand animated',
+                                                            buttons: {
+                                                                ok: {
+                                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                                    className: 'btn-primary'
+                                                                }
+                                                            }
+                                                        });
+                                                    }
+                                                };
+                                            });
+                                        }
+                                        else {
+                                        }
+                                    }
+                                    else {
+                                        bootbox.alert({
+                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+                                            className: 'rubberBand animated',
+                                            buttons: {
+                                                ok: {
+                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                                    className: 'btn-primary'
+                                                }
+                                            }
+                                        });
+                                    }
+                                };
+                            });
+                        }
+                        else {
+                        }
+                    }
+                }
+            });
+
+        });
+    });
+
+</script>
+}
+
+

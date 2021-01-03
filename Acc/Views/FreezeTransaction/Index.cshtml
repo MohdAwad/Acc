@@ -1,0 +1,401 @@
+﻿@model Acc.ViewModels.FreezeTransactionVM
+@{
+    ViewBag.Title = @Resources.Resource.FreezeTransaction;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+
+    table.dataTable th.dt-center {
+        font-size: 10pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 10pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.FreezeTransaction</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <button type="button" class="btn btn-anim" style="background-color:#382D2C" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"> <i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+
+            <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                <thead>
+                    <tr>
+                        <th>@Resources.Resource.MonthID</th>
+                        <th>@Resources.Resource.MonthName</th>
+                        <th>@Resources.Resource.MonthCase</th>
+                        <th>@Resources.Resource.Freeze</th>
+                        <th>@Resources.Resource.UnFreeze</th>
+                    </tr>
+                </thead>
+                <tbody id="BodyStyle"></tbody>
+            </table>
+        </div>
+
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+                 $(document).on('click', '#SaveToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.FreezeTransaction',
+                            ScreenUrl: "/FreezeTransaction/Index",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+
+            $(document).on('click', '#CloseForm', function () {
+                window.location = "/Operations/OperationDash";
+            });
+        var tabelMemRef = $("#tdataTable").DataTable({
+            "language": {
+					"emptyTable": '@Resources.Resource.EmptyTable',
+					"search": '@Resources.Resource.Search',
+					"loadingRecords": '@Resources.Resource.LoadingRecords',
+					"processing": '@Resources.Resource.Processing',
+					"zeroRecords": '@Resources.Resource.ZeroRecords',
+					"info": '@Resources.Resource.Info',
+					"infoEmpty": '@Resources.Resource.InfoEmpty',
+					"lengthMenu": '@Resources.Resource.LengthMenu',
+					"infoFiltered": '@Resources.Resource.InfoFiltered',
+					"paginate": {
+						"previous": '@Resources.Resource.Previous',
+						"next": '@Resources.Resource.Next',
+						"first": '@Resources.Resource.First',
+						"last": '@Resources.Resource.Last',
+					},
+					"aria": {
+						"sortAscending": '@Resources.Resource.SortAscending',
+						"sortDescending": '@Resources.Resource.SortDescending'
+					}
+            },
+                "scrollY": "500px",
+				"scrollX": true,
+				"ordering": false,
+				"autoWidth": false,
+				"paging": false,
+				"columnDefs": [
+                    {
+                        "className": "dt-center",
+                        "targets": "_all",
+                        "orderable": false,
+                    }],
+
+				dom: 'Bfrtip',
+            buttons: [],
+            ajax: {
+                "type": "POST",
+                url: "/FreezeTransaction/GetAllFreezeTransaction",
+                dataSrc: ""
+            },
+            columns: [
+                {
+
+                    data: "MonthID"
+                },
+
+                {
+                    data: "MonthName"
+
+                },
+                {
+                    data: "MonthCase"
+
+                },
+                {
+                    data: "MonthID",
+                    render: function (data, type, r) {
+                         if ("@(User.IsInRole("FreezFreezunfreezmonthtransaction") || User.IsInRole("CoOwner"))" == "True")
+                        {
+                                 if (r.MonthCaseID == 1) {
+                            return "<a  class='btn  btn-icon-anim btn-square btnFreez btn-sm' id='dontFreeze' href='#'><i class='fa fa-lock' style='margin-top: 4px;'></i> </a>";
+                        }
+                        else {
+                            return "<a  class='btn  btn-icon-anim btn-square btnFreez btn-sm' id='Freeze' href='#'><i class='fa fa-lock' style='margin-top: 4px;'></i> </a>";
+                        }
+                        }
+                        else {
+                          return "";
+                        }
+
+
+
+                    }
+
+                },
+                {
+                    data: "MonthID",
+                    render: function (data, type, r) {
+                         if ("@(User.IsInRole("unFreezFreezunfreezmonthtransaction") || User.IsInRole("CoOwner"))" == "True")
+                        {
+                            if (r.MonthCaseID == 0) {
+                                return "<a  class='btn btn-warning btn-icon-anim btn-square btn-sm' id='dontUnFreeze' href='#'><i class='fa fa-unlock' style='margin-top: 4px;'></i> </a>";
+                            }
+                            else {
+                                return "<a  class='btn btn-warning btn-icon-anim btn-square btn-sm' id='UnFreeze' href='#'><i class='fa fa-unlock' style='margin-top: 4px;'></i> </a>";
+                            }
+
+                        }
+                        else {
+                          return "";
+                        }
+
+
+                    }
+
+                }
+            ]
+        });
+        $(document).on('click', '#Freeze', function () {
+            var MonthID = $(this).closest('tr').find('td:eq(0)').text();
+            bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Freezing...</p>',
+								closeButton: false
+							});
+
+                        var DataToSave = {
+                            MonthID: parseInt(MonthID)
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FreezeTransaction/SaveFreezeTransaction",
+                            data: JSON.stringify(DataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+
+                                    toastr.success(data.Msg);
+
+                                    tabelMemRef.ajax.reload();
+                                    $('#modal-container').modal('hide');
+                                    dialog.modal('hide');
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                                bootbox.alert(data.Msg);
+                            }
+
+                        });
+						}
+					}
+				});
+        });
+        $(document).on('click', '#UnFreeze', function () {
+            var MonthID = $(this).closest('tr').find('td:eq(0)').text();
+            bootbox.confirm({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						confirm: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+							className: 'btn-success'
+						},
+						cancel: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+							className: 'btn-danger'
+						}
+					},
+					callback: function (result) {
+						if (result) {
+							var dialog = bootbox.dialog({
+								title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+								message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.UnFreezing...</p>',
+								closeButton: false
+							});
+
+                            var DataToSave = {
+                                MonthID: parseInt(MonthID)
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/FreezeTransaction/SaveUnFreezeTransaction",
+                                data: JSON.stringify(DataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+
+                                        toastr.success(data.Msg);
+
+                                        tabelMemRef.ajax.reload();
+                                        $('#modal-container').modal('hide');
+                                        dialog.modal('hide');
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                    bootbox.alert(data.Msg);
+                                }
+
+                            });
+						}
+					}
+				});
+        });
+            $(document).on("click", "#dontFreeze", function () {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageDontFreeze</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+        });
+            $(document).on("click", "#dontUnFreeze", function () {
+            bootbox.alert({
+					message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageDontUnFreeze</h6>',
+					className: 'rubberBand animated',
+					buttons: {
+						ok: {
+							label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+							className: 'btn-primary'
+						}
+					}
+				});
+            });
+
+            if ("@(User.IsInRole("FreezFreezunfreezmonthtransaction") || User.IsInRole("CoOwner"))" == "False") {
+
+                var column = tabelMemRef.column(3);
+
+                // Toggle the visibility
+                column.visible(!column.visible());
+
+            }
+
+
+            if ("@(User.IsInRole("UnFreezFreezunfreezmonthtransaction") || User.IsInRole("CoOwner"))" == "False") {
+
+                var column = tabelMemRef.column(4);
+
+                // Toggle the visibility
+                column.visible(!column.visible());
+
+            }
+
+    });
+</script>
+}
+
+

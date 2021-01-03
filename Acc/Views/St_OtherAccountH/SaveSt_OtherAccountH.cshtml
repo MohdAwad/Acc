@@ -1,0 +1,521 @@
+﻿@model Acc.ViewModels.St_OtherAccountHVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedDataSalesTaxAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("SalesTaxAccountNumber").value = data.AccountNumber;
+            document.getElementById("SalesTaxAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("SalesTaxAccountNumber").value = '';
+            document.getElementById("SalesTaxAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataPurchaseTaxAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("PurchaseTaxAccountNumber").value = data.AccountNumber;
+            document.getElementById("PurchaseTaxAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("PurchaseTaxAccountNumber").value = '';
+            document.getElementById("PurchaseTaxAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataPurchaseAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("PurchaseAccountNumber").value = data.AccountNumber;
+            document.getElementById("PurchaseAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("PurchaseAccountNumber").value = '';
+            document.getElementById("PurchaseAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataBillsOfExchangeAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("BillsOfExchangeAccountNumber").value = data.AccountNumber;
+            document.getElementById("BillsOfExchangeAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("BillsOfExchangeAccountNumber").value = '';
+            document.getElementById("BillsOfExchangeAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataForeignPurchaseAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("ForeignPurchaseAccountNumber").value = data.AccountNumber;
+            document.getElementById("ForeignPurchaseAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("ForeignPurchaseAccountNumber").value = '';
+            document.getElementById("ForeignPurchaseAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataDirectAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("DirectAccountNumber").value = data.AccountNumber;
+            document.getElementById("DirectAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("DirectAccountNumber").value = '';
+            document.getElementById("DirectAccountName").value = '';
+        }
+
+    }
+    function GetSelectedDataDifferenceAccountNumber(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("DifferenceAccountNumber").value = data.AccountNumber;
+            document.getElementById("DifferenceAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("DifferenceAccountNumber").value = '';
+            document.getElementById("DifferenceAccountName").value = '';
+        }
+
+    }
+</script>
+
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.OtherAccounts</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SalesTaxAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.SalesTaxAccountNumber, new { @id = "SalesTaxAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnSalesTaxAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.SalesTaxAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.SalesTaxAccountName, new { @id = "SalesTaxAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearSalesTaxAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PurchaseTaxAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.PurchaseTaxAccountNumber, new { @id = "PurchaseTaxAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnPurchaseTaxAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.PurchaseTaxAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.PurchaseTaxAccountName, new { @id = "PurchaseTaxAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearPurchaseTaxAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.PurchaseAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.PurchaseAccountNumber, new { @id = "PurchaseAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnPurchaseAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.PurchaseAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.PurchaseAccountName, new { @id = "PurchaseAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearPurchaseAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.BillsOfExchangeAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.BillsOfExchangeAccountNumber, new { @id = "BillsOfExchangeAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnBillsOfExchangeAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.BillsOfExchangeAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.BillsOfExchangeAccountName, new { @id = "BillsOfExchangeAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearBillsOfExchangeAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ForeignPurchaseAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.ForeignPurchaseAccountNumber, new { @id = "ForeignPurchaseAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnForeignPurchaseAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.ForeignPurchaseAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.ForeignPurchaseAccountName, new { @id = "ForeignPurchaseAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearForeignPurchaseAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DirectAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.DirectAccountNumber, new { @id = "DirectAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnDirectAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.DirectAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.DirectAccountName, new { @id = "DirectAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearDirectAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.DifferenceAccountNumber)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.DifferenceAccountNumber, new { @id = "DifferenceAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnDifferenceAccountNumber">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.DifferenceAccountNumber)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.AccountName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.DifferenceAccountName, new { @id = "DifferenceAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearDifferenceAccountNumber">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-anim" id="SaveOtherAccount"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#Close', function () {
+            window.location = "/ST_CompanySettingH/Index";
+        });
+        $(document).on('click', '#SaveOtherAccount', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+                            SalesTaxAccountNumber: $("#SalesTaxAccountNumber").val(),
+                            PurchaseTaxAccountNumber: $("#PurchaseTaxAccountNumber").val(),
+                            PurchaseAccountNumber: $("#PurchaseAccountNumber").val(),
+                            BillsOfExchangeAccountNumber: $("#BillsOfExchangeAccountNumber").val(),
+                            ForeignPurchaseAccountNumber: $("#ForeignPurchaseAccountNumber").val(),
+                            DirectAccountNumber: $("#DirectAccountNumber").val(),
+                            DifferenceAccountNumber: $("#DifferenceAccountNumber").val()
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/St_OtherAccountH/SaveSt_OtherAccountH",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                                bootbox.alert(data.Msg);
+                            }
+                        });
+                    }
+                }
+            });
+
+        });
+
+        $('#BtnSalesTaxAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/SalesTaxAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+		$('#BtnPurchaseTaxAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/PurchaseTaxAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnPurchaseAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/PurchaseAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnForeignPurchaseAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/ForeignPurchaseAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnDirectAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchFatherAccount/DirectAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnDifferenceAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/DifferenceAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnBillsOfExchangeAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/BillsOfExchangeAccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+		$('#BtnClearSalesTaxAccountNumber').on('click', function () {
+            document.getElementById("SalesTaxAccountNumber").value = '';
+            document.getElementById("SalesTaxAccountName").value = '';
+        });
+		$('#BtnClearPurchaseTaxAccountNumber').on('click', function () {
+            document.getElementById("PurchaseTaxAccountNumber").value = '';
+            document.getElementById("PurchaseTaxAccountName").value = '';
+        });
+        $('#BtnClearPurchaseAccountNumber').on('click', function () {
+            document.getElementById("PurchaseAccountNumber").value = '';
+            document.getElementById("PurchaseAccountName").value = '';
+        });
+        $('#BtnClearForeignPurchaseAccountNumber').on('click', function () {
+            document.getElementById("ForeignPurchaseAccountNumber").value = '';
+            document.getElementById("ForeignPurchaseAccountName").value = '';
+        });
+        $('#BtnClearDirectAccountNumber').on('click', function () {
+            document.getElementById("DirectAccountNumber").value = '';
+            document.getElementById("DirectAccountName").value = '';
+        });
+        $('#BtnClearDifferenceAccountNumber').on('click', function () {
+            document.getElementById("DifferenceAccountNumber").value = '';
+            document.getElementById("DifferenceAccountName").value = '';
+        });
+        $('#BtnClearBillsOfExchangeAccountNumber').on('click', function () {
+            document.getElementById("BillsOfExchangeAccountNumber").value = '';
+            document.getElementById("BillsOfExchangeAccountName").value = '';
+        });
+    });
+
+</script>
+}
+
+
+
+
+
+
+

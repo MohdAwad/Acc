@@ -1,0 +1,259 @@
+﻿@model Acc.ViewModels.TempPrepaidAndRevenueReceivedVM
+@{
+    ViewBag.Title = @Resources.Resource.Detail;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #tdataTable {
+        width: 100% !important
+    }
+</style>
+<div style="padding-top: 20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Detail - @Resources.Resource.RevenueReceived</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RevenueReceivedAccountNumber)
+                        @Html.TextBoxFor(m => m.RevenueReceivedAccountNumber, new { @id = "RevenueReceivedAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.RevenueReceivedAccountName, new { @id = "RevenueReceivedAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.RevenueAccountNumber)
+                        @Html.TextBoxFor(m => m.RevenueAccountNumber, new { @id = "RevenueAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.RevenueAccountName, new { @id = "RevenueAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            @if (Model.WorkWithCostCenter)
+            {
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.RevenueReceivedCostNumber)
+                            @Html.TextBoxFor(m => m.RevenueReceivedCostNumber, new { @id = "RevenueReceivedCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.RevenueReceivedCostName, new { @id = "RevenueReceivedCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.RevenueCostNumber)
+                            @Html.TextBoxFor(m => m.RevenueCostNumber, new { @id = "RevenueCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.RevenueCostName, new { @id = "RevenueCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.VoucherNumber)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.VoucherDate)
+                        @Html.TextBoxFor(model => model.TempPrepaidAndRevenueReceived.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.TempPrepaidAndRevenueReceived.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments)
+                        @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments, new { @id = "NumberOfPayments", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.DateFirstPayment)
+                        @Html.TextBoxFor(model => model.TempPrepaidAndRevenueReceived.DateFirstPayment, new { @id = "DateFirstPayment", @class = "form-control input-sml", @Value = Model.TempPrepaidAndRevenueReceived.DateFirstPayment.ToString("dd/MM/yyyy"), data_val = "false", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.Total)
+                        @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.Total, new { @id = "Total", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-9">
+                    @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.Note)
+                    @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-lg-12" style="margin-top:10px;">
+                <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.CollectionDate</th>
+                            <th>@Resources.Resource.Amount</th>
+                            <th>@Resources.Resource.Note</th>
+                            <th>@Resources.Resource.Collect</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel-footer">
+            @if (User.IsInRole("PrintTempRevenueReceived") || User.IsInRole("CoOwner"))
+            {
+                <button type="button" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+            document.getElementById("Total").value = formatMoney(document.getElementById("Total").value, TheDecimalPointForTheLocalCurrency);
+            $(document).on('click', '#PrintPDF', function () {
+                window.open('/PDFReport/GetTempRevenuePDF/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo/@Model.TempPrepaidAndRevenueReceived.CompanyYear', '_blank');
+            });
+
+            $(document).on('click', '#Close', function () {
+                window.location = "/TempRevenueReceived/Index";
+            });
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "className": "dt-center",
+                        "targets": "_all",
+                        "orderable": false,
+
+                    }],
+
+                dom: 'Bfrtip',
+
+
+                ajax: {
+                    "type": "GET",
+                    url: "/TempRevenueReceived/GetTempRevenue/"+@Model.TempPrepaidAndRevenueReceived.VoucherNumber+"/" +@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo+"/" +@Model.TempPrepaidAndRevenueReceived.TransactionKindNo,
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "CollectionDate",
+                        render: function (data, type, r) {
+                            return moment(data).format('DD/MM/YYYY')
+                        }
+
+                    },
+                    {
+                        data: "Amount",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+                    },
+                    {
+                        data: "Note"
+
+                    },
+                    {
+                        data: "Exported"
+
+                    }
+                ]
+
+            });
+        });
+    </script>
+}
+
+

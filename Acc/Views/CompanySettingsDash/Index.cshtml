@@ -1,0 +1,304 @@
+﻿@{
+    ViewBag.Title = @Resources.Resource.CompanyMainSetup;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .btn-text {
+       font-family : Verdana, Geneva, Tahoma, sans-serif
+    }
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+    </style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CompanyMainSetup</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-wrapper collapse in">
+        <div class="panel-body">
+            <div class="row">
+                @if (User.IsInRole("ShowCompany") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Company/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.CompanyInfo</span></a>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowBank") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DefinitionBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Banks</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowManagement") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/AssetAdministration/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.AssetAdministration</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowSupplierbanks") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SupplierBank </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowCustomercity") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/CustomerCity/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.CustomerCity  </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+                    <a href="/FavScreen/DeleteFav" class="btn btn-rounded btn-block btn-anim" style="background-color:#5D6D7E"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.DeleteFavorite </span></a>
+                </div>
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowUser") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Users/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Users</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowOtheraccount") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DefinitionOtherAccount/SaveDefinitionOtherAccount" class="btn btn-rounded btn-block btn-anim" style="background-color:#2980B9"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.OtherAccounts</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowDepartment") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/AssetCircle/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.AssetCircle</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowSuppliercountries") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierCountry/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SupplierCountry </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowCustomerarea") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/CustomerArea/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#D35400"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.CustomerArea  </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowCurrancy") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Currency/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Currency</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowSections") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/AssetSection/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.AssetSection</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowSupplierbankbranches") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierBranchBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color: #F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SupplierBranchBank </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowCurrancyValue") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/CurrencyValue/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.CurrencyValue</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowLocations") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/AssetSite/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.AssetSite</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowSupplierbankcountries") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierCountryBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SupplierCountryBank </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowSalesman") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Sale/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SalesMan</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowTrustee") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/AssetTrustee/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#1ABC9C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.AssetTrustee</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                @if (User.IsInRole("ShowSuppliercity") || User.IsInRole("CoOwner"))
+                {
+
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierCity/Index" class="btn btn-rounded btn-block btn-anim" style="background-color: #F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SupplierCity </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowTransaction") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/CompanyTransactionKind/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.CompnyTransactionKind</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                <div class="col-sm-2 col-xs-12 mt-15">
+
+                </div>
+                @if (User.IsInRole("ShowSuppliersbankcity") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/SupplierCityBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#F39C12"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.SupplierCityBank </span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowServicegroup") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/ServiceGroup/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.ServiceGroup</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowService") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/Service/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.Service</span></a>
+                    </div>
+
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+            <div class="row">
+                @if (User.IsInRole("ShowBankswithdrawnfrom") || User.IsInRole("CoOwner"))
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15">
+                        <a href="/DrawnBank/Index" class="btn btn-rounded btn-block btn-anim" style="background-color:#E74C3C"><i class="fa fa-th"></i><span class="btn-text">@Resources.Resource.DrawnBank</span></a>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-sm-2 col-xs-12 mt-15"></div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

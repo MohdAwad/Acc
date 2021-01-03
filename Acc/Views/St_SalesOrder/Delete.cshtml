@@ -1,0 +1,333 @@
+﻿@model Acc.ViewModels.St_SaleOrderVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    table.dataTable th.dt-center {
+        font-size: 8pt !important;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    #BodyStyle {
+        font-size: 8pt;
+        font-weight: bold;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    table.dataTable thead .sorting::after, table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after {
+        display: none !important;
+    }
+</style>
+<div style="padding-top: 20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Delete - @Resources.Resource.SaleOrder</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.SaleOrderNumber)
+                        @Html.TextBoxFor(m => m.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.OrderDate)
+                        @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.VoucherDate)
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.TaxType)
+                        @Html.DropDownListFor(m => m.TaxType, new List<SelectListItem>{
+                       new SelectListItem{ Text=Resources.Resource.Taxable, Value = "1",Selected=true },
+                       new SelectListItem{ Text=Resources.Resource. TaxableByZero, Value = "2",Selected=false },
+                       new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "3",Selected=false }
+                   }, new { @id = "TaxType", @class = "form-control input-sml", @disabled = "disabled" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.VoucherCase)
+                        @Html.DropDownListFor(m => m.VoucherCase, new List<SelectListItem>{
+                       new SelectListItem{ Text=Resources.Resource.Cash, Value = "1",Selected=true },
+                       new SelectListItem{ Text=Resources.Resource.VoucherCredit, Value = "2",Selected=false },
+                   }, new { @id = "VoucherCase", @class = "form-control input-sml", @disabled = "disabled" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.CustomerAccountNumber) <span style="color:red">*</span>
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.CustomerAccountNumber, new { @id = "CustomerAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.CustomerAccountName, new { @id = "CustomerAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.Note)
+                        @Html.TextBoxFor(m => m.Remark, new { @id = "Remark", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    @Html.Label(Resources.Resource.Hints)
+                    @Html.TextBoxFor(m => m.Hint, new { @id = "Hint", @class = "form-control input-sml", @readonly = "readonly" })
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.Quantity)
+                        @Html.TextBoxFor(m => m.sTotalQuantity, new { @id = "sTotalQuantity", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-2" style="text-align: center">
+                    <div class="form-group">
+                        @Html.Label(@Resources.Resource.NetTotal)
+                        @Html.TextBoxFor(m => m.sNetTotal, new { @id = "sNetTotal", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                </div>
+            </div>
+            <div class="col-lg-12" style="padding-top:20px;">
+                <div class="col-lg-12">
+                    <table id="tdataTable" class="table table-hover table-bordered mb-0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>@Resources.Resource.ItemCode</th>
+                                <th>@Resources.Resource.ItemName</th>
+                                <th>@Resources.Resource.Unit</th>
+                                <th>@Resources.Resource.Quantity</th>
+                                <th>@Resources.Resource.Price</th>
+                                <th>@Resources.Resource.Total</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-anim btnDelete-lg" id="Delete"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNo", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TransactionKindNo, new { @id = "TransactionKindNo", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CurrencyID, new { @id = "CurrencyID", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ConversionFactor, new { @id = "ConversionFactor", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyYear, new { @id = "CompanyYear", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.VHI, new { @id = "VHI", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TotalQuantity, new { @id = "TotalQuantity", @style = "visibility : hidden;", @type = "Number", @min = "0" })
+@Html.TextBoxFor(m => m.NetTotal, new { @id = "NetTotal", @style = "visibility : hidden;", @type = "Number", @min = "0" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            $(document).on('click', '#Close', function () {
+                window.location = "/St_SalesOrder/Index";
+            });
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+            document.getElementById("sNetTotal").value = formatMoney(document.getElementById("NetTotal").value, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("sTotalQuantity").value = formatMoney(document.getElementById("TotalQuantity").value, TheDecimalPointForTheLocalCurrency);
+            var tabelMemRef = $("#tdataTable").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    {
+                        "className": "dt-center",
+                        "targets": "_all",
+                        "orderable": false,
+
+                    }],
+
+                dom: 'Bfrtip',
+
+
+                ajax: {
+                    "type": "GET",
+                    url: "/St_SalesOrder/GetItems/@Model.VoucherNumber/@Model.CompanyTransactionKindNo/@Model.TransactionKindNo/@Model.CompanyYear",
+
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "ItemCode"
+
+                    },
+                    {
+                        data: "ItemName"
+
+                    },
+                    {
+                        data: "ItemUnitName"
+
+                    },
+                    {
+                        data: "Quantity"
+
+                    },
+                    {
+                        data: "Price",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "Total",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    }
+                ]
+            });
+            $(document).on('click', '#Delete', function () {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+                                closeButton: false
+                            });
+                            var dataToDelete = {
+
+                                VoucherNumber: $("#VoucherNumber").val(),
+                                TransactionKindNo: $("#TransactionKindNo").val(),
+                                CompanyYear: $("#CompanyYear").val(),
+                                CompanyTransactionKindNo: $("#CompanyTransactionKindNo").val()
+                            };
+
+                            $.ajax({
+                                type: "POST",
+                                url: "/St_SalesOrder/DeleteSt_SaleOrder",
+                                data: JSON.stringify(dataToDelete),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        $('#modal-container').modal('hide');
+                                        window.location = "/St_SalesOrder/Index";
+                                    }
+
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+                                    bootbox.alert(data.Msg);
+                                }
+
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,139 @@
+@Html.DevExpress().PivotGrid(settings => {
+    settings.Name = "PivotGrid";
+    settings.Theme = "iOS";
+    settings.CallbackRouteValues = new { Controller = "Report", Action = "PivotAccountsGridPartial" };
+
+    settings.OptionsView.HorizontalScrollBarMode = ScrollBarMode.Visible;
+     
+    //    settings.Fields.Add(field => {
+    //    field.Area = PivotArea.FilterArea;
+    //    field.FieldName = "AccountNumber";
+    //    field.Caption = "AccountNumber";
+    //});
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "Name";
+        field.Caption = Resources.Resource.AccountName;
+    });
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "CostCenterName";
+        field.Visible = ViewBag.WorkWithCostCenter;
+        field.Caption = Resources.Resource.CostCenterName;
+    });
+
+
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "TransName";
+        field.Caption = Resources.Resource.TransName;
+    });
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "AccountType";
+        field.Caption = Resources.Resource.AccountType;
+    });
+
+
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "sVoucherDate";
+        field.Caption = Resources.Resource.VoucherDate;
+    });
+
+
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "Debit";
+        field.Caption = Resources.Resource.Debit;
+        field.CellFormat.FormatType = FormatType.Numeric;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            field.CellFormat.FormatString = "{0:n2}";
+        }
+        else
+        {
+            field.CellFormat.FormatString = "{0:n3}";
+        }
+
+    });
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "Credit";
+        field.Caption = Resources.Resource.Credit;
+        field.CellFormat.FormatType = FormatType.Numeric;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            field.CellFormat.FormatString = "{0:n2}";
+        }
+        else
+        {
+            field.CellFormat.FormatString = "{0:n3}";
+        }
+    });
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "NetTot";
+        field.Caption = Resources.Resource.NetTotal;
+        field.CellFormat.FormatType = FormatType.Numeric;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            field.CellFormat.FormatString = "{0:n2}";
+        }
+        else
+        {
+            field.CellFormat.FormatString = "{0:n3}";
+        }
+    });
+
+
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "DebitForeign";
+        field.Caption = Resources.Resource.DebitForeign;
+        field.CellFormat.FormatType = FormatType.Numeric;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            field.CellFormat.FormatString = "{0:n2}";
+        }
+        else
+        {
+            field.CellFormat.FormatString = "{0:n3}";
+        }
+    });
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "CreditForeign";
+        field.Caption = Resources.Resource.CreditForeign;
+        field.CellFormat.FormatType = FormatType.Numeric;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            field.CellFormat.FormatString = "{0:n2}";
+        }
+        else
+        {
+            field.CellFormat.FormatString = "{0:n3}";
+        }
+    });
+    settings.Fields.Add(field => {
+        field.Area = PivotArea.FilterArea;
+        field.FieldName = "NetForeign";
+        field.Caption = Resources.Resource.ForeignAmount;
+        field.CellFormat.FormatType = FormatType.Numeric;
+        if (ViewBag.TheDecimalPointForTheLocalCurrency == 2)
+        {
+            field.CellFormat.FormatString = "{0:n2}";
+        }
+        else
+        {
+            field.CellFormat.FormatString = "{0:n3}";
+        }
+        
+    });
+
+
+    settings.ClientSideEvents.BeginCallback = "OnBeginCallback";
+
+
+
+}).Bind(Model).GetHtml()

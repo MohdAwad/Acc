@@ -1,0 +1,1835 @@
+﻿@model Acc.ViewModels.AccountLevelRepVM
+@{
+    ViewBag.Title = @Resources.Resource.CompareCostMonthsAll;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #MemberShipTypeBody1 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    function GetSelectedCostCenter(data) {
+
+        if (data.CostNumber != null && data.AccNo != '') {
+            document.getElementById("AccNo").value = data.CostNumber;
+            document.getElementById("AccName").value = data.CostName;
+        }
+        else {
+            document.getElementById("AccNo").value = '';
+            document.getElementById("AccName").value = '';
+        }
+
+    }
+        var CostNumber = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedCost };
+                CostNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#AccNo").autocomplete({
+            source: CostNumber,
+            select: function (event, ui) {
+                document.getElementById("AccNo").value = ui.item.value;
+                document.getElementById("AccName").value = ui.item.label;
+            }
+        });
+    });
+
+</script>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.CompareCostMonths</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.AccountLevelDropVMID)<span style="color:red">*</span>
+                    @Html.DropDownListFor(m => m.AccountLevelDropVMID, new SelectList(Model.AccountLevelDropVM, "AccountLevel", "LevelName"), Resources.Resource.Level, new { @id = "AccountLevelID", @class = "form-control input-sml" })
+                </div>
+            </div>
+            <div class="col-md-3">
+                @Html.Label(Resources.Resource.CostCenter)
+                <div class="form-group  input-group">
+                    @Html.TextBoxFor(m => m.AccNo, new { @id = "AccNo", @class = "form-control input-sml"})
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccNo">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-3">
+                @Html.Label(Resources.Resource.CostCenterName)
+                <div class="form-group input-group">
+                    @Html.TextBoxFor(m => m.AccName, new { @id = "AccName", @class = "form-control input-sml", @readonly = "readonly" })
+                    <span class="input-group-btn">
+                        <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccNo">
+                            <i class="fa fa-minus-square"></i>
+                        </button>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowEstimatedZero, new { @id = "ShowEstimatedZero" })
+                    @Html.Label(Resources.Resource.ShowEstimatedZero)
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowMainAccountValue, new { @id = "ShowMainAccountValue" })
+                    @Html.Label(Resources.Resource.ShowMainAccountValue)
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    @Html.CheckBoxFor(m => m.ShowOnlyaccountswithcostcenter, new { @id = "ShowOnlyaccountswithcostcenter" })
+                    @Html.Label(Resources.Resource.ShowOnlyaccountswithcostcenter)
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <button type="submit" class="btn  btn-anim btnSearch" id="reload"><i class=" fa fa-search"></i><span class="btn-text">@Resources.Resource.Search</span></button>
+            @if (User.IsInRole("PrintRepEstimatedBudgetCostAllMonth") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="submit" class="btn btn-anim btnFav" id="AddToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+        <div class="col-lg-12" style="margin-top:10px;">
+            <table id="tdataTableTransAction" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="3"> </th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.January</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.February</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.March</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.April</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.May</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.June</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.July</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.August</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.September</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.October</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.November</th>
+                        <th colspan="4" style="text-align:center">@Resources.Resource.December</th>
+
+
+
+
+
+                    </tr>
+                    <tr>
+                        <th>*</th>
+                        <th>@Resources.Resource.AccountNumber</th>
+                        <th>@Resources.Resource.AccountName</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th> @*3*@
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        @*19*@
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        @*39*@
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th> @*50*@
+
+
+
+
+
+
+
+
+                        <th>@Resources.Resource.MonthTransaction 1</th>
+                        <th>@Resources.Resource.Expected  </th>
+                        <th>@Resources.Resource.ChangeVaule  </th>
+                        <th>%</th>
+
+
+                        <th>@Resources.Resource.MonthTransaction 2</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 3</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 4</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+
+                        <th>@Resources.Resource.MonthTransaction 5</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 6</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 7</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+
+                        <th>@Resources.Resource.MonthTransaction 8</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 9</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 10 </th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 11</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+                        <th>@Resources.Resource.MonthTransaction 12</th>
+                        <th>@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th>%</th>
+
+
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th style="color:black !important">*</th>
+                        <th style="color:black !important">@Resources.Resource.AccountNumber</th>
+                        <th style="color:black !important">@Resources.Resource.AccountName</th>
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+
+
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 1</th>
+                        <th style="color:black !important">@Resources.Resource.Expected  </th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule  </th>
+                        <th style="color:black !important">%</th>
+
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 2</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 3</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 4</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 5 </th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 6</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th>@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 7</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 8</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 9</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 10 </th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 11</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+                        <th style="color:black !important">@Resources.Resource.MonthTransaction 12</th>
+                        <th style="color:black !important">@Resources.Resource.Expected</th>
+                        <th style="color:black !important">@Resources.Resource.ChangeVaule</th>
+                        <th style="color:black !important">%</th>
+
+
+
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="panel-footer">
+
+    </div>
+</div>
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+
+
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+
+        $(document).on('click', '#AddToFav', function () {
+
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.CompareCostMonths',
+                            ScreenUrl: "/Report/EstimatedBudgetCostAllMonth",
+                            ScreenType: 1
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+
+
+        });
+
+        $(document).on('click', '#reload', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            tdataTableTransActionRef.ajax.reload();
+            dialog.modal('hide');
+        });
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/Report/ReportDash";
+        });
+
+        var tdataTableTransActionRef = $("#tdataTableTransAction").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "scrollY": "500px",
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "searching": false,
+            buttons: [
+            ],
+            "columnDefs": [
+
+                {
+                    "targets": 1,
+                    "className": "text-center",
+                },
+                {
+                    className: 'text-center', targets: [2, 3, 4, 5, 6]
+                }
+                ,
+                {
+                    "targets": [6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98],
+                    "visible": false
+                }
+
+
+            ],
+            "decimal": ",",
+            "thousands": ".",
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            ajax: {
+                "type": "POST",
+                url: "/Report/GetEstimatedBudgetCostAllMonth",
+                "data": function (d) {
+
+                    d.ShowMainAccountValue = $("#ShowMainAccountValue:checked").val();
+                    d.AccNo = $("#AccNo").val();
+                    d.Month = $("#Month").val();
+                    d.ShowOnlyaccountswithcostcenter = $("#ShowOnlyaccountswithcostcenter:checked").val();
+                    d.ShowEstimatedZero = $("#ShowEstimatedZero:checked").val();
+                    d.AccountLevelDropVMID = $("#AccountLevelID").val();
+
+                },
+                dataSrc: ""
+            },
+
+
+
+            columns: [
+                {
+                    data: "MainAccount"
+
+                },
+                {
+
+                    data: "AccountNumber",
+                    render: function (data, type, r) {
+                        if (r.IsMainAccount == 1) {
+                            return "<i class='text-danger'><strong>" + data + "</strong></i>";
+                        }
+                        else {
+                            return "<i class='text-primary'><strong>" + data + "</strong></i>";
+
+                        }
+
+                    }
+                },
+                {
+                    data: "Name"
+
+                },
+                {
+                    data: "MonthTransaction1",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected1",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule1",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec1",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction2",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected2",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule2",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec2",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction3",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected3",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule3",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec3",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction4",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected4",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule4",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec4",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction5",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected5",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule5",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec5",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction6",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected6",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule6",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec6",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction7",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected7",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule7",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec7",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction8",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected8",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule8",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec8",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction9",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected9",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule9",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec9",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction10",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected10",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule10",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec10",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                }, {
+                    data: "MonthTransaction11",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected11",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule11",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec11",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "MonthTransaction12",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "Expected12",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangeVaule12",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                },
+                {
+                    data: "ChangePrec12",
+                    render: function (data, type, r) {
+
+                        return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+
+                    }
+                }
+
+                , {
+                    data: "nMonthTransaction1"
+
+                },
+                {
+                    data: "nExpected1"
+
+                },
+                {
+                    data: "nChangeVaule1"
+
+                },
+                {
+                    data: "nChangePrec1"
+
+                },
+                {
+                    data: "nMonthTransaction2"
+
+                },
+                {
+                    data: "nExpected2"
+
+                },
+                {
+                    data: "nChangeVaule2"
+
+                },
+                {
+                    data: "nChangePrec2"
+
+                },
+                {
+                    data: "nMonthTransaction3"
+
+                },
+                {
+                    data: "nExpected3"
+
+                },
+                {
+                    data: "nChangeVaule3"
+
+                },
+                {
+                    data: "nChangePrec3"
+
+                },
+                {
+                    data: "nMonthTransaction4"
+
+                },
+                {
+                    data: "nExpected4"
+
+                },
+                {
+                    data: "nChangeVaule4"
+
+                },
+                {
+                    data: "nChangePrec4"
+
+                },
+                {
+                    data: "nMonthTransaction5"
+
+                },
+                {
+                    data: "nExpected5"
+
+                },
+                {
+                    data: "nChangeVaule5"
+
+                },
+                {
+                    data: "nChangePrec5"
+
+                }
+                , {
+                    data: "nMonthTransaction6"
+
+                },
+                {
+                    data: "nExpected6"
+
+                },
+                {
+                    data: "nChangeVaule6"
+
+                },
+                {
+                    data: "nChangePrec6"
+
+                }
+                , {
+                    data: "nMonthTransaction7"
+
+                },
+                {
+                    data: "nExpected7"
+
+                },
+                {
+                    data: "nChangeVaule7"
+
+                },
+                {
+                    data: "nChangePrec7"
+
+                }, {
+                    data: "nMonthTransaction8"
+
+                },
+                {
+                    data: "nExpected8"
+
+                },
+                {
+                    data: "nChangeVaule8"
+
+                },
+                {
+                    data: "nChangePrec8"
+
+                }, {
+                    data: "nMonthTransaction9"
+
+                },
+                {
+                    data: "nExpected9"
+
+                },
+                {
+                    data: "nChangeVaule9"
+
+                },
+                {
+                    data: "nChangePrec9"
+
+                }, {
+                    data: "nMonthTransaction10"
+
+                },
+                {
+                    data: "nExpected10"
+
+                },
+                {
+                    data: "nChangeVaule10"
+
+                },
+                {
+                    data: "nChangePrec10"
+
+                }, {
+                    data: "nMonthTransaction11"
+
+                },
+                {
+                    data: "nExpected11"
+
+                },
+                {
+                    data: "nChangeVaule11"
+
+                },
+                {
+                    data: "nChangePrec11"
+
+                }, {
+                    data: "nMonthTransaction12"
+
+                },
+                {
+                    data: "nExpected12"
+
+                },
+                {
+                    data: "nChangeVaule12"
+
+                },
+                {
+                    data: "nChangePrec12"
+
+                }
+
+
+            ],
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[, Rs]|(\.\d{2})/g, "") * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                },
+                    total3 = api
+                        .column(51)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total4 = api
+                        .column(52)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total5 = api
+                        .column(53)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total6 = api
+                        .column(54)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+
+                    total7 = api
+                        .column(55)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total8 = api
+                        .column(56)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total9 = api
+                        .column(57)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total10 = api
+                        .column(58)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total11 = api
+                        .column(59)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total12 = api
+                        .column(60)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total13 = api
+                        .column(61)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total14 = api
+                        .column(62)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total15 = api
+                        .column(63)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total16 = api
+                        .column(64)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total17 = api
+                        .column(65)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total18 = api
+                        .column(66)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total19 = api
+                        .column(67)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total20 = api
+                        .column(68)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total21 = api
+                        .column(69)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total22 = api
+                        .column(70)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total23 = api
+                        .column(71)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total24 = api
+                        .column(72)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total25 = api
+                        .column(73)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total26 = api
+                        .column(74)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+
+                    total27 = api
+                        .column(75)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total28 = api
+                        .column(76)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total29 = api
+                        .column(77)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total30 = api
+                        .column(78)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total31 = api
+                        .column(79)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total32 = api
+                        .column(80)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total33 = api
+                        .column(81)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total34 = api
+                        .column(82)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total35 = api
+                        .column(83)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total36 = api
+                        .column(84)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total37 = api
+                        .column(85)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total38 = api
+                        .column(86)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total39 = api
+                        .column(87)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total40 = api
+                        .column(88)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total41 = api
+                        .column(89)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total42 = api
+                        .column(90)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total43 = api
+                        .column(91)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total44 = api
+                        .column(92)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total45 = api
+                        .column(93)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total46 = api
+                        .column(94)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+
+
+                    total47 = api
+                        .column(95)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total48 = api
+                        .column(96)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total49 = api
+                        .column(97)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0),
+                    total50 = api
+                        .column(98)
+                        .data()
+                        .reduce(function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0);
+
+
+                //total51= api
+                //    .column(99)
+                //    .data()
+                //    .reduce(function (a, b) {
+                //        return intVal(a) + intVal(b);
+                //    }, 0),
+                //total52= api
+                //    .column(100)
+                //    .data()
+                //    .reduce(function (a, b) {
+                //        return intVal(a) + intVal(b);
+                //    }, 0),
+                //total53= api
+                //    .column(101)
+                //    .data()
+                //    .reduce(function (a, b) {
+                //        return intVal(a) + intVal(b);
+                //    }, 0),
+                //total54= api
+                //    .column(102)
+                //    .data()
+                //    .reduce(function (a, b) {
+                //        return intVal(a) + intVal(b);
+                //    }, 0),
+
+
+
+                //total56= api
+                //    .column(103)
+                //    .data()
+                //    .reduce(function (a, b) {
+                //        return intVal(a) + intVal(b);
+                //    }, 0),
+                //total57= api
+                //    .column(104)
+                //    .data()
+                //    .reduce(function (a, b) {
+                //        return intVal(a) + intVal(b);
+                //    }, 0)
+
+
+
+
+
+
+
+
+
+
+                $(api.column(0).footer()).html('');
+                $(api.column(1).footer()).html('');
+                $(api.column(2).footer()).html('');
+
+
+                $(api.column(3).footer()).html(formatMoney(total3, TheDecimalPointForTheLocalCurrency));
+                $(api.column(4).footer()).html(formatMoney(total4, TheDecimalPointForTheLocalCurrency));
+                $(api.column(5).footer()).html(formatMoney(total5, TheDecimalPointForTheLocalCurrency));
+                $(api.column(6).footer()).html(formatMoney(total6, TheDecimalPointForTheLocalCurrency));
+
+                $(api.column(7).footer()).html(formatMoney(total7, TheDecimalPointForTheLocalCurrency));
+                $(api.column(8).footer()).html(formatMoney(total8, TheDecimalPointForTheLocalCurrency));
+                $(api.column(9).footer()).html(formatMoney(total9, TheDecimalPointForTheLocalCurrency));
+                $(api.column(10).footer()).html(formatMoney(total10, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(11).footer()).html(formatMoney(total11, TheDecimalPointForTheLocalCurrency));
+                $(api.column(12).footer()).html(formatMoney(total12, TheDecimalPointForTheLocalCurrency));
+                $(api.column(13).footer()).html(formatMoney(total13, TheDecimalPointForTheLocalCurrency));
+                $(api.column(14).footer()).html(formatMoney(total14, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(15).footer()).html(formatMoney(total15, TheDecimalPointForTheLocalCurrency));
+                $(api.column(16).footer()).html(formatMoney(total16, TheDecimalPointForTheLocalCurrency));
+                $(api.column(17).footer()).html(formatMoney(total17, TheDecimalPointForTheLocalCurrency));
+                $(api.column(18).footer()).html(formatMoney(total18, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(19).footer()).html(formatMoney(total19, TheDecimalPointForTheLocalCurrency));
+                $(api.column(20).footer()).html(formatMoney(total20, TheDecimalPointForTheLocalCurrency));
+                $(api.column(21).footer()).html(formatMoney(total21, TheDecimalPointForTheLocalCurrency));
+                $(api.column(22).footer()).html(formatMoney(total22, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(23).footer()).html(formatMoney(total23, TheDecimalPointForTheLocalCurrency));
+                $(api.column(24).footer()).html(formatMoney(total24, TheDecimalPointForTheLocalCurrency));
+                $(api.column(25).footer()).html(formatMoney(total25, TheDecimalPointForTheLocalCurrency));
+                $(api.column(26).footer()).html(formatMoney(total26, TheDecimalPointForTheLocalCurrency));
+
+                $(api.column(27).footer()).html(formatMoney(total27, TheDecimalPointForTheLocalCurrency));
+                $(api.column(28).footer()).html(formatMoney(total28, TheDecimalPointForTheLocalCurrency));
+                $(api.column(29).footer()).html(formatMoney(total29, TheDecimalPointForTheLocalCurrency));
+                $(api.column(30).footer()).html(formatMoney(total30, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(31).footer()).html(formatMoney(total31, TheDecimalPointForTheLocalCurrency));
+                $(api.column(32).footer()).html(formatMoney(total32, TheDecimalPointForTheLocalCurrency));
+                $(api.column(33).footer()).html(formatMoney(total33, TheDecimalPointForTheLocalCurrency));
+                $(api.column(34).footer()).html(formatMoney(total34, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(35).footer()).html(formatMoney(total35, TheDecimalPointForTheLocalCurrency));
+                $(api.column(36).footer()).html(formatMoney(total36, TheDecimalPointForTheLocalCurrency));
+                $(api.column(37).footer()).html(formatMoney(total37, TheDecimalPointForTheLocalCurrency));
+                $(api.column(38).footer()).html(formatMoney(total38, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(39).footer()).html(formatMoney(total39, TheDecimalPointForTheLocalCurrency));
+                $(api.column(40).footer()).html(formatMoney(total40, TheDecimalPointForTheLocalCurrency));
+                $(api.column(41).footer()).html(formatMoney(total41, TheDecimalPointForTheLocalCurrency));
+                $(api.column(42).footer()).html(formatMoney(total42, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(43).footer()).html(formatMoney(total43, TheDecimalPointForTheLocalCurrency));
+                $(api.column(44).footer()).html(formatMoney(total44, TheDecimalPointForTheLocalCurrency));
+                $(api.column(45).footer()).html(formatMoney(total45, TheDecimalPointForTheLocalCurrency));
+                $(api.column(46).footer()).html(formatMoney(total46, TheDecimalPointForTheLocalCurrency));
+
+
+                $(api.column(47).footer()).html(formatMoney(total47, TheDecimalPointForTheLocalCurrency));
+                $(api.column(48).footer()).html(formatMoney(total48, TheDecimalPointForTheLocalCurrency));
+                $(api.column(49).footer()).html(formatMoney(total49, TheDecimalPointForTheLocalCurrency));
+                $(api.column(50).footer()).html(formatMoney(total50, TheDecimalPointForTheLocalCurrency));
+
+
+                //$(api.column(51).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(52).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(53).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(54).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+
+                //$(api.column(55).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(56).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(57).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(58).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+                //$(api.column(59).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(60).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(61).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(62).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+
+                //$(api.column(3).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(4).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(5).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(6).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+                //$(api.column(3).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(4).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(5).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(6).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+
+                //$(api.column(3).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(4).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(5).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(6).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+
+                //$(api.column(3).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(4).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(5).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(6).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+                //$(api.column(3).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total3));
+                //$(api.column(4).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total4));
+                //$(api.column(5).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total5));
+                //$(api.column(6).footer()).html(new Intl.NumberFormat('en-US', { minimumFractionDigits: 3 }).format(total6));
+
+
+
+            }
+
+
+        });
+
+
+
+        $('#tdataTableAccount').on('click', '.js-delete', function (e) {
+
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).removeData('bs.modal');
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#tdataTableAccount').on('click', '.js-modify', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#tdataTableAccount').on('click', '.js-reason', function (e) {
+            var d = e.target.getAttribute("data-content");
+            bootbox.alert(d);
+        });
+        $('#js-addnew').on('click', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+        });
+        $('#tdataTableAccount').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+            console.log('modal-containe');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+        $("#AccNo").focus().select();
+
+        $("#AccNo").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#AccountLevelID").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/SearchFromCostCenter';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+
+        $('#BtnAccNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/SearchFromCostCenter';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            });
+
+        });
+        $('#BtnClearAccNo').on('click', function () {
+            document.getElementById("AccNo").value = '';
+            document.getElementById("AccName").value = '';
+        });
+
+        $("#AccNo").blur(function () {
+            var AccountNumber = document.getElementById("AccNo").value;
+            if (AccountNumber == '') {
+                document.getElementById("AccName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccNo").value = '';
+                            document.getElementById("AccName").value = '';
+                            $("#AccNo").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("AccName").value = Data.ArabicName;
+                                }
+                                else {
+                                document.getElementById("AccName").value = Data.EnglishName;
+                                }
+
+                        }
+                    });
+                }
+            }
+        });
+
+    });
+
+
+
+</script>
+
+}
+
+
+

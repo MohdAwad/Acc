@@ -1,0 +1,1399 @@
+﻿@model Acc.ViewModels.TempPrepaidAndRevenueReceivedVM
+@{
+    ViewBag.Title = @Resources.Resource.Update;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #TempPrepaidGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvBatchEditNewItem_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+    #TempPrepaidGrid_col0 {
+        width: 55px;
+    }
+</style>
+<script>
+    var LastStatment = "";
+    var preventEndEditOnLostFocus = false;
+    var currentEditedValue;
+    var SelectAccount;
+    var lastVisibleIndex;
+    var FocusedCellColumnIndex = 0;
+    var FocusedCellRowIndex = 0;
+    var SumAmount = 0;
+    function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+        try {
+            decimalCount = Math.abs(decimalCount);
+            decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+            const negativeSign = amount < 0 ? "-" : "";
+
+            let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+            let j = (i.length > 3) ? i.length % 3 : 0;
+
+            return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+        } catch (e) {
+            console.log(e)
+        }
+    };
+    function validatedate(dateString) {
+        var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+        if (dateString.match(dateformat)) {
+            var operator = dateString.split('/');
+            var datepart = [];
+            if (operator.length > 1) {
+                datepart = dateString.split('/');
+            }
+            var month = parseInt(datepart[1]);
+            var day = parseInt(datepart[0]);
+            var year = parseInt(datepart[2]);
+            var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (month == 1 || month > 2) {
+                if (day > ListofDays[month - 1]) {
+                    return false;
+                }
+            } else if (month == 2) {
+                var leapYear = false;
+                if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                    leapYear = true;
+                }
+                if ((leapYear == false) && (day >= 29)) {
+                    return false;
+                } else
+                    if ((leapYear == true) && (day > 29)) {
+                        return false;
+                    }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+    function CalcSumAmount(s, e) {
+        SumAmount = 0;
+        var Amount = 0;
+        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            Amount = TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount");
+            Amount = Number(Amount);
+            if (Amount == "NaN") {
+                Amount = 0;
+            }
+            SumAmount = SumAmount + parseFloat(Amount);
+        }
+        document.getElementById("Total").value = SumAmount;
+        $("#Total").val((parseFloat($("#Total").val())).toFixed(TheDecimalPointForTheLocalCurrency));
+    }
+    function ClearGrid(s, e) {
+        TempPrepaidGrid.PerformCallback('clear');
+        setTimeout(function () {
+            CalcSumAmount(s, e);
+        }, 1000);
+    }
+    function ReCalc(s, e) {
+        setTimeout(function () {
+            CalcSumAmount(s, e);
+        }, 1000);
+    }
+    function LoopGrid(s, e) {
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        var dDate = document.getElementById("VoucherDate").value;
+        var iError = 0;
+        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            if (TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate") == "" || TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate") == null) {
+                iError = 1;
+                break;
+            }
+            else if (TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount") == "" || TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount") == null
+                || TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount") == 0) {
+                iError = 2;
+                break;
+            }
+        }
+        if (WorkWithCostCenter) {
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (dDate != null && dDate != '') {
+                var dd = parseInt(dDate.substring(0, 2));
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                var mm = parseInt(dDate.substring(3, 5));
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                var yyyy = parseInt(dDate.substring(6, 10));
+                dDate = mm + '/' + dd + '/' + yyyy;
+                $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                    if (Data >= 1) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        if (iError == 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillCollectionDate</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if (iError == 2) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillAmount</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#ExpenseAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#PrepaidExpenseAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#ExpenseCostNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#PrepaidExpenseCostNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#NumberOfPayments").val() == '' || $("#NumberOfPayments").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#Total").val() == '' || $("#Total").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            bootbox.confirm({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    confirm: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        CalcSumAmount(s, e);
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                            closeButton: false
+                                        });
+                                        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+                                        var TempDetailslist = [];
+                                        for (var i = 0; i < visibleRowIndices.length; i++) {
+                                            var TempDetails = {
+                                                CollectionDate: moment(TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate")).format('LL'),
+                                                Amount: TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount"),
+                                                Note: TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Note")
+                                            };
+                                            TempDetailslist.push(TempDetails);
+                                        }
+                                        var TempPrepaidAndRevenueReceivedData = {
+                                            VoucherNumber: $("#VoucherNumber").val(),
+                                            VoucherDate: $("#VoucherDate").val(),
+                                            DateFirstPayment: $("#DateFirstPayment").val(),
+                                            NumberOfPayments: $("#NumberOfPayments").val(),
+                                            Total: $("#Total").val(),
+                                            Note: $("#Note").val(),
+                                            CompanyTransactionKindNo: $("#CompanyTransactionKindID").val(),
+                                            CompanyYear: $("#CompanyYear").val()
+                                        }
+                                        var dataToUpdate = {
+                                            TempPrepaidAndRevenueReceivedDetail: TempDetailslist,
+                                            TempPrepaidAndRevenueReceived: TempPrepaidAndRevenueReceivedData,
+                                            CompanyTransactionKindID: $("#CompanyTransactionKindID").val(),
+                                            ExpenseAccountNumber: $("#ExpenseAccountNumber").val(),
+                                            PrepaidExpenseAccountNumber: $("#PrepaidExpenseAccountNumber").val(),
+                                            ExpenseCostNumber: $("#ExpenseCostNumber").val(),
+                                            PrepaidExpenseCostNumber: $("#PrepaidExpenseCostNumber").val()
+                                        }
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/TempPrepaid/UpdateTempPrepaidWithExport",
+                                            data: JSON.stringify(dataToUpdate),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    $('#modal-container').modal('hide');
+                                                    toastr.success(data.Msg);
+                                                    $('#modal-container').modal('hide');
+                                                    bootbox.confirm({
+                                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                                        className: 'rubberBand animated',
+                                                        buttons: {
+                                                            confirm: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                className: 'btn-success'
+                                                            },
+                                                            cancel: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                className: 'btn-danger'
+                                                            }
+                                                        },
+                                                        callback: function (result) {
+                                                            if (result) {
+                                                                window.open('/TempPrepaid/ShowAttach/@Model.CompanyYear/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo', '_blank');
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempPrepaidPDF/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo/@Model.TempPrepaidAndRevenueReceived.CompanyYear', '_blank');
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                        else {
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+
+                                                            else {
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempPrepaidPDF/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo/@Model.TempPrepaidAndRevenueReceived.CompanyYear', '_blank');
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                        else {
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+
+                                                        }
+                                                    });
+
+                                                }
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    };
+                });
+            }
+        }
+        else {
+            if (!validatedate(dDate) && dDate != null && dDate != '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (dDate != null && dDate != '') {
+                var dd = parseInt(dDate.substring(0, 2));
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                var mm = parseInt(dDate.substring(3, 5));
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                var yyyy = parseInt(dDate.substring(6, 10));
+                dDate = mm + '/' + dd + '/' + yyyy;
+                $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                    if (Data >= 1) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        if (iError == 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillCollectionDate</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if (iError == 2) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillAmount</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#ExpenseAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#PrepaidExpenseAccountNumber").val() == '') {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#NumberOfPayments").val() == '' || $("#NumberOfPayments").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else if ($("#Total").val() == '' || $("#Total").val() == 0) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            bootbox.confirm({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    confirm: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                        className: 'btn-success'
+                                    },
+                                    cancel: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                        className: 'btn-danger'
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        CalcSumAmount(s, e);
+                                        var dialog = bootbox.dialog({
+                                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Updating...</p>',
+                                            closeButton: false
+                                        });
+                                        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+                                        var TempDetailslist = [];
+                                        for (var i = 0; i < visibleRowIndices.length; i++) {
+                                            var TempDetails = {
+                                                CollectionDate: moment(TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CollectionDate")).format('LL'),
+                                                Amount: TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Amount"),
+                                                Note: TempPrepaidGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Note")
+                                            };
+                                            TempDetailslist.push(TempDetails);
+                                        }
+                                        var TempPrepaidAndRevenueReceivedData = {
+                                            VoucherNumber: $("#VoucherNumber").val(),
+                                            VoucherDate: $("#VoucherDate").val(),
+                                            DateFirstPayment: $("#DateFirstPayment").val(),
+                                            NumberOfPayments: $("#NumberOfPayments").val(),
+                                            Total: $("#Total").val(),
+                                            Note: $("#Note").val(),
+                                            CompanyTransactionKindNo: $("#CompanyTransactionKindID").val(),
+                                            CompanyYear: $("#CompanyYear").val()
+                                        }
+                                        var dataToUpdate = {
+                                            TempPrepaidAndRevenueReceivedDetail: TempDetailslist,
+                                            TempPrepaidAndRevenueReceived: TempPrepaidAndRevenueReceivedData,
+                                            CompanyTransactionKindID: $("#CompanyTransactionKindID").val(),
+                                            ExpenseAccountNumber: $("#ExpenseAccountNumber").val(),
+                                            PrepaidExpenseAccountNumber: $("#PrepaidExpenseAccountNumber").val(),
+                                            ExpenseCostNumber: "",
+                                            PrepaidExpenseCostNumber: ""
+                                        }
+                                        $.ajax({
+                                            type: "POST",
+                                            url: "/TempPrepaid/UpdateTempPrepaidWithExport",
+                                            data: JSON.stringify(dataToUpdate),
+                                            contentType: 'application/json',
+                                            success: function (data) {
+                                                dialog.modal('hide');
+                                                if (data.Code == 0) {
+                                                    toastr.error(data.Msg);
+                                                }
+                                                else if (data.Code == 1) {
+                                                    $('#modal-container').modal('hide');
+                                                    toastr.success(data.Msg);
+                                                    $('#modal-container').modal('hide');
+                                                    bootbox.confirm({
+                                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                                        className: 'rubberBand animated',
+                                                        buttons: {
+                                                            confirm: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                className: 'btn-success'
+                                                            },
+                                                            cancel: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                className: 'btn-danger'
+                                                            }
+                                                        },
+                                                        callback: function (result) {
+                                                            if (result) {
+                                                                window.open('/TempPrepaid/ShowAttach/@Model.CompanyYear/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo', '_blank');
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempPrepaidPDF/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo/@Model.TempPrepaidAndRevenueReceived.CompanyYear', '_blank');
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                        else {
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+
+                                                            else {
+                                                                bootbox.confirm({
+                                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                    className: 'rubberBand animated',
+                                                                    buttons: {
+                                                                        confirm: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                            className: 'btn-success'
+                                                                        },
+                                                                        cancel: {
+                                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                            className: 'btn-danger'
+                                                                        }
+                                                                    },
+                                                                    callback: function (result) {
+                                                                        if (result) {
+                                                                            window.open('/PDFReport/GetTempPrepaidPDF/@Model.TempPrepaidAndRevenueReceived.VoucherNumber/@Model.TempPrepaidAndRevenueReceived.CompanyTransactionKindNo/@Model.TempPrepaidAndRevenueReceived.TransactionKindNo/@Model.TempPrepaidAndRevenueReceived.CompanyYear', '_blank');
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                        else {
+                                                                            window.location = "/TempPrepaid/index";
+
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                            }
+
+                                                        }
+                                                    });
+
+                                                }
+                                            },
+                                            error: function (data) {
+                                                dialog.modal('hide');
+                                                toastr.error(data);
+                                                bootbox.alert(data);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    };
+                });
+            }
+        }
+    }
+    function OnInit(s, e) {
+        ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+            "keydown",
+            function (evt) {
+            });
+    }
+    function Grid_BatchEditEndEditing(s, e) {
+    }
+    function Grid_BatchEditStartEditing(s, e) {
+        setTimeout(function () {
+            CalcSumAmount(s, e);
+        }, 1000);
+    }
+    function OnBeginCallback(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallback(s, e) {
+        if (s.cpSuccessFlag)
+        {
+            alert("All changes were saved");
+            window.location = "@Url.Action("Success","Test1")";
+        }
+    }
+    function OnClickPostData(s, e) {
+        if (TempPrepaidGrid.batchEditApi.HasChanges())
+            TempPrepaidGrid.UpdateEdit();
+        else
+            TempPrepaidGrid.PerformCallback();
+    }
+    function AddRows() {
+        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (visibleRowIndices.length > 0) {
+            bootbox.confirm({
+                message: "@Resources.Resource.TheProcessWillBeRecalculation",
+                buttons: {
+                    confirm: {
+                        label: '@Resources.Resource.Yes',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '@Resources.Resource.No',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        TempPrepaidGrid.PerformCallback('clear');
+                        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+                        for (var i = 1; i <= NumberOfPayments; i++) {
+                            TempPrepaidGrid.AddNewRow();
+                        }
+                    }
+                    else {
+                        document.getElementById("NumberOfPayments").value = visibleRowIndices.length;
+                    }
+                }
+            });
+        }
+        else {
+            TempPrepaidGrid.PerformCallback('clear');
+            var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+            for (var i = 1; i <= NumberOfPayments; i++) {
+                TempPrepaidGrid.AddNewRow();
+            }
+        }
+    }
+    function AddAmount() {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+        var Total = document.getElementById("Total").value;
+        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (NumberOfPayments > 0) {
+            var Amount = Total / NumberOfPayments;
+            for (var i = 0; i <= visibleRowIndices.length; i++) {
+                TempPrepaidGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Amount", (parseFloat(Amount)).toFixed(TheDecimalPointForTheLocalCurrency));
+            }
+        }
+    }
+    function AddDate() {
+        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+        var DateFirst = document.getElementById("DateFirstPayment").value;
+        var dd = parseInt(DateFirst.substring(0, 2));
+        var mm = parseInt(DateFirst.substring(3, 5));
+        var yyyy = parseInt(DateFirst.substring(6, 10));
+         mm = mm-1;
+        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (NumberOfPayments > 0) {
+            for (var i = 1; i <= NumberOfPayments; i++) {
+                if (mm > 11) {
+                    mm =  0 ;
+                     yyyy = yyyy + 1;
+                    var CollectionDate = new Date(yyyy, mm, dd);
+                    TempPrepaidGrid.batchEditApi.SetCellValue(visibleRowIndices[i - 1], "CollectionDate",CollectionDate);
+                }
+                else {
+                    var CollectionDate = new Date(yyyy, mm, dd);
+                    TempPrepaidGrid.batchEditApi.SetCellValue(visibleRowIndices[i - 1], "CollectionDate", CollectionDate);
+                };
+
+                mm = mm + 1;
+            }
+        }
+    }
+    function AddNote() {
+        var NumberOfPayments = document.getElementById("NumberOfPayments").value;
+        var Note = document.getElementById("Note").value;
+        var visibleRowIndices = TempPrepaidGrid.batchEditApi.GetRowVisibleIndices(false);
+        if (NumberOfPayments > 0) {
+            for (var i = 0; i <= visibleRowIndices.length; i++) {
+              TempPrepaidGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Note", Note);
+            }
+        }
+    }
+
+     var ExpenseNumber = [];
+    $.getJSON('@Url.Action("GetDefinitionExpense", "MultiUse")', { id: 0 }, function (Data) {
+        ExpenseNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                ExpenseNumber.push(r);
+            }
+    });
+    var PrepaidExpenseNumber = [];
+    $.getJSON('@Url.Action("GetDefinitionPaidExpense", "MultiUse")', { id: 0 }, function (Data) {
+        PrepaidExpenseNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                PrepaidExpenseNumber.push(r);
+            }
+    });
+     var CostCenter = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostCenter = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedAccount };
+                CostCenter.push(r);
+            }
+    });
+    $(function () {
+        $("#PrepaidExpenseAccountNumber").autocomplete({
+            source: PrepaidExpenseNumber,
+            select: function (event, ui) {
+                document.getElementById("PrepaidExpenseAccountNumber").value = ui.item.value;
+                document.getElementById("PrepaidExpenseAccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#ExpenseAccountNumber").autocomplete({
+            source: ExpenseNumber,
+            select: function (event, ui) {
+                document.getElementById("ExpenseAccountNumber").value = ui.item.value;
+                document.getElementById("ExpenseAccountName").value = ui.item.label;
+            }
+        });
+    });
+
+    $(function () {
+        $("#ExpenseCostNumber").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("ExpenseCostNumber").value = ui.item.value;
+                document.getElementById("ExpenseCostName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#PrepaidExpenseCostNumber").autocomplete({
+            source: CostCenter,
+            select: function (event, ui) {
+                document.getElementById("PrepaidExpenseCostNumber").value = ui.item.value;
+                document.getElementById("PrepaidExpenseCostName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+
+@using (Html.BeginForm("Update", " PrepaidExpenses", FormMethod.Post, new { id = "myForm" }))
+{
+    <div style="padding-top: 20px;">
+        <div class="panel card-view">
+            <div class="panel-heading" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Update - @Resources.Resource.PrepaidExpenses</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ExpenseAccountNumber)
+                            @Html.TextBoxFor(m => m.ExpenseAccountNumber, new { @id = "ExpenseAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AccountName)
+                            @Html.TextBoxFor(m => m.ExpenseAccountName, new { @id = "ExpenseAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.PrepaidExpenseAccountNumber)
+                            @Html.TextBoxFor(m => m.PrepaidExpenseAccountNumber, new { @id = "PrepaidExpenseAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AccountName)
+                            @Html.TextBoxFor(m => m.PrepaidExpenseAccountName, new { @id = "PrepaidExpenseAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.ExpenseCostNumber)
+                                @Html.TextBoxFor(m => m.ExpenseCostNumber, new { @id = "ExpenseCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.CostCenterName)
+                                @Html.TextBoxFor(m => m.ExpenseCostName, new { @id = "ExpenseCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.LabelFor(m => m.PrepaidExpenseCostNumber)
+                                @Html.TextBoxFor(m => m.PrepaidExpenseCostNumber, new { @id = "PrepaidExpenseCostNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.CostCenterName)
+                                @Html.TextBoxFor(m => m.PrepaidExpenseCostName, new { @id = "PrepaidExpenseCostName", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                <div class="col-lg-12">
+                    <div class="col-lg-2">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.VoucherNumber)
+                        <div class="form-group">
+                            @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.VoucherDate)
+                            @Html.TextBoxFor(model => model.TempPrepaidAndRevenueReceived.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.TempPrepaidAndRevenueReceived.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments)<span style="color:red">*</span>
+                            @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments, new { @id = "NumberOfPayments", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                            @Html.ValidationMessageFor(m => m.TempPrepaidAndRevenueReceived.NumberOfPayments)
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.DateFirstPayment)
+                            @Html.TextBoxFor(model => model.TempPrepaidAndRevenueReceived.DateFirstPayment, new { @id = "DateFirstPayment", @class = "form-control input-sml", @Value = Model.TempPrepaidAndRevenueReceived.DateFirstPayment.ToString("dd/MM/yyyy"), data_val = "false" })
+
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.Total)<span style="color:red">*</span>
+                            @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.Total, new { @id = "Total", @class = "form-control input-sml", @type = "Number", @min = "0" })
+                            @Html.ValidationMessageFor(m => m.TempPrepaidAndRevenueReceived.Total)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-9">
+                        @Html.LabelFor(m => m.TempPrepaidAndRevenueReceived.Note)
+                        @Html.TextBoxFor(m => m.TempPrepaidAndRevenueReceived.Note, new { @id = "Note", @class = "form-control input-sml" })
+                    </div>
+                </div>
+                <div class="col-lg-12" style="padding-top:20px;">
+                    <div class="col-lg-12">
+                        @Html.Action("GridViewTempPrepaidPartial", new { id = Model.TempPrepaidAndRevenueReceived.VoucherNumber, id2 = "0", id3 = "17", @style = "max-width:initial" })
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "buttonUpdate";
+               settings.Text = Resources.Resource.Update;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "LoopGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnAddRows";
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "AddRows";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnAddAmount";
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "AddAmount";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnAddDate";
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "AddDate";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+       {
+           settings.Name = "btnAddNote";
+           settings.UseSubmitBehavior = false;
+           settings.ClientVisible = false;
+           settings.ClientSideEvents.Click = "AddNote";
+       }).GetHtml()
+                <button type="button" class="btn btn-success btn-anim" id="Update"><i class="fa fa-edit"></i><span class="btn-text">@Resources.Resource.Update</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+}
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.HiddenFor(m => m.TempPrepaidAndRevenueReceived.CompanyYear, new { @id = "CompanyYear" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script>
+        $(document).ready(function () {
+            function validatedate(dateString) {
+                var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+                if (dateString.match(dateformat)) {
+                    var operator = dateString.split('/');
+                    var datepart = [];
+                    if (operator.length > 1) {
+                        datepart = dateString.split('/');
+                    }
+                    var month = parseInt(datepart[1]);
+                    var day = parseInt(datepart[0]);
+                    var year = parseInt(datepart[2]);
+                    var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                    if (month == 1 || month > 2) {
+                        if (day > ListofDays[month - 1]) {
+                            return false;
+                        }
+                    } else if (month == 2) {
+                        var leapYear = false;
+                        if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                            leapYear = true;
+                        }
+                        if ((leapYear == false) && (day >= 29)) {
+                            return false;
+                        } else
+                            if ((leapYear == true) && (day > 29)) {
+                                return false;
+                            }
+                    }
+                }
+                else {
+                    return false;
+                }
+                return true;
+            }
+            $(document).on('click', '#Update', function () {
+                document.getElementById("buttonUpdate").click();
+            });
+            $(document).on('click', '#Close', function () {
+                window.location = "/TempPrepaid/index";
+            });
+            $("#VoucherDate").focus().select();
+            $("#VoucherDate").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#NumberOfPayments").focus().select();;
+            });
+            $("#NumberOfPayments").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#DateFirstPayment").focus().select();;
+            });
+            $("#DateFirstPayment").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#Total").focus().select();;
+            });
+            $("#Total").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#Note").focus().select();;
+            });
+            $("#Note").keyup(function (event) {
+                if (event.keyCode == 13)
+                    $("#VoucherDate").focus().select();;
+            });
+            $("#VoucherDate").mask("99/99/9999");
+            $("#DateFirstPayment").mask("99/99/9999");
+            $("#NumberOfPayments").blur(function () {
+                document.getElementById("btnAddRows").click();
+            });
+            $("#Total").blur(function () {
+                document.getElementById("btnAddAmount").click();
+            });
+            $("#Note").blur(function () {
+                document.getElementById("btnAddNote").click();
+            });
+            $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (dDate != null && dDate != '') {
+                if (!validatedate(dDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dd = parseInt(dDate.substring(0, 2));
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    var mm = parseInt(dDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    var yyyy = parseInt(dDate.substring(6, 10));
+                    dDate = mm + '/' + dd + '/' + yyyy;
+                    $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                        if (Data >= 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            else {
+            }
+            });
+            $("#DateFirstPayment").blur(function () {
+            var dDate = document.getElementById("DateFirstPayment").value;
+            if (!validatedate(dDate)) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+                document.getElementById("DateFirstPayment").value = '01/01/' + new Date().getFullYear();
+
+            }
+            document.getElementById("btnAddDate").click();
+            });
+
+
+
+
+
+        $("#ExpenseAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PrepaidExpenseAccountNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchExpenseAccountNumber/ExpenseAccountNumberSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#ExpenseAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("ExpenseAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("ExpenseAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckDefinitionExpense", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ExpenseAccountNumber").value = '';
+                            document.getElementById("ExpenseAccountName").value = '';
+                            $("#ExpenseAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("ExpenseAccountName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#PrepaidExpenseAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#ExpenseCostNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchPaidExpenseAccountNumber/PrepaidExpenseAccountNumberSearch';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#PrepaidExpenseAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("PrepaidExpenseAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("PrepaidExpenseAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckDefinitionPaidExpense", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("PrepaidExpenseAccountNumber").value = '';
+                            document.getElementById("PrepaidExpenseAccountName").value = '';
+                            $("#PrepaidExpenseAccountNumber").focus();
+                        }
+                        else {
+                            document.getElementById("PrepaidExpenseAccountName").value = Data.AccountName;
+
+                        }
+                    });
+                }
+            }
+        });
+
+
+        $("#ExpenseCostNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#PrepaidExpenseCostNumber").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/ExpenseCostNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#PrepaidExpenseCostNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#VoucherDate").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/PrepaidExpenseCostNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+
+        $("#ExpenseCostNumber").blur(function () {
+            var AccountNumber = document.getElementById("ExpenseCostNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("ExpenseCostName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("ExpenseCostNumber").value = '';
+                            document.getElementById("ExpenseCostName").value = '';
+                            $("#ExpenseCostNumber").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("ExpenseCostName").value = Data.ArabicName;
+                            }
+                            else {
+                                document.getElementById("ExpenseCostName").value = Data.EnglishName;
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#PrepaidExpenseCostNumber").blur(function () {
+            var AccountNumber = document.getElementById("PrepaidExpenseCostNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("PrepaidExpenseCostName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("PrepaidExpenseCostNumber").value = '';
+                            document.getElementById("PrepaidExpenseCostName").value = '';
+                            $("#PrepaidExpenseCostNumber").focus();
+                        }
+                        else {
+                            if ('@Resources.Resource.CurLang' == 'Arb') {
+                                document.getElementById("PrepaidExpenseCostName").value = Data.ArabicName;
+                            }
+                            else {
+                                document.getElementById("PrepaidExpenseCostName").value = Data.EnglishName;
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        });
+</script>
+}

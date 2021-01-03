@@ -1,0 +1,140 @@
+﻿@model  Acc.ViewModels.ChartOfAccountVM
+@{
+    ViewBag.Title = @Resources.Resource.CreateFatherAccount;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<script>
+    $(document).ready(function () {
+        $("#AccountNumber").focus().select();
+        $("#AccountNumber").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#ArabicName").focus().select();
+
+        });
+        $("#ArabicName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#EnglishName").focus().select();
+
+        });
+        $("#EnglishName").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Note").focus().select();
+        });
+        $("#Note").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#AccountNumber").focus().select();
+        });
+    });
+</script>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold"> @Resources.Resource.CreateFatherAccount <span style="color:red; font-weight:bold"> @Resources.Resource.AnAccount </span></h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountTypeID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "ArabicName"),new { @id = "AccountTypeID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.AccountTypeID, new SelectList(Model.AccountType, "AccountTypeID", "EnglishName"), new { @id = "AccountTypeID", @class = "form-control input-sml" })
+                        }
+
+
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.AccountKind)
+
+
+                        @Html.DropDownListFor(m => m.AccountKind, new List<SelectListItem>
+                                                         {
+                                                          new SelectListItem{ Text=Resources.Resource.AnAccount, Value = "0",Selected=true },
+                                                          new SelectListItem{ Text=Resources.Resource. Client, Value = "1",Selected=false },
+
+                                                          new SelectListItem{ Text=Resources.Resource.Supplier, Value = "2",Selected=false },
+                                                           new SelectListItem{ Text=Resources.Resource.Approval, Value = "3",Selected=false }
+                   }, new { @id = "AccountKind", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(model => model.AccountKind, "", new { @class = "text-danger" })
+
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.AccountNumber)<span style="color:red">*</span>
+                        @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.AccountNumber)
+                    </div>
+
+                </div>
+                <div class="col-lg-6">
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ArabicName)<span style="color:red">*</span>
+                        @Html.TextBoxFor(m => m.ArabicName, new { @id = "ArabicName", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.ArabicName)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EnglishName)
+                        @Html.TextBoxFor(m => m.EnglishName, new { @id = "EnglishName", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.EnglishName)
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Note)
+                        @Html.TextBoxFor(m => m.Note, new { @id = "Note", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Note)
+                    </div>
+
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.CurrencyID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), new { @id = "CurrencyID", @class = "form-control input-sml" })
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), new { @id = "CurrencyID", @class = "form-control input-sml" })
+                        }
+                    </div>
+                </div>
+                @Html.HiddenFor(m => m.LevelZero, new { @id = "LevelZero" })
+                @Html.HiddenFor(m => m.AccountLevel, new { @id = "AccountLevel" })
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-primary btn-anim" id="SaveFatherAccount"> <i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $(function () {
+            $("#AccountNumber").mask('@Model.LevelZero');
+        });
+    });
+</script>
+
+

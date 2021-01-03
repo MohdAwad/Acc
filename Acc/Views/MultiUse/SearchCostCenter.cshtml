@@ -1,0 +1,378 @@
+﻿@model Acc.ViewModels.MutilUseSearchVM
+@{
+    ViewBag.Title = @Resources.Resource.SearchCostCenter;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">@Resources.Resource.SearchCostCenter</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                <table id="tdataTableDetail" class="table table-bordered" style="width:100%;cursor:pointer">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.CostNumber</th>
+                            <th>@Resources.Resource.CostCenter</th>
+                            <th>@Resources.Resource.StoppedCost</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="btnClose"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var tabelMemRefDetail = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "400px",
+                "scrollX": true,
+                "scrollCollapse": true,
+                "paging": false,
+                "ordering": false,
+                "info": false,
+                "columnDefs": [
+                    {
+                        "targets": [0],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [1],
+                        "className": "dt-center"
+                    },
+                    {
+                        "targets": [2],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+
+                dom: 'Bfrtip',
+
+                buttons: [
+
+
+                ],
+
+
+            ajax: {
+                url: "/MultiUse/GetCostCenter/",
+                "type": "POST",
+                "data": function (d) {
+                    d.id = 0;
+                },
+                dataSrc: ""
+            },
+            columns: [
+                {
+                    data: "CostNumber"
+
+                },
+                {
+                    data: "CostName"
+
+                },
+                {
+                    data: "StoppedCost"
+
+                }
+            ]
+
+            });
+
+
+        $('#tdataTableDetail tbody').on('click', 'tr', function () {
+            // alert('@(ViewBag.ID)');
+            if ('@(ViewBag.ID)' == "FromCostCenter") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedDataFromCostCenter(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+            }
+            else if ('@(ViewBag.ID)' == "ToCostCenter") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedDataToCostCenter(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "TaxCostCenter") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedDataTaxCostCenter(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "BankCostCenter") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedBankCostCenter(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "CostCenter") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedCostCenter(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "ExpenseCostNumber") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedExpenseCost(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "PrepaidExpenseCostNumber") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedPrepaidExpenseCost(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                   bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "RevenueCostNumber") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedRevenueCost(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "RevenueReceivedCostNumber") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedRevenueReceivedCost(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "TaxCostAccNo") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedTaxCostAccNo(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+
+            else if ('@(ViewBag.ID)' == "CreditCostAccNo") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedCreditCostAccNo(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+
+            else if ('@(ViewBag.ID)' == "DebitCostAccNo") {
+                if (tabelMemRefDetail.row(this).data().StoppedCost == '0') {
+                    GetSelectedDebitCostAccNo(tabelMemRefDetail.row(this).data());
+                    $('#btnClose').trigger('click');
+                }
+                else {
+                    bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterIsSuspended</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                }
+
+            }
+            else if ('@(ViewBag.ID)' == "SearchFromCostCenter") {
+                GetSelectedCostCenter(tabelMemRefDetail.row(this).data());
+                $('#btnClose').trigger('click');
+
+            }
+            else if ('@(ViewBag.ID)' == "SearchToCostCenter") {
+                GetSelectedCostCenter(tabelMemRefDetail.row(this).data());
+                $('#btnClose').trigger('click');
+            }
+        });
+    });
+
+</script>
+
+

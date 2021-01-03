@@ -1,0 +1,847 @@
+﻿@model Acc.ViewModels.EstimatedBudgetVM
+@{
+    ViewBag.Title = @Resources.Resource.EstimatedBudget;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+    <link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+    
+</style>
+<script>
+    function FillData() {
+        var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+        var Acc;
+        if ($('#BudgetType').val() == 2) {
+            Acc = $('#CostCenterNumber').val();
+        }
+        else {
+            Acc = $('#AccountNumber').val();
+        }
+        var url = '/EstimatedBudget/GetEstimatedBudget/' + Acc + "/" + $('#BudgetType').val();
+        $.get(url, function (data) {
+            document.getElementById("January").value = data.January;
+            document.getElementById("February").value = data.February;
+            document.getElementById("March").value = data.March;
+            document.getElementById("April").value = data.April;
+            document.getElementById("May").value = data.May;
+            document.getElementById("June").value = data.June;
+            document.getElementById("July").value = data.July;
+            document.getElementById("August").value = data.August;
+            document.getElementById("September").value = data.September;
+            document.getElementById("October").value = data.October;
+            document.getElementById("November").value = data.November;
+            document.getElementById("December").value = data.December;
+            if (data.Yeardividingitbymonths) {
+                document.getElementById("Yeardividingitbymonths").checked = true;
+                document.getElementById("YearBudget").value = data.YearBudget;
+                document.getElementById("YearBudget").readOnly = false;
+                $("#YearBudget").focus().select();
+            }
+            else {
+                document.getElementById("Yeardividingitbymonths").checked = false;
+                document.getElementById("YearBudget").value = 0;
+                document.getElementById("YearBudget").readOnly = true;
+                $("#January").focus().select();
+            }
+            dialog.modal('hide');
+        });
+    }
+    function GetSelectedAccount(data) {
+
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("AccountNumber").value = data.AccountNumber;
+
+            document.getElementById("AccountName").value = data.AccountName;
+            FillData();
+
+
+        }
+        else {
+            document.getElementById("AccountNumber").value = '';
+            document.getElementById("AccountName").value = '';
+        }
+
+    }
+    function GetSelectedCostCenter(data) {
+
+        if (data.CostNumber != null && data.CostNumber != '') {
+            document.getElementById("CostCenterNumber").value = data.CostNumber;
+            document.getElementById("CostName").value = data.CostName;
+            FillData();
+        }
+        else {
+            document.getElementById("CostCenterNumber").value = '';
+            document.getElementById("CostName").value = '';
+        }
+
+    }
+    var AccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        AccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount };
+                AccNumber.push(r);
+            }
+    });
+    var CostNumber = [];
+    $.getJSON('@Url.Action("GetCostCenter", "MultiUse")', { id: 0 }, function (Data) {
+        CostNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].CostName, value: Data[i].CostNumber, stop: Data[i].StoppedCost };
+                CostNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#AccountNumber").autocomplete({
+            source: AccNumber,
+            select: function (event, ui) {
+                document.getElementById("AccountNumber").value = ui.item.value;
+                document.getElementById("AccountName").value = ui.item.label;
+            }
+        });
+    });
+    $(function () {
+        $("#CostCenterNumber").autocomplete({
+            source: CostNumber,
+            select: function (event, ui) {
+                document.getElementById("CostCenterNumber").value = ui.item.value;
+                document.getElementById("CostName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.EstimatedBudget</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(model => model.BudgetType)
+                    @if (Model.WorkWithCostCenter)
+                    {
+                        @Html.DropDownListFor(m => m.BudgetType, new List<SelectListItem>
+                                                             {
+                                                              new SelectListItem{ Text=Resources.Resource.BudgetAccount, Value = "1",Selected=true },
+                                                              new SelectListItem{ Text=Resources.Resource. BudgetCost, Value = "2",Selected=false },
+
+                                                              new SelectListItem{ Text=Resources.Resource.BudgetAccountCost, Value = "3",Selected=false }
+                       }, new { @id = "BudgetType", @class = "form-control input-sml" })
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(m => m.BudgetType, new List<SelectListItem>
+                                                             {
+                                                              new SelectListItem{ Text=Resources.Resource.BudgetAccount, Value = "1",Selected=true },
+                                                              new SelectListItem{ Text=Resources.Resource. BudgetCost, Value = "2",Selected=false },
+
+                                                              new SelectListItem{ Text=Resources.Resource.BudgetAccountCost, Value = "3",Selected=false }
+                       }, new { @id = "BudgetType", @class = "form-control input-sml", @disabled = "disabled" })
+                    }
+                    @Html.ValidationMessageFor(model => model.BudgetType, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-lg-3">
+                    @Html.CheckBoxFor(m => m.Yeardividingitbymonths, new { @id = "Yeardividingitbymonths" }) @Resources.Resource.Yeardividingitbymonths
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.YearBudget, new { @id = "YearBudget", @class = "form-control input-sml ", @type = "number", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+        <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.Label(Resources.Resource.AccountNumber)
+                    <div class="form-group  input-group">
+                        @Html.TextBoxFor(m => m.AccountNumber, new { @id = "AccountNumber", @class = "form-control input-sml" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnAccNo">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </span>
+                        @Html.ValidationMessageFor(m => m.AccountNumber)
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    @Html.Label(Resources.Resource.AccountName)
+                    <div class="form-group input-group">
+                        @Html.TextBoxFor(m => m.AccountName, new { @id = "AccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                        <span class="input-group-btn">
+                            <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearAccNo">
+                                <i class="fa fa-minus-square"></i>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                @if (Model.WorkWithCostCenter)
+                {
+                    <div class="col-lg-3">
+                        @Html.Label(Resources.Resource.CostCenter)
+                        <div class="form-group  input-group">
+                            @Html.TextBoxFor(m => m.CostCenterNumber, new { @id = "CostCenterNumber", @class = "form-control input-sml" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnCostAccNo">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </span>
+                            @Html.ValidationMessageFor(m => m.CostCenterNumber)
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        @Html.Label(Resources.Resource.CostCenterName)
+                        <div class="form-group input-group">
+                            @Html.TextBoxFor(m => m.CostName, new { @id = "CostName", @class = "form-control input-sml", @readonly = "readonly" })
+                            <span class="input-group-btn">
+                                <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearCostAccNo">
+                                    <i class="fa fa-minus-square"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.January)
+                    @Html.TextBoxFor(m => m.January, new { @id = "January", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.February)
+                    @Html.TextBoxFor(m => m.February, new { @id = "February", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.March)
+                    @Html.TextBoxFor(m => m.March, new { @id = "March", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.April)
+                    @Html.TextBoxFor(m => m.April, new { @id = "April", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.May)
+                    @Html.TextBoxFor(m => m.May, new { @id = "May", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.June)
+                    @Html.TextBoxFor(m => m.June, new { @id = "June", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-12">
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.July)
+                    @Html.TextBoxFor(m => m.July, new { @id = "July", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.August)
+                    @Html.TextBoxFor(m => m.August, new { @id = "August", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.September)
+                    @Html.TextBoxFor(m => m.September, new { @id = "September", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.October)
+                    @Html.TextBoxFor(m => m.October, new { @id = "October", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.November)
+                    @Html.TextBoxFor(m => m.November, new { @id = "November", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.December)
+                    @Html.TextBoxFor(m => m.December, new { @id = "December", @class = "form-control input-sml", @type = "number" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <div class="form-group">
+            @if (User.IsInRole("AddEstimatedbudget") || User.IsInRole("CoOwner"))
+            {
+                <button type="submit" class="btn btn-primary btn-anim" id="save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+            }
+            <button type="button" class="btn btn-warning btn-anim" id="btnClear"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Clear</span> </button>
+            <button type="button" class="btn btn-anim btnFav" id="SaveToFav"><i class=" fa fa-star"></i><span class="btn-text">@Resources.Resource.AddToFav</span></button>
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        $(document).on('click', '#SaveToFav', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var dataToSave = {
+
+                            ScreenName: '@Resources.Resource.EstimatedBudget',
+                            ScreenUrl: "/EstimatedBudget/Index",
+
+                            ScreenType: 0
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/FavScreen/AddToFave",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    toastr.success(data.Msg);
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+        $('#Yeardividingitbymonths').click(function () {
+            var Yeardividingitbymonths = $("#Yeardividingitbymonths:checked").val();
+            if (Yeardividingitbymonths) {
+                document.getElementById("YearBudget").readOnly = false;
+                $("#YearBudget").focus().select();
+            }
+            else {
+                document.getElementById("YearBudget").readOnly = true;
+                document.getElementById("January").value = 0;
+                document.getElementById("February").value = 0;
+                document.getElementById("March").value = 0;
+                document.getElementById("April").value = 0;;
+                document.getElementById("May").value = 0;
+                document.getElementById("June").value = 0;
+                document.getElementById("July").value = 0;
+                document.getElementById("August").value = 0;
+                document.getElementById("September").value = 0;
+                document.getElementById("October").value = 0;
+                document.getElementById("November").value = 0;
+                document.getElementById("December").value = 0;
+                document.getElementById("YearBudget").value = 0;
+                $("#January").focus().select();
+            }
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/Operations/OperationDash";
+        });
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        if (WorkWithCostCenter) {
+            document.getElementById("CostCenterNumber").disabled = true;
+            document.getElementById("BtnCostAccNo").disabled = true;
+            document.getElementById("AccountNumber").disabled = false;
+            document.getElementById("BtnAccNo").disabled = false;
+        }
+        $('#BudgetType').on('change', function (e) {
+            if ($("#BudgetType").val() == 1) {
+                document.getElementById("CostCenterNumber").disabled = true;
+                document.getElementById("BtnCostAccNo").disabled = true;
+                document.getElementById("AccountNumber").disabled = false;
+                document.getElementById("BtnAccNo").disabled = false;
+                $("#AccountNumber").focus().select();
+            }
+            else if ($("#BudgetType").val() == 2) {
+                document.getElementById("CostCenterNumber").disabled = false;
+                document.getElementById("BtnCostAccNo").disabled = false;
+                document.getElementById("AccountNumber").disabled = true;
+                document.getElementById("BtnAccNo").disabled = true;
+                $("#CostCenterNumber").focus().select();
+            }
+            else if ($("#BudgetType").val() == 3) {
+                document.getElementById("CostCenterNumber").disabled = false;
+                document.getElementById("BtnCostAccNo").disabled = false;
+                document.getElementById("AccountNumber").disabled = false;
+                document.getElementById("BtnAccNo").disabled = false;
+                $("#AccountNumber").focus().select();
+            }
+            document.getElementById("January").value = 0;
+            document.getElementById("February").value = 0;
+            document.getElementById("March").value = 0;
+            document.getElementById("April").value = 0;;
+            document.getElementById("May").value = 0;
+            document.getElementById("June").value = 0;
+            document.getElementById("July").value = 0;
+            document.getElementById("August").value = 0;
+            document.getElementById("September").value = 0;
+            document.getElementById("October").value = 0;
+            document.getElementById("November").value = 0;
+            document.getElementById("December").value = 0;
+            document.getElementById("YearBudget").value = 0;
+            document.getElementById("AccountNumber").value = '';
+            document.getElementById("AccountName").value = '';
+            document.getElementById("Yeardividingitbymonths").checked = false;
+            document.getElementById("YearBudget").readOnly = true;
+            if (WorkWithCostCenter) {
+                document.getElementById("CostCenterNumber").value = '';
+                document.getElementById("CostName").value = '';
+            }
+        });
+        $('#AccountNumber').on('change', function (e) {
+            FillData();
+        });
+        $('#CostCenterNumber').on('change', function (e) {
+            FillData();
+
+        });
+        $(document).on('click', '#btnClear', function () {
+            document.getElementById("BudgetType").selectedIndex = "0";
+            document.getElementById("January").value = 0;
+            document.getElementById("February").value = 0;
+            document.getElementById("March").value = 0;
+            document.getElementById("April").value = 0;;
+            document.getElementById("May").value = 0;
+            document.getElementById("June").value = 0;
+            document.getElementById("July").value = 0;
+            document.getElementById("August").value = 0;
+            document.getElementById("September").value = 0;
+            document.getElementById("October").value = 0;
+            document.getElementById("November").value = 0;
+            document.getElementById("December").value = 0;
+            document.getElementById("YearBudget").value = 0;
+            document.getElementById("AccountNumber").value = '';
+            document.getElementById("AccountName").value = '';
+            document.getElementById("Yeardividingitbymonths").checked = false;
+            document.getElementById("YearBudget").readOnly = true;
+            document.getElementById("AccountNumber").disabled = false;
+            document.getElementById("BtnAccNo").disabled = false;
+            $("#AccountNumber").focus().select();
+            if (WorkWithCostCenter) {
+                document.getElementById("CostCenterNumber").value = '';
+                document.getElementById("CostName").value = '';
+                document.getElementById("CostCenterNumber").disabled = true;
+                document.getElementById("BtnCostAccNo").disabled = true;
+            }
+        });
+        $(document).on('click', '#save', function () {
+            bootbox.confirm({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    confirm: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                        className: 'btn-success'
+                    },
+                    cancel: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                        className: 'btn-danger'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        var dialog = bootbox.dialog({
+                            title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                            message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                            closeButton: false
+                        });
+
+                        var CostCenter = "";
+
+                        if (WorkWithCostCenter) {
+                            CostCenter = $("#CostCenterNumber").val();
+                        }
+                        var dataToSave = {
+                            BudgetType: $("#BudgetType").val(), AccountNumber: $("#AccountNumber").val(),
+                            CostCenterNumber: CostCenter, YearBudget: $("#YearBudget").val(),
+                            January: $("#January").val(), February: $("#February").val(), March: $("#March").val(), April: $("#April").val(),
+                            May: $("#May").val(), June: $("#June").val(), July: $("#July").val(),
+                            August: $("#August").val(), September: $("#September").val(), October: $("#October").val(),
+                            November: $("#November").val(), December: $("#December").val(),
+                            Yeardividingitbymonths: $("#Yeardividingitbymonths:checked").val()
+
+                        };
+
+                        $.ajax({
+                            type: "POST",
+                            url: "/EstimatedBudget/Save",
+                            data: JSON.stringify(dataToSave),
+                            contentType: 'application/json',
+                            success: function (data) {
+
+                                dialog.modal('hide');
+                                if (data.Code == 0) {
+                                    toastr.error(data.Msg);
+                                }
+                                else if (data.Code == 1) {
+                                    $('#modal-container').modal('hide');
+                                    toastr.success(data.Msg);
+                                    document.getElementById("Clear").click();
+                                }
+
+                            },
+                            error: function (data) {
+                                dialog.modal('hide');
+                                toastr.error(data);
+                            }
+
+                        });
+                    }
+                }
+            });
+        });
+        $('#Yeardividingitbymonths').on('change', function (e) {
+            var Yeardividingitbymonths = $("#Yeardividingitbymonths:checked").val();
+            if (Yeardividingitbymonths) {
+                var YearBudget = $("#YearBudget").val();
+                YearBudget = YearBudget / 12;
+                YearBudget = YearBudget.toFixed(3);
+                document.getElementById("January").value = YearBudget;
+                document.getElementById("February").value = YearBudget;
+                document.getElementById("March").value = YearBudget;
+                document.getElementById("April").value = YearBudget;
+                document.getElementById("May").value = YearBudget;
+                document.getElementById("June").value = YearBudget;
+                document.getElementById("July").value = YearBudget;
+                document.getElementById("August").value = YearBudget;
+                document.getElementById("September").value = YearBudget;
+                document.getElementById("October").value = YearBudget;
+                document.getElementById("November").value = YearBudget;
+                document.getElementById("December").value = YearBudget;
+            }
+        });
+        $('#YearBudget').on('change', function (e) {
+            var Yeardividingitbymonths = $("#Yeardividingitbymonths:checked").val();
+            if (Yeardividingitbymonths) {
+                var YearBudget = $("#YearBudget").val();
+                YearBudget = YearBudget / 12;
+                YearBudget = YearBudget.toFixed(3);
+                document.getElementById("January").value = YearBudget;
+                document.getElementById("February").value = YearBudget;
+                document.getElementById("March").value = YearBudget;
+                document.getElementById("April").value = YearBudget;
+                document.getElementById("May").value = YearBudget;
+                document.getElementById("June").value = YearBudget;
+                document.getElementById("July").value = YearBudget;
+                document.getElementById("August").value = YearBudget;
+                document.getElementById("September").value = YearBudget;
+                document.getElementById("October").value = YearBudget;
+                document.getElementById("November").value = YearBudget;
+                document.getElementById("December").value = YearBudget;
+            }
+        });
+        $('#BtnAccNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/AccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnCostAccNo').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchCostCenter/CostCenter';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearAccNo').on('click', function () {
+            document.getElementById("AccountNumber").value = '';
+            document.getElementById("AccountName").value = '';
+        });
+        $('#BtnClearCostAccNo').on('click', function () {
+            document.getElementById("CostCenterNumber").value = '';
+            document.getElementById("CostName").value = '';
+        });
+        $("#AccountNumber").focus().select();
+        $("#YearBudget").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#January").focus().select();
+        });
+        $("#AccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                if (document.getElementById("CostCenterNumber").disabled) {
+                    $("#January").focus().select();
+                }
+                else {
+                    $("#CostCenterNumber").focus().select();
+                }
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/AccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#CostCenterNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#January").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchCostCenter/CostCenter';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+        });
+        $("#January").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#February").focus().select();
+
+        });
+        $("#February").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#March").focus().select();
+
+        });
+        $("#March").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#April").focus().select();
+
+        });
+        $("#April").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#May").focus().select();
+
+        });
+        $("#May").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#June").focus().select();
+
+        });
+        $("#June").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#July").focus().select();
+
+        });
+        $("#July").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#August").focus().select();
+
+        });
+        $("#August").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#September").focus().select();
+
+        });
+        $("#September").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#October").focus().select();
+
+        });
+        $("#October").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#November").focus().select();
+
+        });
+        $("#November").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#December").focus().select();
+
+        });
+        $("#December").keyup(function (event) {
+            if (event.keyCode == 13)
+                if (document.getElementById("YearBudget").readOnly) {
+                    $("#January").focus().select();
+                }
+                else {
+                    $("#YearBudget").focus().select();
+                }
+        });
+        $("#AccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("AccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("AccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("AccountNumber").value = '';
+                            document.getElementById("AccountName").value = '';
+                            $("#AccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("AccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("AccountNumber").value = "";
+                                document.getElementById("AccountName").value = "";
+                                $("#AccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+        $("#CostCenterNumber").blur(function () {
+            var CostNumber = document.getElementById("CostCenterNumber").value;
+            if (CostNumber == '') {
+                document.getElementById("CostName").value = '';
+            }
+            else {
+                if (CostNumber != null && CostNumber != '') {
+                    $.getJSON('@Url.Action("GetCostCenterInfo", "CostCenter")', { id: CostNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheCostCenterDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("CostCenterNumber").value = '';
+                            document.getElementById("CostName").value = '';
+                            $("#CostCenterNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedCost) {
+                                if ('@Resources.Resource.CurLang' == 'Arb') {
+                                    document.getElementById("CostName").value = Data.ArabicName;
+                                }
+                                else {
+                                    document.getElementById("CostName").value = Data.EnglishName;
+                                }
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("CostCenterNumber").value = "";
+                                document.getElementById("CostName").value = "";
+                                $("#CostCenterNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+}
+
+
+
+

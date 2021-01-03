@@ -1,0 +1,1006 @@
+﻿@model Acc.ViewModels.St_OfferPriceVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #ItemsGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvBatchEditNewItem_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+
+    #ItemsGrid_col0 {
+        width: 55px;
+    }
+
+    .hideColumn {
+        display: none !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    var LastStatment = "";
+    var SumDebit = 0;
+    var SumCredit = 0;
+    var preventEndEditOnLostFocus = false;
+    var currentEditedValue;
+    var SelectAccount;
+    var lastVisibleIndex;
+    var FocusedCellColumnIndex = 0;
+    var FocusedCellRowIndex = 0;
+    function GetSelectedOfferPriceItemCode(data) {
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", data.ItemCode);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", data.ItemName);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", data.ItemUnitName);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", data.ItemCode);
+    }
+    var OfferPriceItem = [];
+     $.getJSON('@Url.Action("GetAllSt_ItemCard", "MultiUse")', { id: 0 }, function (Data) {
+         OfferPriceItem = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = {
+                 label: Data[i].ItemName, value: Data[i].ItemCode, stop: Data[i].StopItem, unit: Data[i].ItemUnitName
+             };
+             OfferPriceItem.push(r);
+         }
+     });
+    function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+        try {
+            decimalCount = Math.abs(decimalCount);
+            decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+            const negativeSign = amount < 0 ? "-" : "";
+
+            let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+            let j = (i.length > 3) ? i.length % 3 : 0;
+
+            return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+        } catch (e) {
+            console.log(e)
+        }
+    };
+    function validatedate(dateString) {
+        var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+        if (dateString.match(dateformat)) {
+            var operator = dateString.split('/');
+            var datepart = [];
+            if (operator.length > 1) {
+                datepart = dateString.split('/');
+            }
+            var month = parseInt(datepart[1]);
+            var day = parseInt(datepart[0]);
+            var year = parseInt(datepart[2]);
+            var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (month == 1 || month > 2) {
+                if (day > ListofDays[month - 1]) {
+                    return false;
+                }
+            } else if (month == 2) {
+                var leapYear = false;
+                if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                    leapYear = true;
+                }
+                if ((leapYear == false) && (day >= 29)) {
+                    return false;
+                } else
+                    if ((leapYear == true) && (day > 29)) {
+                        return false;
+                    }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+    function AutoCompleteItems(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: OfferPriceItem,
+             select: function (event, ui) {
+                 if (ui.item.stop == '0') {
+                     s.SetValue(ui.item.value);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", data.ItemCode);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", data.ItemName);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", data.ItemUnitName);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Price", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Total", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", data.ItemCode);
+                     ItemsGrid.batchEditApi.GetCellValue()
+                 }
+                 else {
+                     bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                     FocusedCellColumnIndex = 1;
+                     s.SetValue('');
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Price", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Total", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+                 }
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function ClearGrid(s, e)
+    {
+        ItemsGrid.PerformCallback('clear');
+        setTimeout(function () {
+            CalcSum(s, e);
+        }, 1000);
+    }
+    var SumQuantity = 0;
+    var SumTotal = 0;
+    function CalcSum(s, e) {
+        SumQuantity = 0;
+        SumTotal = 0;
+        var Quantity = 0;
+        var Price = 0;
+        var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices(false);
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            Quantity = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity");
+            Price = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Price");
+            Quantity = Number(Quantity);
+            if (Quantity == "NaN") {
+                Quantity = 0;
+            }
+            Price = Number(Price);
+            if (Price == "NaN") {
+                Price = 0;
+            }
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Total", Quantity * Price);
+            SumQuantity = SumQuantity + parseFloat(Quantity);
+            SumTotal = SumTotal + parseFloat(Price * Quantity);
+        }
+        document.getElementById("TotalQuantity").value = SumQuantity;
+        document.getElementById("NetTotal").value = SumTotal;
+        document.getElementById("sTotalQuantity").value = formatMoney(SumQuantity, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sNetTotal").value = formatMoney(SumTotal, TheDecimalPointForTheLocalCurrency);
+    }
+    function Recalculate() {
+        SumQuantity = 0;
+        SumTotal = 0;
+        var Quantity = 0;
+        var Price = 0;
+        var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices(false);
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            Quantity = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity");
+            Price = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Price");
+            Quantity = Number(Quantity);
+            if (Quantity == "NaN") {
+                Quantity = 0;
+            }
+            Price = Number(Price);
+            if (Price == "NaN") {
+                Price = 0;
+            }
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "Total", Quantity * Price);
+            SumQuantity = SumQuantity + parseFloat(Quantity);
+            SumTotal = SumTotal + parseFloat(Price * Quantity);
+        }
+        document.getElementById("TotalQuantity").value = SumQuantity;
+        document.getElementById("NetTotal").value = SumTotal;
+        document.getElementById("sTotalQuantity").value = formatMoney(SumQuantity, TheDecimalPointForTheLocalCurrency);
+        document.getElementById("sNetTotal").value = formatMoney(SumTotal, TheDecimalPointForTheLocalCurrency);
+    }
+    function LoopGrid(s, e) {
+        Recalculate();
+        var dDate = document.getElementById("VoucherDate").value;
+        if (!validatedate(dDate) && dDate != null && dDate != '') {
+            bootbox.alert({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    ok: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                        className: 'btn-primary'
+                    }
+                }
+            });
+        }
+        else if (dDate != null && dDate != '') {
+            var iError = 0;
+            var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices();
+            for (var i = 0; i < visibleRowIndices.length; i++) {
+                if (ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemCode") == "" || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemCode") == null) {
+                    iError = 1;
+                    break;
+                }
+                else if (ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemName") == "" || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemName") == null) {
+                    iError = 1;
+                    break;
+                }
+                else if (ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity") == "" || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity") == null
+                    || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity") == 0) {
+                    iError = 2;
+                    break;
+                }
+            }
+            if (iError == 1) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillItemCode</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if (iError == 2) {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillQuantity</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else if ($("#CustomerAccountNumber").val() == '') {
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            else {
+                bootbox.confirm({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        confirm: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                            className: 'btn-success'
+                        },
+                        cancel: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                            className: 'btn-danger'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            var dialog = bootbox.dialog({
+                                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                closeButton: false
+                            });
+                            var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices();
+                            var ItemList = [];
+                            for (var i = 0; i < visibleRowIndices.length; i++) {
+                                var Items = {
+                                    ItemCode: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemCode"),
+                                    Quantity: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity"),
+                                    Price: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Price"),
+                                    Total: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Total"),
+                                    SimilarItemCode: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "SimilarItemCode"),
+                                    RowNumber: i + 1
+                                };
+                                ItemList.push(Items);
+
+                            }
+                            var dataToSave = {
+                                St_OfferPriceTransaction: ItemList,
+                                CompanyTransactionKindNo: $("#CompanyTransactionKindNo").val(),
+                                TransactionKindNo: $("#TransactionKindNo").val(),
+                                VoucherCase: $("#VoucherCase").val(),
+                                TaxType: $("#TaxType").val(),
+                                CompanyYear: $("#CompanyYear").val(),
+                                CustomerAccountNumber: $("#CustomerAccountNumber").val(),
+                                Hint: $("#Hint").val(),
+                                CurrencyID: $("#CurrencyID").val(),
+                                VoucherNumber: $("#VoucherNumber").val(),
+                                VoucherDate: $("#VoucherDate").val(),
+                                Remark: $("#Remark").val(),
+                                ConversionFactor: $("#ConversionFactor").val(),
+                                TotalQuantity: $("#TotalQuantity").val(),
+                                NetTotal: $("#NetTotal").val()
+                            }
+                            $.ajax({
+                                type: "POST",
+                                url: "/St_OfferPrice/Save",
+                                data: JSON.stringify(dataToSave),
+                                contentType: 'application/json',
+                                success: function (data) {
+
+                                    dialog.modal('hide');
+                                    if (data.Code == 0) {
+                                        toastr.error(data.Msg);
+                                    }
+                                    else if (data.Code == 1) {
+                                        $('#modal-container').modal('hide');
+                                        toastr.success(data.Msg);
+                                        document.getElementById("Clear").click();
+                                        bootbox.confirm({
+                                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                            className: 'rubberBand animated',
+                                            buttons: {
+                                                confirm: {
+                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                    className: 'btn-success'
+                                                },
+                                                cancel: {
+                                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                    className: 'btn-danger'
+                                                }
+                                            },
+                                            callback: function (result) {
+                                                if (result) {
+                                                    window.open('/St_OfferPrice/ShowAttach/' + data.Year + '/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo, '_blank');
+                                                    bootbox.confirm({
+                                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                        className: 'rubberBand animated',
+                                                        buttons: {
+                                                            confirm: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                className: 'btn-success'
+                                                            },
+                                                            cancel: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                className: 'btn-danger'
+                                                            }
+                                                        },
+                                                        callback: function (result) {
+                                                            if (result) {
+                                                                window.open('/St_PDFReport/St_OfferPriceDetailPDf/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year, '_blank');
+
+                                                            }
+                                                        }
+                                                    });
+
+                                                }
+                                                else {
+
+                                                    bootbox.confirm({
+                                                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                        className: 'rubberBand animated',
+                                                        buttons: {
+                                                            confirm: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                className: 'btn-success'
+                                                            },
+                                                            cancel: {
+                                                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                className: 'btn-danger'
+                                                            }
+                                                        },
+                                                        callback: function (result) {
+                                                            if (result) {
+                                                                window.open('/St_PDFReport/St_OfferPriceDetailPDf/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year, '_blank');
+
+                                                            }
+                                                        }
+                                                    });
+
+                                                }
+
+                                            }
+                                        });
+
+                                        $('#modal-container').modal('hide');
+                                    }
+                                },
+                                error: function (data) {
+                                    dialog.modal('hide');
+                                    toastr.error(data);
+
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        }
+    }
+    function OnInit(s, e) {
+        ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+            "keydown",
+            function (evt) {
+                if (evt.ctrlKey && FocusedCellColumnIndex == 1) {
+                    var dialog = bootbox.dialog({
+                        title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                        message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                        closeButton: false
+                    });
+                    var url = '/MultiUse/SearchSt_ItemCard/OfferPriceItemCode';
+                    $.get(url, function (data) {
+                        $('#modal-container').html(data);
+                        $('#modal-container').modal('show');
+                        dialog.modal('hide');
+                    })
+                }
+                switch (evt.keyCode) {
+                    case 13:
+                        if (FocusedCellColumnIndex == 5) {
+                            s.AddNewRow();
+                        }
+                        break;
+                }
+            });
+    };
+    function Grid_BatchEditEndEditing(s, e) {
+        var productNameColumn = s.GetColumnByField("ItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndex == 1) {
+            var ItemCodeIndex = s.GetColumnByField("ItemCode").index;
+            var ItemCode = e.rowValues[ItemCodeIndex].value;
+            if (!ItemCode) {
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Price", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Total", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+            }
+            else {
+                if (ItemCode != null && ItemCode != '') {
+                    $.getJSON('@Url.Action("CheckItemCode", "St_ItemCard")', { id: ItemCode }, function (Data) {
+                        if (Data == "") {
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Price", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Total", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            FocusedCellColumnIndex = 1;
+                        }
+                        else {
+                            if (Data.StopItem) {
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Price", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Total", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndex = 1;
+                            }
+                            else {
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", Data.ItemCode);
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", Data.ItemName);
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", Data.ItemUnitName);
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Price", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Total", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", ItemCode);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        FocusedCellColumnIndex = 1;
+        FocusedCellRowIndex = 1;
+    }
+    function Grid_BatchEditStartEditing(s, e) {
+        FocusedCellColumnIndex = e.focusedColumn.index;
+        FocusedCellRowIndex = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("ItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndex = e.visibleIndex;
+        currentEditedValue = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+        CalcSum(s, e);
+    }
+    function OnBeginCallback(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallback(s, e) {
+        if (s.cpSuccessFlag) {
+            alert("All changes were saved");
+            window.location = "@Url.Action("Success","Test1")";
+        }
+    }
+    function OnClickPostData(s, e) {
+        if (ItemsGrid.batchEditApi.HasChanges())
+            ItemsGrid.UpdateEdit();
+        else
+            ItemsGrid.PerformCallback();
+    }
+    function Grid_DeleteRowEvent(s, e) {
+        setTimeout(function () {
+            CalcSum(s, e);
+        }, 1000);
+    }
+    function GetSelectedAccount(data) {
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+            document.getElementById("CustomerAccountNumber").value = data.AccountNumber;
+            document.getElementById("CustomerAccountName").value = data.AccountName;
+        }
+        else {
+            document.getElementById("CustomerAccountNumber").value = '';
+            document.getElementById("CustomerAccountName").value = '';
+        }
+
+    }
+    var CustomerAccNumber = [];
+    $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+        CustomerAccNumber = [];
+            for (var i = 0, len = Data.length; i < len; i++) {
+                var r = { label: Data[i].AccountName, value: Data[i].AccountNumber, stop: Data[i].StoppedAccount};
+                CustomerAccNumber.push(r);
+            }
+    });
+    $(function () {
+        $("#CustomerAccountNumber").autocomplete({
+            source: CustomerAccNumber,
+            select: function (event, ui) {
+                document.getElementById("CustomerAccountNumber").value = ui.item.value;
+                document.getElementById("CustomerAccountName").value = ui.item.label;
+            }
+        });
+    });
+</script>
+
+@using (Html.BeginForm("Add", "St_OfferPrice", FormMethod.Post, new { id = "myForm" }))
+{
+    <div style="padding-top: 20px;">
+        <div class="panel card-view">
+            <div class="panel-heading" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.OfferPrice</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.OfferPriceNo)
+                            @Html.TextBoxFor(m => m.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.OfferDate)
+                            @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                            @Html.ValidationMessageFor(m => m.VoucherDate)
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.TaxType)
+                            @Html.DropDownListFor(m => m.TaxType, new List<SelectListItem>{
+                           new SelectListItem{ Text=Resources.Resource.Taxable, Value = "1",Selected=true },
+                           new SelectListItem{ Text=Resources.Resource. TaxableByZero, Value = "2",Selected=false },
+                           new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "3",Selected=false }
+                       }, new { @id = "TaxType", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.VoucherCase)
+                            @Html.DropDownListFor(m => m.VoucherCase, new List<SelectListItem>{
+                           new SelectListItem{ Text=Resources.Resource.Cash, Value = "1",Selected=true },
+                           new SelectListItem{ Text=Resources.Resource.VoucherCredit, Value = "2",Selected=false },
+                       }, new { @id = "VoucherCase", @class = "form-control input-sml" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CustomerAccountNumber) <span style="color:red">*</span>
+                            <div class="form-group  input-group">
+                                @Html.TextBoxFor(m => m.CustomerAccountNumber, new { @id = "CustomerAccountNumber", @class = "form-control input-sml" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default btn-icon-anim btn-square" type="button" id="BtnCustomerAccountNumber">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                                @Html.ValidationMessageFor(m => m.CustomerAccountNumber)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.AccountName)
+                            <div class="form-group input-group">
+                                @Html.TextBoxFor(m => m.CustomerAccountName, new { @id = "CustomerAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                                <span class="input-group-btn">
+                                    <button class="btn btn-danger btn-icon-anim btn-square" type="button" id="BtnClearCustomerAccountNumber">
+                                        <i class="fa fa-minus-square"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.Note)
+                            @Html.TextBoxFor(m => m.Remark, new { @id = "Remark", @class = "form-control input-sml" })
+                            @Html.ValidationMessageFor(m => m.Remark)
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        @Html.Label(Resources.Resource.Hints)
+                        @Html.TextBoxFor(m => m.Hint, new { @id = "Hint", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Hint)
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-md-4">
+                    </div>
+                    <div class="col-md-2" style="text-align: center">
+                        <div class="form-group">
+                            @Html.Label(@Resources.Resource.Quantity)
+                            @Html.TextBoxFor(m => m.sTotalQuantity, new { @id = "sTotalQuantity", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-md-2" style="text-align: center">
+                        <div class="form-group">
+                            @Html.Label(@Resources.Resource.NetTotal)
+                            @Html.TextBoxFor(m => m.sNetTotal, new { @id = "sNetTotal", @class = "form-control input-sml", @style = "text-align: center;font-weight: bold;", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                    </div>
+                </div>
+                <div class="col-lg-12" style="padding-top:20px;">
+                    <div class="col-lg-12">
+                        @Html.Action("GridViewItems", new { id = "", id2 = "", id3 = "", id4 = "" })
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "buttonSave";
+               settings.Text = Resources.Resource.Save;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "LoopGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnClear";
+               settings.Text = Resources.Resource.CreateNew;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "ClearGrid";
+           }).GetHtml()
+                <button type="button" class="btn btn-primary btn-anim" id="Save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-warning btn-anim" id="Clear"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Clear</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+}
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNo", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TotalQuantity, new { @id = "TotalQuantity", @style = "visibility : hidden;", @type = "Number", @min = "0" })
+@Html.TextBoxFor(m => m.NetTotal, new { @id = "NetTotal", @style = "visibility : hidden;", @type = "Number", @min = "0" })
+@Html.TextBoxFor(m => m.TransactionKindNo, new { @id = "TransactionKindNo", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CurrencyID, new { @id = "CurrencyID", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ConversionFactor, new { @id = "ConversionFactor", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyYear, new { @id = "CompanyYear", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+    $(document).ready(function () {
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        $(document).on('click', '#Clear', function () {
+            document.getElementById("btnClear").click();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("VoucherDate").value = today;
+            document.getElementById("CustomerAccountNumber").value = '';
+            document.getElementById("CustomerAccountName").value = '';
+            document.getElementById("TotalQuantity").value = '0';
+            document.getElementById("NetTotal").value = '0';
+            document.getElementById("sTotalQuantity").value = '0';
+            document.getElementById("NetTotal").value = '0';
+            document.getElementById("Remark").value = '';
+            document.getElementById("Hint").value = '';
+            document.getElementById("TaxType").selectedIndex = "0";
+            document.getElementById("VoucherCase").selectedIndex = "0";
+            var CompanyTransactionKindNo = document.getElementById("CompanyTransactionKindNo").value;
+            var StockCode = '*';
+            var CompanyYear = document.getElementById("CompanyYear").value;
+            if (CompanyTransactionKindNo != null && CompanyTransactionKindNo != '') {
+                $.getJSON('@Url.Action("GetMaxVoucher", "St_OfferPrice")', { id: CompanyTransactionKindNo, id2: CompanyYear, id3: StockCode }, function (Data) {
+
+                    if (Data != null) {
+                        document.getElementById("VoucherNumber").value = Data;
+
+                    } else {
+
+                    };
+                });
+            }
+            else {
+            }
+            $("#VoucherDate").focus().select();
+        });
+        $(document).on('click', '#Save', function () {
+            document.getElementById("buttonSave").click();
+        });
+        var CompanyTransactionKindNo = document.getElementById("CompanyTransactionKindNo").value;
+        var StockCode = '*';
+        var CompanyYear = document.getElementById("CompanyYear").value;
+        if (CompanyTransactionKindNo != null && CompanyTransactionKindNo != '') {
+            $.getJSON('@Url.Action("GetMaxVoucher", "St_OfferPrice")', { id: CompanyTransactionKindNo, id2: CompanyYear, id3: StockCode }, function (Data) {
+
+                if (Data != null) {
+                    document.getElementById("VoucherNumber").value = Data;
+
+                } else {
+
+                };
+            });
+        }
+        else {
+        }
+        $(document).on('click', '#Close', function () {
+            window.location = "/St_OfferPrice/Index";
+        });
+        $("#VoucherDate").focus().select();
+        $("#VoucherDate").mask("99/99/9999");
+        $('#BtnCustomerAccountNumber').on('click', function () {
+            var dialog = bootbox.dialog({
+                title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                closeButton: false
+            });
+            var url = '/MultiUse/SearchAcc/AccountNumber';
+            $.get(url, function (data) {
+                $('#modal-container').html(data);
+                $('#modal-container').modal('show');
+                dialog.modal('hide');
+            })
+        });
+        $('#BtnClearCustomerAccountNumber').on('click', function () {
+            document.getElementById("CustomerAccountNumber").value = '';
+            document.getElementById("CustomerAccountName").value = '';
+        });
+        $("#VoucherDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#CustomerAccountNumber").focus().select();
+
+        });
+        $("#CustomerAccountNumber").keyup(function (event) {
+            if (event.keyCode == 13) {
+                $("#Remark").focus().select();
+            }
+            else if (event.keyCode == 17) {
+                var dialog = bootbox.dialog({
+                    title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                    message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                    closeButton: false
+                });
+                var url = '/MultiUse/SearchAcc/AccountNumber';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+            }
+
+        });
+        $("#Remark").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Hint").focus().select();
+        });
+        $("#Hint").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#VoucherDate").focus().select();
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+
+            return false;
+        });
+        $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (dDate != null && dDate != '') {
+                if (!validatedate(dDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+            }
+            else {
+            }
+        });
+        $("#CustomerAccountNumber").blur(function () {
+            var AccountNumber = document.getElementById("CustomerAccountNumber").value;
+            if (AccountNumber == '') {
+                document.getElementById("CustomerAccountName").value = '';
+            }
+            else {
+                if (AccountNumber != null && AccountNumber != '') {
+                    $.getJSON('@Url.Action("CheckAcountAcc", "MultiUse")', { id: AccountNumber }, function (Data) {
+                        if (Data == "") {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            document.getElementById("CustomerAccountNumber").value = '';
+                            document.getElementById("CustomerAccountName").value = '';
+                            $("#CustomerAccountNumber").focus();
+                        }
+                        else {
+                            if (!Data.StoppedAccount) {
+                                document.getElementById("CustomerAccountName").value = Data.AccountName;
+                            }
+                            else {
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheAccountNumberIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                document.getElementById("CustomerAccountNumber").value = "";
+                                document.getElementById("CustomerAccountName").value = "";
+                                $("#CustomerAccountNumber").focus().select();
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+    });
+    </script>
+}
+
+
+
+

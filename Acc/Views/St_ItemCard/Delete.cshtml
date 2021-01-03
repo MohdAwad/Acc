@@ -1,0 +1,1719 @@
+﻿@model Acc.ViewModels.St_ItemCardVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div class="panel card-view">
+    <div class="panel-heading" style="background-color: #34495E">
+        <div class="pull-left">
+            <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Delete - @Resources.Resource.ItemCard</h6>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="panel-body">
+        <div class="pills-struct mt-40">
+            <ul role="tablist" class="nav nav-pills" id="myTabs_6">
+                <li class="active" id="sCardInformation" role="presentation"><a data-toggle="tab" role="tab" style="background: #34495E" href="#CardInformation" aria-expanded="true">@Resources.Resource.CardInformation</a></li>
+                <li role="presentation" id="sItemClassifications" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#ItemClassifications" aria-expanded="false">@Resources.Resource.ItemClassifications</a></li>
+                <li role="presentation" id="sSimilarItem" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#SimilarItem" aria-expanded="false">@Resources.Resource.SimilarItem</a></li>
+                <li role="presentation" id="sAlternativeItems" class=""><a data-toggle="tab" id="profile_tab_6" role="tab" style="background: #34495E" href="#AlternativeItems" aria-expanded="false">@Resources.Resource.AlternativeItems</a></li>
+                <li role="presentation" id="sOtherUnits" class=""><a data-toggle="tab" style="background: #34495E" id="profile_tab_6" role="tab" href="#OtherUnits" aria-expanded="false">@Resources.Resource.OtherUnits</a></li>
+                <li role="presentation" id="sOffers" class=""><a data-toggle="tab" style="background: #34495E" id="profile_tab_6" role="tab" href="#Offers" aria-expanded="false">@Resources.Resource.Offers</a></li>
+                <li role="presentation" id="sCategoriesPrices" class=""><a data-toggle="tab" style="background: #34495E" id="profile_tab_6" role="tab" href="#CategoriesPrices" aria-expanded="false">@Resources.Resource.CategoriesPrices</a></li>
+                <li role="presentation" id="sItemPicture" class=""><a data-toggle="tab" style="background: #34495E" id="profile_tab_6" role="tab" href="#ItemPicture" aria-expanded="false">@Resources.Resource.ItemPicture</a></li>
+                <li role="presentation" id="sItemGallary" class=""><a data-toggle="tab" style="background: #34495E" id="profile_tab_6" role="tab" href="#ItemGallary" aria-expanded="false">@Resources.Resource.ItemFiles</a></li>
+            </ul>
+            <div class="tab-content" id="myTabContent_6">
+                <div id="CardInformation" class="tab-pane fade active in" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.ItemCode)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ItemCode, new { @id = "ItemCode", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-6">
+                            @Html.Label(Resources.Resource.ArabicName)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ArabicName, new { @id = "ItemNameArabic", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            @Html.Label(Resources.Resource.EnglishName)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.EnglishName, new { @id = "ItemNameEnglish", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.TaxType)
+                                @Html.DropDownListFor(m => m.TaxTypeNo, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.Taxable, Value = "1",Selected=true },
+                                    new SelectListItem{ Text=Resources.Resource. TaxableByZero, Value = "2",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. TaxExempt, Value = "3",Selected=false }
+                                }, new { @id = "TaxTypeNo", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.TaxRate)
+                                @Html.DropDownListFor(m => m.TaxRate, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text="0", Value = "1",Selected=false },
+                                    new SelectListItem{ Text="0.5", Value = "2",Selected=false },
+                                    new SelectListItem{ Text="4", Value = "3",Selected=false },
+                                    new SelectListItem{ Text="5", Value = "4",Selected=false },
+                                    new SelectListItem{ Text="6", Value = "5",Selected=false },
+                                    new SelectListItem{ Text="7", Value = "6",Selected=false },
+                                    new SelectListItem{ Text="8", Value = "7",Selected=false },
+                                    new SelectListItem{ Text="10", Value = "8",Selected=false },
+                                    new SelectListItem{ Text="13", Value = "9",Selected=false },
+                                    new SelectListItem{ Text="14", Value = "10",Selected=false },
+                                    new SelectListItem{ Text="15", Value = "11",Selected=false },
+                                    new SelectListItem{ Text="16", Value = "12",Selected=true },
+                                    new SelectListItem{ Text="16.5", Value = "13",Selected=false },
+                                    new SelectListItem{ Text="17", Value = "14",Selected=false },
+                                    new SelectListItem{ Text="20", Value = "15",Selected=false }
+                                }, new { @id = "TaxRate", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.MinimumItem)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.MinimumItemNo, new { @id = "MinimumItemNo", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.MaximumItem)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.MaximumItemNo, new { @id = "MaximumItemNo", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.QuantityAvailable)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.QuantityAvailable, new { @id = "QuantityAvailable", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.SupplierAccountNo)
+                                @Html.TextBoxFor(m => m.SupplierAccountNumber, new { @id = "SupplierAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.SupplierAccountName)
+                                @Html.TextBoxFor(m => m.SupplierAccountName, new { @id = "SupplierAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.ManufacturerCompany)
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.ManufacturerCompanyNo, new SelectList(Model.St_ManufacturerCompany, "ManufacturerCompanyID", "ArabicName"), Resources.Resource.ManufacturerCompany, new { @id = "ComboManufacturerCompanyNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.ManufacturerCompanyNo, new SelectList(Model.St_ManufacturerCompany, "ManufacturerCompanyID", "EnglishName"), Resources.Resource.ManufacturerCompany, new { @id = "ComboManufacturerCompanyNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.CountryOfOrigin)
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.CountryOfOriginNo, new SelectList(Model.St_CountryOfOrigin, "CountryOfOriginID", "ArabicName"), Resources.Resource.CountryOfOrigin, new { @id = "ComboCountryOfOriginNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.CountryOfOriginNo, new SelectList(Model.St_CountryOfOrigin, "CountryOfOriginID", "EnglishName"), Resources.Resource.CountryOfOrigin, new { @id = "ComboCountryOfOriginNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.LocalCost)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.LocalCost, new { @id = "LocalCost", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.SalePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.SalePrice, new { @id = "SalePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.PointOfSalePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.PointOfSalePrice, new { @id = "PointOfSalePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.LastLocalPurchasePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.LastLocalPurchasePrice, new { @id = "LastLocalPurchasePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.ForeignCost)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.ForeignCost, new { @id = "ForeignCost", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.LastForeignPurchasePrice)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.LastForeignPurchasePrice, new { @id = "LastForeignPurchasePrice", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.CostRate)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CostRate, new { @id = "CostRate", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.MinimumSaleAmount)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.MinimumSaleAmount, new { @id = "MinimumSaleAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TotalQuantitySold)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TotalQuantitySold, new { @id = "TotalQuantitySold", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TotalValueSold)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TotalValueSold, new { @id = "TotalValueSold", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TheNumberOfDaysTheCardIsOpened)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TheNumberOfDaysTheCardIsOpened, new { @id = "TheNumberOfDaysTheCardIsOpened", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-2">
+                            @Html.Label(Resources.Resource.TheTargetMonthlyAmount)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.TheTargetMonthlyAmount, new { @id = "TheTargetMonthlyAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-2 panel panel-default card-view">
+                            <div class="form-group mb-30">
+                                <div class="panel-heading" style="background-color: #34495E">
+                                    <div class="pull-left">
+                                        <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ScaleItem</h6>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ScaleItem" id="ScaleItems" value="1" disabled>
+                                    <label for="ScaleItems">
+                                        @Resources.Resource.ScaleItem
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ScaleItem" id="ScaleItemByPiece" value="2" disabled>
+                                    <label for="ScaleItemByPiece">
+                                        @Resources.Resource.ScaleItemByPiece
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ScaleItem" id="Other" value="3" checked="" disabled>
+                                    <label for="Other">
+                                        @Resources.Resource.Other
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-1" style="width: 10px;">
+                        </div>
+                        <div class="col-lg-2 panel panel-default card-view">
+                            <div class="form-group mb-30">
+                                <div class="panel-heading" style="background-color: #34495E">
+                                    <div class="pull-left">
+                                        <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.ItemSalesAndPurchases</h6>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ItemSalesAndPurchases" id="ItemSalesOnly" value="1" disabled>
+                                    <label for="ItemSalesOnly">
+                                        @Resources.Resource.ItemSalesOnly
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ItemSalesAndPurchases" id="ItemPurchasesOnly" value="2" disabled>
+                                    <label for="ItemPurchasesOnly">
+                                        @Resources.Resource.ItemPurchasesOnly
+                                    </label>
+                                </div>
+                                <div class="radio radio-primary">
+                                    <input type="radio" name="ItemSalesAndPurchases" id="ItemSalesAndPurchasess" value="3" checked="" disabled>
+                                    <label for="ItemSalesAndPurchasess">
+                                        @Resources.Resource.ItemSalesAndPurchases
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-1" style="width: 10px;">
+                        </div>
+                        <div class="col-lg-2 panel panel-default card-view">
+                            <div class="form-group mb-30">
+                                <div class="checkbox checkbox-primary">
+                                    <input id="StopItem" type="checkbox" disabled>
+                                    <label for="StopItem">
+                                        @Resources.Resource.StopItem
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="StoppingItemFromSelling" type="checkbox" disabled>
+                                    <label for="StoppingItemFromSelling">
+                                        @Resources.Resource.StoppingItemFromSelling
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="StoppingItemFromBuying" type="checkbox" disabled>
+                                    <label for="StoppingItemFromBuying">
+                                        @Resources.Resource.StoppingItemFromBuying
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="StoppingItemFromPointOfSale" type="checkbox" disabled>
+                                    <label for="StoppingItemFromPointOfSale">
+                                        @Resources.Resource.StoppingItemFromPointOfSale
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="ItemServicesWithoutAnInventory" type="checkbox" disabled>
+                                    <label for="ItemServicesWithoutAnInventory">
+                                        @Resources.Resource.ItemServicesWithoutAnInventory
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-1" style="width: 10px;">
+                        </div>
+                        <div class="col-lg-2 panel panel-default card-view">
+                            <div class="form-group mb-30">
+                                <div class="checkbox checkbox-primary">
+                                    <input id="TrackAnExpirationDate" type="checkbox" disabled>
+                                    <label for="TrackAnExpirationDate">
+                                        @Resources.Resource.TrackAnExpirationDate
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="TrackSequence" type="checkbox" disabled>
+                                    <label for="TrackSequence">
+                                        @Resources.Resource.TrackSequence
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="TrackSequenceUponInput" type="checkbox" disabled>
+                                    <label for="TrackSequenceUponInput">
+                                        @Resources.Resource.TrackSequenceUponInput
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="TrackSequenceUponOutput" type="checkbox" disabled>
+                                    <label for="TrackSequenceUponOutput">
+                                        @Resources.Resource.TrackSequenceUponOutput
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="TrackCustoms" type="checkbox" disabled>
+                                    <label for="TrackCustoms">
+                                        @Resources.Resource.TrackCustoms
+                                    </label>
+                                </div>
+                                <div class="checkbox checkbox-primary">
+                                    <input id="Smoke" type="checkbox" disabled>
+                                    <label for="Smoke">
+                                        @Resources.Resource.Smoke
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-1" style="width: 10px;">
+                        </div>
+                        <div class="col-lg-3">
+                            <table id="tdataTableWarehouse" class="table table-hover table-bordered mb-0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>@Resources.Resource.StockName</th>
+                                        <th>@Resources.Resource.StockCode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="ItemClassifications" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.ItemUnits)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.ItemUnitNo, new SelectList(Model.St_ItemUnit, "ItemUnitCode", "ArabicName"), Resources.Resource.ItemUnits, new { @id = "ComboItemUnitNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.ItemUnitNo, new SelectList(Model.St_ItemUnit, "ItemUnitCode", "EnglishName"), Resources.Resource.ItemUnits, new { @id = "ComboItemUnitNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_3Name">@Model.Categorie_3Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_3, new SelectList(Model.St_DescriptionDetail3, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_3", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_3, new SelectList(Model.St_DescriptionDetail3, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_3", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_7Name">@Model.Categorie_7Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_7, new SelectList(Model.St_DescriptionDetail7, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_7", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_7, new SelectList(Model.St_DescriptionDetail7, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_7", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_11Name">@Model.Categorie_11Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_11, new SelectList(Model.St_DescriptionDetail11, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_11", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_11, new SelectList(Model.St_DescriptionDetail11, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_11", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <div class="form-group">
+                                @Html.Label(Resources.Resource.ItemNature)
+                                @Html.DropDownListFor(m => m.ItemNatureNo, new List<SelectListItem>
+                                    {
+                                    new SelectListItem{ Text=Resources.Resource.ForeignImport, Value = "1",Selected=false },
+                                    new SelectListItem{ Text=Resources.Resource. LocalImport, Value = "2",Selected=true },
+                                    new SelectListItem{ Text=Resources.Resource. Manufacturing, Value = "3",Selected=false }
+                                }, new { @id = "ItemNatureNo", @class = "form-control input-sml", @disabled = "disabled" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_4Name">@Model.Categorie_4Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_4, new SelectList(Model.St_DescriptionDetail4, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_4", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_4, new SelectList(Model.St_DescriptionDetail4, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_4", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_8Name">@Model.Categorie_8Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_8, new SelectList(Model.St_DescriptionDetail8, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_8", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_8, new SelectList(Model.St_DescriptionDetail8, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_8", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_12Name">@Model.Categorie_12Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_12, new SelectList(Model.St_DescriptionDetail12, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_12", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_12, new SelectList(Model.St_DescriptionDetail12, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_12", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <span id="Categorie_1Name">@Model.Categorie_1Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_1, new SelectList(Model.St_DescriptionDetail1, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_1", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_1, new SelectList(Model.St_DescriptionDetail1, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_1", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_5Name">@Model.Categorie_5Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_5, new SelectList(Model.St_DescriptionDetail5, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_5", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_5, new SelectList(Model.St_DescriptionDetail5, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_5", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_9Name">@Model.Categorie_9Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_9, new SelectList(Model.St_DescriptionDetail9, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_9", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_9, new SelectList(Model.St_DescriptionDetail9, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_9", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_13Name">@Model.Categorie_13Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_13, new SelectList(Model.St_DescriptionDetail13, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_13", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_13, new SelectList(Model.St_DescriptionDetail13, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_13", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <span id="Categorie_2Name">@Model.Categorie_2Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_2, new SelectList(Model.St_DescriptionDetail2, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_2", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_2, new SelectList(Model.St_DescriptionDetail2, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_2", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_6Name">@Model.Categorie_6Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_6, new SelectList(Model.St_DescriptionDetail6, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_6", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_6, new SelectList(Model.St_DescriptionDetail6, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_6", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_10Name">@Model.Categorie_10Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_10, new SelectList(Model.St_DescriptionDetail10, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_10", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_10, new SelectList(Model.St_DescriptionDetail10, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_10", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="Categorie_14Name">@Model.Categorie_14Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_14, new SelectList(Model.St_DescriptionDetail14, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_14", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_14, new SelectList(Model.St_DescriptionDetail14, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_14", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <span id="Categorie_15Name">@Model.Categorie_15Name</span>
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_15, new SelectList(Model.St_DescriptionDetail15, "DescriptionDetailID", "ArabicName"), "", new { @id = "ComboCategorie_15", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.Categorie_15, new SelectList(Model.St_DescriptionDetail15, "DescriptionDetailID", "EnglishName"), "", new { @id = "ComboCategorie_15", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="panel-heading" style="background-color: #34495E">
+                            <div class="pull-left" style="text-align : center">
+                                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Measurements</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12" style="margin-top :10px">
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.CBM)
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CBM, new { @id = "CBM", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.Length)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.LengthNo, new SelectList(Model.St_MeasurementDetailLength, "MeasurementDetailID", "ArabicName"), "", new { @id = "ComboLengthNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.LengthNo, new SelectList(Model.St_MeasurementDetailLength, "MeasurementDetailID", "EnglishName"), "", new { @id = "ComboLengthNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.Width)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.WidthNo, new SelectList(Model.St_MeasurementDetailWidth, "MeasurementDetailID", "ArabicName"), "", new { @id = "ComboWidthNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.WidthNo, new SelectList(Model.St_MeasurementDetailWidth, "MeasurementDetailID", "EnglishName"), "", new { @id = "ComboWidthNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.Height)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.HeightNo, new SelectList(Model.St_MeasurementDetailHeight, "MeasurementDetailID", "ArabicName"), "", new { @id = "ComboHeightNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.HeightNo, new SelectList(Model.St_MeasurementDetailHeight, "MeasurementDetailID", "EnglishName"), "", new { @id = "ComboHeightNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.Size)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.SizeNo, new SelectList(Model.St_MeasurementDetailSize, "MeasurementDetailID", "ArabicName"), "", new { @id = "ComboSizeNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.SizeNo, new SelectList(Model.St_MeasurementDetailSize, "MeasurementDetailID", "EnglishName"), "", new { @id = "ComboSizeNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.Weight)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.WeightNo, new SelectList(Model.St_MeasurementDetailWeight, "MeasurementDetailID", "ArabicName"), "", new { @id = "ComboWeightNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.WeightNo, new SelectList(Model.St_MeasurementDetailWeight, "MeasurementDetailID", "EnglishName"), "", new { @id = "ComboWeightNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            @Html.Label(Resources.Resource.Unit)
+                            <div class="form-group">
+                                @if (Resources.Resource.CurLang == "Arb")
+                                {
+                                    @Html.DropDownListFor(m => m.UnitNo, new SelectList(Model.St_MeasurementDetailUnit, "MeasurementDetailID", "ArabicName"), "", new { @id = "ComboUnitNo", @class = "form-control input-sml", @disabled = "disabled" })
+
+                                }
+                                else
+                                {
+                                    @Html.DropDownListFor(m => m.UnitNo, new SelectList(Model.St_MeasurementDetailUnit, "MeasurementDetailID", "EnglishName"), "", new { @id = "ComboUnitNo", @class = "form-control input-sml", @disabled = "disabled" })
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="SimilarItem" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-5">
+                        <table id="tdataTableSimilarItem" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.SimilarItem</th>
+                                    <th>@Resources.Resource.UnitName</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="AlternativeItems" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <table id="tdataTableAlternativeItem" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.ItemCode</th>
+                                    <th>@Resources.Resource.ItemName</th>
+                                    <th>@Resources.Resource.SalePrice</th>
+                                    <th>@Resources.Resource.Quantity</th>
+                                    <th>@Resources.Resource.ManufacturerCompany</th>
+                                    <th>@Resources.Resource.CountryOfOrigin</th>
+                                    <th>@Resources.Resource.UnitName</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="OtherUnits" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="checkbox checkbox-primary">
+                            <input id="NotRelatedToTheUnitAbove" type="checkbox" disabled>
+                            <label for="NotRelatedToTheUnitAbove">
+                                @Resources.Resource.NotRelatedToTheUnitAbove
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-12">
+                            <table id="tdataTableOtherItemUnit" class="table table-hover table-bordered mb-0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>@Resources.Resource.UnitCode</th>
+                                        <th>@Resources.Resource.UnitName</th>
+                                        <th>@Resources.Resource.Quantity</th>
+                                        <th>@Resources.Resource.SalePrice</th>
+                                        <th>@Resources.Resource.PurchasePrice</th>
+                                        <th>@Resources.Resource.Barcode</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div id="Offers" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-2 panel panel-default card-view">
+                        <div class="form-group mb-30">
+                            <div class="panel-heading" style="background-color: #34495E">
+                                <div class="pull-left">
+                                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.OfferType</h6>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="radio radio-primary">
+                                <input type="radio" name="OfferType" id="Offer1" value="1" disabled>
+                                <label for="Offer1">
+                                    @Resources.Resource.Offer1
+                                </label>
+                            </div>
+                            <div class="radio radio-primary">
+                                <input type="radio" name="OfferType" id="Offer2" value="2" disabled>
+                                <label for="Offer2">
+                                    @Resources.Resource.Offer2
+                                </label>
+                            </div>
+                            <div class="radio radio-primary">
+                                <input type="radio" name="OfferType" id="ThereIsNoOffer" value="3" checked="" disabled>
+                                <label for="ThereIsNoOffer">
+                                    @Resources.Resource.ThereIsNoOffer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-1" style="width: 10px;">
+                    </div>
+                    <div class="col-lg-5" id="sOffer1" style="display:none;">
+                        <table id="tdataTableItemOffer1" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.Quantity</th>
+                                    <th>@Resources.Resource.Bonus</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-5" id="sOffer2" style="display:none;">
+                        <table id="tdataTableItemOffer2" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.Quantity</th>
+                                    <th>@Resources.Resource.UnitPrice</th>
+                                    <th>@Resources.Resource.TotalPrice</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="CategoriesPrices" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_1Name">@Model.CategoriePrice_1Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_1, new { @id = "CategoriePrice_1", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_4Name">@Model.CategoriePrice_4Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_4, new { @id = "CategoriePrice_4", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_7Name">@Model.CategoriePrice_7Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_7, new { @id = "CategoriePrice_7", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_10Name">@Model.CategoriePrice_10Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_10, new { @id = "CategoriePrice_10", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_2Name">@Model.CategoriePrice_2Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_2, new { @id = "CategoriePrice_2", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_5Name">@Model.CategoriePrice_5Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_5, new { @id = "CategoriePrice_5", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_8Name">@Model.CategoriePrice_8Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_8, new { @id = "CategoriePrice_8", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_3Name">@Model.CategoriePrice_3Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_3, new { @id = "CategoriePrice_3", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_6Name">@Model.CategoriePrice_6Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_6, new { @id = "CategoriePrice_6", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                        <div class="col-lg-3">
+                            <span id="CategoriePrice_9Name">@Model.CategoriePrice_9Name</span>
+                            <div class="form-group">
+                                @Html.TextBoxFor(m => m.CategoriePrice_9, new { @id = "CategoriePrice_9", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="ItemPicture" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-3">
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <a href="~/ItemLogo/@Model.ItemLogo" target="_blank">
+                                <img style="width:500px;height:350px;object-fit:contain;" src="~/ItemLogo/@Model.ItemLogo" id="ItemLogo" class="img-responsive img-rounded" />
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+                </div>
+                <div id="ItemGallary" class="tab-pane fade" role="tabpanel">
+                    <div class="col-lg-12" style="margin-top:10px;">
+                        <table id="tdataTableItemGallary" class="table table-hover table-bordered mb-0" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>@Resources.Resource.Name</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer">
+        <button type="button" class="btn btn-anim btnDelete-lg" id="Delete"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+        <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.OfferType, new { @id = "OfferType", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ItemSalesAndPurchases, new { @id = "ItemSalesAndPurchases", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ScaleItem, new { @id = "ScaleItem", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.StopItem, new { @id = "bStopItem", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.StoppingItemFromSelling, new { @id = "bStoppingItemFromSelling", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.StoppingItemFromBuying, new { @id = "bStoppingItemFromBuying", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.StoppingItemFromPointOfSale, new { @id = "bStoppingItemFromPointOfSale", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.ItemServicesWithoutAnInventory, new { @id = "bItemServicesWithoutAnInventory", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.TrackAnExpirationDate, new { @id = "bTrackAnExpirationDate", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.TrackSequence, new { @id = "bTrackSequence", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.TrackSequenceUponInput, new { @id = "bTrackSequenceUponInput", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.TrackSequenceUponOutput, new { @id = "bTrackSequenceUponOutput", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.TrackCustoms, new { @id = "bTrackCustoms", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.Smoke, new { @id = "bSmoke", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+<script>
+    $(document).ready(function () {
+        document.getElementById('StopItem').checked = document.getElementById("bStopItem").checked;
+        document.getElementById('StoppingItemFromSelling').checked = document.getElementById("bStoppingItemFromSelling").checked;
+        document.getElementById('StoppingItemFromBuying').checked = document.getElementById("bStoppingItemFromBuying").checked;
+        document.getElementById('StoppingItemFromPointOfSale').checked = document.getElementById("bStoppingItemFromPointOfSale").checked;
+        document.getElementById('ItemServicesWithoutAnInventory').checked = document.getElementById("bItemServicesWithoutAnInventory").checked;
+        document.getElementById('TrackAnExpirationDate').checked = document.getElementById("bTrackAnExpirationDate").checked;
+        document.getElementById('TrackSequence').checked = document.getElementById("bTrackSequence").checked;
+        document.getElementById('TrackSequenceUponInput').checked = document.getElementById("bTrackSequenceUponInput").checked;
+        document.getElementById('TrackSequenceUponOutput').checked = document.getElementById("bTrackSequenceUponOutput").checked;
+        document.getElementById('TrackCustoms').checked = document.getElementById("bTrackCustoms").checked;
+        document.getElementById('Smoke').checked = document.getElementById("bSmoke").checked;
+
+        if (document.getElementById("OfferType").value == 1) {
+            document.getElementById('Offer1').checked = true;
+        }
+        else if (document.getElementById("OfferType").value == 2) {
+            document.getElementById('Offer2').checked = true;
+        }
+        else if (document.getElementById("OfferType").value == 3) {
+            document.getElementById('ThereIsNoOffer').checked = true;
+        }
+        if (document.getElementById("ScaleItem").value == 1) {
+            document.getElementById('ScaleItems').checked = true;
+        }
+        else if (document.getElementById("ScaleItem").value == 2) {
+            document.getElementById('ScaleItemByPiece').checked = true;
+        }
+        else if (document.getElementById("ScaleItem").value == 3) {
+            document.getElementById('Other').checked = true;
+        }
+        if (document.getElementById("ItemSalesAndPurchases").value == 1) {
+            document.getElementById('ItemSalesOnly').checked = true;
+        }
+        else if (document.getElementById("ItemSalesAndPurchases").value == 2) {
+            document.getElementById('ItemPurchasesOnly').checked = true;
+        }
+        else if (document.getElementById("ItemSalesAndPurchases").value == 3) {
+            document.getElementById('ItemSalesAndPurchasess').checked = true;
+        }
+        if ($('input[name=OfferType]:checked').val() == 1) {
+            document.getElementById("sOffer2").style.display = 'none';
+            document.getElementById("sOffer1").style.display = 'block';
+        }
+        else if ($('input[name=OfferType]:checked').val() == 2) {
+            document.getElementById("sOffer2").style.display = 'block';
+            document.getElementById("sOffer1").style.display = 'none';
+        }
+        else {
+            document.getElementById("sOffer2").style.display = 'none';
+            document.getElementById("sOffer1").style.display = 'none';
+        }
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            $($.fn.dataTable.tables(true)).DataTable()
+                .columns.adjust();
+        });
+        $(document).on('click', '#Close', function () {
+            window.location = "/St_ItemCard/Index";
+        });
+        var TheDecimalPointForTheLocalCurrency = $("#TheDecimalPointForTheLocalCurrency").val();
+        if (TheDecimalPointForTheLocalCurrency == '' || TheDecimalPointForTheLocalCurrency == null) {
+            TheDecimalPointForTheLocalCurrency = 3;
+        }
+        function formatMoneyLocalCurrencyFraction(number, decPlaces, decSep, thouSep) {
+            decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? TheDecimalPointForTheLocalCurrency : decPlaces,
+                decSep = typeof decSep === "undefined" ? "." : decSep;
+            thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+            var sign = number < 0 ? "-" : "";
+            var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+            var j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return sign +
+                (j ? i.substr(0, j) + thouSep : "") +
+                i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+                (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+        }
+        function formatMoneyThreeFraction(number, decPlaces, decSep, thouSep) {
+            decPlaces = isNaN(decPlaces = Math.abs(decPlaces)) ? 3 : decPlaces,
+                decSep = typeof decSep === "undefined" ? "." : decSep;
+            thouSep = typeof thouSep === "undefined" ? "," : thouSep;
+            var sign = number < 0 ? "-" : "";
+            var i = String(parseInt(number = Math.abs(Number(number) || 0).toFixed(decPlaces)));
+            var j = (j = i.length) > 3 ? j % 3 : 0;
+
+            return sign +
+                (j ? i.substr(0, j) + thouSep : "") +
+                i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
+                (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
+        }
+        var tabelMemRefWarehouse = $("#tdataTableWarehouse").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center"
+                },
+                {
+                    "targets": [1],
+                    "visible": false,
+                    "searchable": false
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCard/GetAllSt_WarehouseByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "StockName"
+                },
+
+                {
+                    data: "StockCode"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefItemGallary = $("#tdataTableItemGallary").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "columnDefs": [
+                    { "width": "100%", "targets": 0, "className": "dt-center" }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+                ],
+
+                ajax: {
+                    url: "/Attach/GetAllItemsFiles/@Model.ItemCode",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+
+                        data: "FileName"
+                    }
+                ]
+        });
+        var tabelMemRefSimilarItem = $("#tdataTableSimilarItem").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "30%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "70%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCard/GetAllSt_SimilarItemByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "SimilarItemCode"
+                },
+
+                {
+                    data: "SimilarUnitName"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefAlternativeItem = $("#tdataTableAlternativeItem").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "10%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "30%"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center",
+                    "Width": "20%"
+                },
+                {
+                    "targets": [5],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [6],
+                    "className": "dt-center",
+                    "Width": "10%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCard/GetAllSt_AlternativeItemByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "AlternativeItemCode"
+                },
+
+                {
+                    data: "AlternativeItemName"
+
+                },
+                {
+                    data: "AlternativeSalePrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "AlternativeQuantity",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "AlternativeManufacturerCompany"
+
+                },
+                {
+                    data: "AlternativeCountryOfOrigin"
+
+                },
+                {
+                    data: "AlternativeUnit"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefOtherItemUnit = $("#tdataTableOtherItemUnit").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "10%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "40%"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [3],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [4],
+                    "className": "dt-center",
+                    "Width": "10%"
+                },
+                {
+                    "targets": [5],
+                    "className": "dt-center",
+                    "Width": "20%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCard/GetAllSt_ItemOtherUnitByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+                    data: "OtherUnitNumber"
+                },
+
+                {
+                    data: "OtherUnitName"
+
+                },
+                {
+                    data: "OtherUnitQuantity",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "OtherUnitSalePrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "OtherUnitPurchasePrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "OtherUnitBarcode"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefItemOffer1 = $("#tdataTableItemOffer1").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "50%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "50%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCard/GetAllSt_ItemOffer1ByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "ItemOfferQuantitySold"
+                },
+
+                {
+                    data: "ItemOfferBonus"
+
+                }
+            ]
+
+
+        });
+        var tabelMemRefItemOffer2 = $("#tdataTableItemOffer2").DataTable({
+            "language": {
+                "emptyTable": '@Resources.Resource.EmptyTable',
+                "search": '@Resources.Resource.Search',
+                "loadingRecords": '@Resources.Resource.LoadingRecords',
+                "processing": '@Resources.Resource.Processing',
+                "zeroRecords": '@Resources.Resource.ZeroRecords',
+                "info": '@Resources.Resource.Info',
+                "infoEmpty": '@Resources.Resource.InfoEmpty',
+                "lengthMenu": '@Resources.Resource.LengthMenu',
+                "infoFiltered": '@Resources.Resource.InfoFiltered',
+                "paginate": {
+                    "previous": '@Resources.Resource.Previous',
+                    "next": '@Resources.Resource.Next',
+                    "first": '@Resources.Resource.First',
+                    "last": '@Resources.Resource.Last',
+                },
+                "aria": {
+                    "sortAscending": '@Resources.Resource.SortAscending',
+                    "sortDescending": '@Resources.Resource.SortDescending'
+                }
+            },
+            "searching": false,
+            "scrollX": true,
+            "ordering": false,
+            "autoWidth": false,
+            "paging": false,
+            "info": false,
+            "infoEmpty": false,
+            "scrollY": "200px",
+
+            dom: 'Bfrtip',
+            buttons: [
+
+            ],
+
+            "columnDefs": [
+                 {
+                    "targets": [0],
+                    "className": "dt-center",
+                    "Width" : "35%"
+                },
+                {
+                    "targets": [1],
+                    "className": "dt-center",
+                    "Width": "33%"
+                },
+                {
+                    "targets": [2],
+                    "className": "dt-center",
+                    "Width": "32%"
+                }
+            ],
+            ajax: {
+                "type": "GET",
+                url: "/St_ItemCard/GetAllSt_ItemOffer2ByItemCodeView/@Model.ItemCode",
+
+                dataSrc: ""
+            },
+
+            columns: [
+                {
+
+                    data: "ItemOfferQuantitySold"
+                },
+
+                {
+                    data: "ItemOfferUnitPrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                },
+                {
+                    data: "ItemOfferTotalPrice",
+                    render: function (data, type, r) {
+                        return (formatMoneyLocalCurrencyFraction(data, TheDecimalPointForTheLocalCurrency))
+                    }
+
+                }
+            ]
+
+
+        });
+        $(document).on('click', '#Delete', function () {
+            bootbox.confirm({
+				message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+				className: 'rubberBand animated',
+				buttons: {
+					confirm: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+						className: 'btn-success'
+					},
+					cancel: {
+						label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+						className: 'btn-danger'
+					}
+				},
+				callback: function (result) {
+					if (result) {
+                        var ItemCode = $("#ItemCode").val();
+                        if (ItemCode != null && ItemCode != '') {
+                            $.getJSON('@Url.Action("CheckItemCodeBeforDelete", "St_ItemCard")', { id: ItemCode}, function (Data) {
+								if (Data != null) {
+                                    var checkItemCode = Data;
+                                    if (checkItemCode == "") {
+										var dialog = bootbox.dialog({
+											title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+											message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Deleting...</p>',
+											closeButton: false
+										});
+
+										var dataToSave = {
+
+                                            ItemCode: $("#ItemCode").val()
+
+										};
+
+										$.ajax({
+											type: "POST",
+                                            url: "/St_ItemCard/DeleteSt_ItemCard",
+											data: JSON.stringify(dataToSave),
+											contentType: 'application/json',
+											success: function (data) {
+
+												dialog.modal('hide');
+												if (data.Code == 0) {
+													toastr.error(data.Msg);
+												}
+												else if (data.Code == 1) {
+                                                    toastr.success(data.Msg);
+                                                    $('#modal-container').modal('hide');
+                                                    window.location = "/St_ItemCard/Index";
+												}
+
+											},
+											error: function (data) {
+												dialog.modal('hide');
+												toastr.error(data);
+											}
+
+										});
+									}
+									else {
+										bootbox.alert({
+											message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.MessageCantDelete</h6>',
+											className: 'rubberBand animated',
+											buttons: {
+												ok: {
+													label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+													className: 'btn-primary'
+												}
+											}
+										});
+									}
+								};
+							});
+						}
+						else {
+						}
+					}
+				}
+			});
+        });
+    });
+</script>
+}

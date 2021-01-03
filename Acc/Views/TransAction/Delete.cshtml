@@ -1,0 +1,512 @@
+﻿@model Acc.ViewModels.TransActionVM
+@{
+    ViewBag.Title = @Resources.Resource.Delete;
+}
+<style>
+    .modal-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .modal-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+</style>
+<div id="myModal" class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: block;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="modal-title txt-light" style="font-weight:bold">
+                        @Resources.Resource.Delete
+                    </h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-body">
+                @Html.HiddenFor(m => m.Header.CompanyTransactionKindNo, new { id = "CompanyTransactionKindNo" })
+                <div class="col-md-4">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CompanyTransactionKindID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.Header.CompanyTransactionKindNo, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "ArabicName"), new { @id = "CompanyTransactionKindID", @class = "form-control  input-sm", @disabled = "disabled" })
+
+
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.Header.CompanyTransactionKindNo, new SelectList(Model.CompanyTransactionKind, "CompanyTransactionKindID", "EnglishName"), new { @id = "CompanyTransactionKindID", @class = "form-control  input-sm", @disabled = "disabled" })
+                        }
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherNumber)
+                        @Html.TextBoxFor(m => m.Header.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherDate)
+                        @Html.TextBoxFor(model => model.Header.VoucherDate, new { @id = "VoucherDate", @class = "form-control  input-sm", @Value = Model.Header.VoucherDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.Note)
+                        @Html.TextBoxFor(m => m.Header.Note, new { @id = "Note", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyID)
+                        @if (Resources.Resource.CurLang == "Arb")
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "ArabicName"), new { @id = "CurrencyID", @class = "form-control  input-sm", @disabled = "disabled" })
+
+
+                        }
+                        else
+                        {
+                            @Html.DropDownListFor(m => m.CurrencyID, new SelectList(Model.Currency, "CurrencyID", "EnglishName"), new { @id = "CurrencyID", @class = "form-control  input-sm", @disabled = "disabled" })
+                        }
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyNewValue)
+                        @Html.TextBoxFor(m => m.CurrencyNewValue, new { @id = "CurrencyNewValue", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TotalDebit)
+                        @Html.TextBoxFor(m => m.TotalDebit, new { @id = "sTotalDebit", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TotalCredit)
+                        @Html.TextBoxFor(m => m.TotalCredit, new { @id = "sTotalCredit", @class = "form-control  input-sm", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div id="BankGuaranteeDiv" style="display:none">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.WarrantyNumber)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.WarrantyNumber, new { @id = "WarrantyNumber", @class = "form-control  input-sm", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.DueDate)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.DueDate, new { @id = "DueDate", @class = "form-control  input-sm", @Value = Model.Header.VoucherDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.IssuedBy)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.IssuedBy, new { @id = "IssuedBy", @class = "form-control  input-sm", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.WarrantyAmount)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.WarrantyAmount, new { @id = "WarrantyAmount", @class = "form-control  input-sm", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.OrderNo)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.OrderNo, new { @id = "OrderNo", @class = "form-control  input-sm", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.ExpensesAmount)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.ExpensesAmount, new { @id = "ExpensesAmount", @class = "form-control  input-sm", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.BankGuarantee.DepositValue)
+                                    @Html.TextBoxFor(m => m.BankGuarantee.DepositValue, new { @id = "DepositValue", @class = "form-control  input-sm", @readonly = "readonly" })
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+                <table id="tdataTableDetail" class="table table-hover table-bordered mb-0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>@Resources.Resource.Debit</th>
+                            <th>@Resources.Resource.Credit</th>
+                            <th>@Resources.Resource.DebitForeign</th>
+                            <th>@Resources.Resource.CreditForeign</th>
+                            <th>@Resources.Resource.AccountNumber</th>
+                            <th>@Resources.Resource.AccountName</th>
+                            @if (Model.WorkWithCostCenter)
+                            {
+                                <th>@Resources.Resource.CostCenter</th>
+                                <th>@Resources.Resource.CostCenterName</th>
+                            }
+                            <th>@Resources.Resource.Note</th>
+                            <th>@Resources.Resource.Debit</th>
+                            <th>@Resources.Resource.Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-12">
+                    <button type="submit" class="btn btn-anim btnDelete" id="DeleteTrans"> <i class="fa fa-trash-o"></i><span class="btn-text">@Resources.Resource.Delete</span></button>
+                    <button type="button" class="btn btn-default btn-anim" data-dismiss="modal" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@Html.HiddenFor(m => m.Header.CompanyYear, new { @id = "CompanyYearDel" })
+@Html.HiddenFor(m => m.Header.TransactionKindNo, new { @id = "TransactionKindNoDel" })
+@Html.HiddenFor(m => m.Header.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNoDel" })
+@Html.HiddenFor(m => m.Header.VoucherNumber, new { @id = "VoucherNumberDel" })
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+
+
+@Scripts.Render("~/bundles/jqueryval");
+<script>
+    $(document).ready(function () {
+        var WorkWithCostCenter = document.getElementById("WorkWithCostCenter").checked;
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        if (WorkWithCostCenter) {
+            var tabelMemRef = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    { "targets": 0, "className": "dt-center" },
+                    { "targets": 1, "className": "dt-center" },
+                    { "targets": 2, "className": "dt-center" },
+                    { "targets": 3, "className": "dt-center" },
+                    { "targets": 4, "className": "dt-center" },
+                    { "targets": 5, "className": "dt-center" },
+                    { "targets": 6, "className": "dt-center" },
+                    { "targets": 7, "className": "dt-center" },
+                    { "targets": 8, "className": "dt-center" },
+                    {
+                        "targets": [9],
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [10],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+
+                ],
+                ajax: {
+                    "type": "GET",
+                    url: "/TransAction/GetTransActionsDetail/@Model.Header.VoucherNumber/@Model.Header.CompanyTransactionKindNo/@Model.Header.TransactionKindNo/@Model.Header.CompanyYear",
+
+                    dataSrc: ""
+                },
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+                    TotalDebit = api.column(9).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    TotalCredit = api.column(10).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    document.getElementById("sTotalDebit").value = formatMoney(TotalDebit, TheDecimalPointForTheLocalCurrency);
+                    document.getElementById("sTotalCredit").value = formatMoney(TotalCredit, TheDecimalPointForTheLocalCurrency);
+                },
+                columns: [
+
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "DebitForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CreditForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+
+                    },
+                    {
+                        data: "AccountNumber"
+
+                    },
+                    {
+                        data: "AccountName"
+
+                    },
+                    {
+                        data: "CostCenter"
+
+                    },
+                    {
+                        data: "CostName"
+
+                    },
+
+                    {
+                        data: "Note"
+
+                    },
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (parseFloat(data)).toFixed(TheDecimalPointForTheLocalCurrency)
+                        }
+
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (parseFloat(data)).toFixed(TheDecimalPointForTheLocalCurrency)
+                        }
+
+                    }
+
+
+                ]
+
+
+            });
+        }
+        else {
+            var tabelMemRef = $("#tdataTableDetail").DataTable({
+                "language": {
+                    "emptyTable": '@Resources.Resource.EmptyTable',
+                    "search": '@Resources.Resource.Search',
+                    "loadingRecords": '@Resources.Resource.LoadingRecords',
+                    "processing": '@Resources.Resource.Processing',
+                    "zeroRecords": '@Resources.Resource.ZeroRecords',
+                    "info": '@Resources.Resource.Info',
+                    "infoEmpty": '@Resources.Resource.InfoEmpty',
+                    "lengthMenu": '@Resources.Resource.LengthMenu',
+                    "infoFiltered": '@Resources.Resource.InfoFiltered',
+                    "paginate": {
+                        "previous": '@Resources.Resource.Previous',
+                        "next": '@Resources.Resource.Next',
+                        "first": '@Resources.Resource.First',
+                        "last": '@Resources.Resource.Last',
+                    },
+                    "aria": {
+                        "sortAscending": '@Resources.Resource.SortAscending',
+                        "sortDescending": '@Resources.Resource.SortDescending'
+                    }
+                },
+                "scrollY": "150px",
+                "scrollX": true,
+                "ordering": false,
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "columnDefs": [
+                    { "targets": 0, "className": "dt-center" },
+                    { "targets": 1, "className": "dt-center" },
+                    { "targets": 2, "className": "dt-center" },
+                    { "targets": 3, "className": "dt-center" },
+                    { "targets": 4, "className": "dt-center" },
+                    { "targets": 5, "className": "dt-center" },
+                    { "targets": 6, "className": "dt-center" },
+                    {
+                        "targets": [7],
+                        "visible": false,
+                        "searchable": false
+                    },
+                    {
+                        "targets": [8],
+                        "visible": false,
+                        "searchable": false
+                    }
+                ],
+
+                dom: 'Bfrtip',
+                buttons: [
+
+                ],
+                ajax: {
+                    "type": "GET",
+                    url: "/TransAction/GetTransActionsDetail/@Model.Header.VoucherNumber/@Model.Header.CompanyTransactionKindNo/@Model.Header.TransactionKindNo/@Model.Header.CompanyYear",
+
+                    dataSrc: ""
+                },
+
+                "footerCallback": function (row, data, start, end, display) {
+                    var api = this.api(), data;
+                    var intVal = function (i) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\$,]/g, '') * 1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+                    TotalDebit = api.column(7).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    TotalCredit = api.column(8).data().reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                    document.getElementById("sTotalDebit").value = formatMoney(TotalDebit, TheDecimalPointForTheLocalCurrency);
+                    document.getElementById("sTotalCredit").value = formatMoney(TotalCredit, TheDecimalPointForTheLocalCurrency);
+                },
+                columns: [
+
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheLocalCurrency))
+                        }
+
+                    },
+                    {
+                        data: "DebitForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+
+                    },
+                    {
+                        data: "CreditForeign",
+                        render: function (data, type, r) {
+                            return (formatMoney(data, TheDecimalPointForTheForeignCurrency))
+                        }
+
+                    },
+                    {
+                        data: "AccountNumber"
+
+                    },
+                    {
+                        data: "AccountName"
+                    },
+
+                    {
+                        data: "Note"
+                    },
+                    {
+                        data: "Debit",
+                        render: function (data, type, r) {
+                            return (parseFloat(data)).toFixed(TheDecimalPointForTheLocalCurrency)
+                        }
+
+                    },
+                    {
+                        data: "Credit",
+                        render: function (data, type, r) {
+                            return (parseFloat(data)).toFixed(TheDecimalPointForTheLocalCurrency)
+                        }
+
+                    }
+
+
+                ]
+
+
+            });
+        }
+        if (@Model.Header.TransactionKindNo == 14) {
+            document.getElementById("BankGuaranteeDiv").style.display = 'block';
+        }
+    });
+
+</script>
+
+}
+
+

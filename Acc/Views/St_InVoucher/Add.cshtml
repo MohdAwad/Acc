@@ -1,0 +1,1330 @@
+﻿@model Acc.ViewModels.St_HeaderVM
+@{
+    ViewBag.Title = @Resources.Resource.Save;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+
+    #ItemsGrid_DXHeadersRow0 {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvBatchEditNewItem_iOS {
+        font-family: Verdana, Geneva, Tahoma, sans-serif !important;
+        font-size: 10pt;
+    }
+
+    .dxgvControl_iOS {
+        width: 100% !important;
+    }
+
+    #ItemsGrid_col0 {
+        width: 55px;
+    }
+
+    .hideColumn {
+        display: none !important;
+    }
+</style>
+<link href="~/Content/jquery-ui.css" rel="stylesheet" />
+<script>
+    var LastStatment = "";
+    var SumDebit = 0;
+    var SumCredit = 0;
+    var preventEndEditOnLostFocus = false;
+    var currentEditedValue;
+    var SelectAccount;
+    var lastVisibleIndex;
+    var FocusedCellColumnIndex = 0;
+    var FocusedCellRowIndex = 0;
+    function GetSelectedInVoucherItemCode(data) {
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", data.ItemCode);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", data.ItemName);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", data.ItemUnitName);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", data.TaxRate);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", data.ItemCode);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", data.PurchasePrice);
+        var ItemCode = data.ItemCode;
+        $.getJSON('@Url.Action("CheckItemOtherUnit", "St_ItemCard")', { id: ItemCode }, function (Data2) {
+            if (Data2 != "") {
+                var url = '/St_InVoucher/St_ItemOtherUnit/' + data.ItemCode;
+                $.get(url, function (data) {
+                   $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                    dialog.modal('hide');
+                })
+
+            }
+            else {
+
+            }
+        }); // بتنشال عند الهياجنه
+    }
+    var InVoucherItem = [];
+     $.getJSON('@Url.Action("GetAllSt_ItemCard", "MultiUse")', { id: 0 }, function (Data) {
+         InVoucherItem = [];
+         for (var i = 0, len = Data.length; i < len; i++) {
+             var r = {
+                 label: Data[i].ItemName, value: Data[i].ItemCode, stop: Data[i].StopItem, unit: Data[i].ItemUnitName, taxrate: Data[i].TaxRate,
+                 purchaseprice: Data[i].PurchasePrice
+             };
+             InVoucherItem.push(r);
+         }
+     });
+    function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+        try {
+            decimalCount = Math.abs(decimalCount);
+            decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+            const negativeSign = amount < 0 ? "-" : "";
+
+            let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+            let j = (i.length > 3) ? i.length % 3 : 0;
+
+            return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+        } catch (e) {
+            console.log(e)
+        }
+    };
+    function validatedate(dateString) {
+        var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+        if (dateString.match(dateformat)) {
+            var operator = dateString.split('/');
+            var datepart = [];
+            if (operator.length > 1) {
+                datepart = dateString.split('/');
+            }
+            var month = parseInt(datepart[1]);
+            var day = parseInt(datepart[0]);
+            var year = parseInt(datepart[2]);
+            var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            if (month == 1 || month > 2) {
+                if (day > ListofDays[month - 1]) {
+                    return false;
+                }
+            } else if (month == 2) {
+                var leapYear = false;
+                if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                    leapYear = true;
+                }
+                if ((leapYear == false) && (day >= 29)) {
+                    return false;
+                } else
+                    if ((leapYear == true) && (day > 29)) {
+                        return false;
+                    }
+            }
+        }
+        else {
+            return false;
+        }
+        return true;
+    }
+    function AutoCompleteItems(s, e) {
+        $(s.GetInputElement()).autocomplete({
+          minLength: 0,
+            source: InVoucherItem,
+             select: function (event, ui) {
+                 if (ui.item.stop == '0') {
+                     s.SetValue(ui.item.value);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", data.ItemCode);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", data.ItemName);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", data.ItemUnitName);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Bonus", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", data.PurchasePrice);
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterLineDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalAfterLineDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxAfterLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceAfterLineDiscountBeforDiscountAllLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "CostPieceLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalBeforDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "LineDiscountPercentage", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalAfterLineDiscountBeforDiscountAllLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "DiscountPercentage", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalCostLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxAfterLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTotalLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", data.ItemCode);
+                     ItemsGrid.batchEditApi.GetCellValue()
+                 }
+                 else {
+                     bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                     FocusedCellColumnIndexAlternativeItemCode = 1;
+                     s.SetValue('');
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Bonus", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterLineDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalAfterLineDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxAfterLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceAfterLineDiscountBeforDiscountAllLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "CostPieceLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalBeforDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "LineDiscountPercentage", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalAfterLineDiscountBeforDiscountAllLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "DiscountPercentage", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalCostLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxAfterLineDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceDiscountLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterDiscount", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTotalLocal", "0");
+                     ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+                 }
+             return false;
+             },
+             position:
+             {
+                 my: "left top",
+                 at: "left bottom",
+                 of: s.GetMainElement()
+             }
+
+        });
+    }
+    function ClearGrid(s, e)
+    {
+        ItemsGrid.PerformCallback('clear');
+        setTimeout(function () {
+            RecalccSum();
+        }, 1000);
+    }
+    function RecalccSum() {
+        var Quantity = 0;
+        var Bonus = 0;
+        var TaxRate = 0;
+        var PricePieceLocalBeforDiscount = 0;
+        var PricePieceLineDiscountLocal = 0;
+        var LineDiscountPercentage = 0;
+        var PricePieceLocalAfterLineDiscount = 0;
+        var PricePieceTaxAfterLineDiscountLocal = 0;
+        var PricePieceAfterLineDiscountBeforDiscountAllLocal = 0;
+        var PricePieceDiscountLocal = 0;
+        var PricePieceLocalAfterDiscount = 0;
+        var PricePieceTaxLocal = 0;
+        var PricePieceTotalLocal = 0;
+        var CostPieceLocal = 0;
+        var DiscountPercentage = 0;
+        var TotalLineDiscountLocal = 0;
+        var TotalLocalBeforDiscount = 0;
+        var TotalLocalAfterLineDiscount = 0;
+        var TotalTaxAfterLineDiscountLocal = 0;
+        var TotalAfterLineDiscountBeforDiscountAllLocal = 0;
+        var TotalDiscountLocal = 0;
+        var TotalLocalAfterDiscount = 0;
+        var TotalTaxLocal = 0;
+        var TotalLocal = 0;
+        var TotalCostLocal = 0;
+        var NetTotalLocalBeforDiscount = 0;
+        var NetTotalLineDiscountLocal = 0;
+        var NetTotalLocalAfterLineDiscount = 0;
+        var NetTotalTaxAfterLineDiscountLocal = 0;
+        var NetTotalAfterLineDiscountBeforDiscountAllLocal = 0;
+        var NetTotalDiscountLocal = 0;
+        var NetTotalLocalAfterDiscount = 0;
+        var NetTotalTaxLocal = 0;
+        var NetTotalLocal = 0;
+        var NetTotalLocalAfterLineDiscount1 = 0;
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        var TaxType = document.getElementById("TaxType").value;
+        var DiscountPercentage1 = document.getElementById("DiscountPercentage").value;
+        NetTotalDiscountLocal = document.getElementById("NetTotalDiscountLocal").value;
+        NetTotalLocalAfterLineDiscount1 = document.getElementById("NetTotalLocalAfterLineDiscount").value;
+        var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+
+            PricePieceLocalBeforDiscount = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLocalBeforDiscount");
+            PricePieceLineDiscountLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLineDiscountLocal");
+            PricePieceLocalAfterLineDiscount = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLocalAfterLineDiscount");
+            PricePieceTaxAfterLineDiscountLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceTaxAfterLineDiscountLocal");
+            PricePieceAfterLineDiscountBeforDiscountAllLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceAfterLineDiscountBeforDiscountAllLocal");
+            PricePieceDiscountLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceDiscountLocal");
+            PricePieceTaxLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceTaxLocal");
+            PricePieceLocalAfterDiscount = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLocalAfterDiscount");
+            PricePieceTotalLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceTotalLocal");
+            CostPieceLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CostPieceLocal");
+
+            LineDiscountPercentage = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "LineDiscountPercentage");
+            DiscountPercentage = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "DiscountPercentage");
+
+            TotalLocalBeforDiscount = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocalBeforDiscount");
+            TotalLineDiscountLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLineDiscountLocal");
+            TotalLocalAfterLineDiscount = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocalAfterLineDiscount");
+            TotalTaxAfterLineDiscountLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalTaxAfterLineDiscountLocal");
+            TotalAfterLineDiscountBeforDiscountAllLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalAfterLineDiscountBeforDiscountAllLocal");
+            TotalDiscountLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalDiscountLocal");
+            TotalLocalAfterDiscount = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocalAfterDiscount");
+            TotalTaxLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalTaxLocal");
+            TotalLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocal");
+            TotalCostLocal = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalCostLocal");
+
+            Quantity = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity");
+            Bonus = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Bonus");
+            TaxRate = ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TaxRate");
+
+            TaxRate = TaxRate / 100;
+            if (TaxType == 2 || TaxType == 3) {
+                TaxRate = 0;
+            }
+            TotalLocalBeforDiscount = Quantity * PricePieceLocalBeforDiscount;
+            if (TotalLineDiscountLocal > TotalLocalBeforDiscount) {
+                TotalLineDiscountLocal = TotalLocalBeforDiscount;
+                bootbox.alert({
+                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheDiscountValueIsGreaterThanTheActualValue</h6>',
+                    className: 'rubberBand animated',
+                    buttons: {
+                        ok: {
+                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                            className: 'btn-primary'
+                        }
+                    }
+                });
+            }
+            if (TotalLocalBeforDiscount > 0) {
+                LineDiscountPercentage = (TotalLineDiscountLocal / TotalLocalBeforDiscount) * 100; //5
+            }
+            else {
+                LineDiscountPercentage = 0;
+            }
+
+            if (Quantity > 0) {
+
+                PricePieceLineDiscountLocal = TotalLineDiscountLocal / Quantity;
+            }
+            else {
+                PricePieceLineDiscountLocal = 0;
+            }
+            PricePieceLocalAfterLineDiscount = PricePieceLocalBeforDiscount - PricePieceLineDiscountLocal;
+            TotalLocalAfterLineDiscount = TotalLocalBeforDiscount - TotalLineDiscountLocal;
+            if (TaxRate == 0) {
+                PricePieceTaxAfterLineDiscountLocal = 0;
+                TotalTaxAfterLineDiscountLocal = 0;
+            }
+            else {
+                PricePieceTaxAfterLineDiscountLocal = PricePieceLocalAfterLineDiscount * TaxRate;
+                TotalTaxAfterLineDiscountLocal = TotalLocalAfterLineDiscount * TaxRate;
+            }
+            PricePieceAfterLineDiscountBeforDiscountAllLocal = PricePieceTaxAfterLineDiscountLocal + PricePieceLocalAfterLineDiscount;
+            TotalAfterLineDiscountBeforDiscountAllLocal = TotalTaxAfterLineDiscountLocal + TotalLocalAfterLineDiscount;
+            if (DiscountPercentage1 > 0) {
+                TotalDiscountLocal = (TotalLocalAfterLineDiscount * DiscountPercentage1) / 100;
+                if (Quantity > 0) {
+                    PricePieceDiscountLocal = TotalDiscountLocal / Quantity;
+                }
+                else {
+                    PricePieceDiscountLocal = 0;
+                }
+            }
+            else {
+                TotalDiscountLocal = 0;
+                PricePieceDiscountLocal = 0;
+            }
+            DiscountPercentage = DiscountPercentage1;
+            PricePieceLocalAfterDiscount = PricePieceLocalAfterLineDiscount - PricePieceDiscountLocal;
+            TotalLocalAfterDiscount = TotalLocalAfterLineDiscount - TotalDiscountLocal;
+            if (TaxRate == 0) {
+                PricePieceTaxLocal = 0;
+                TotalTaxLocal = 0;
+            }
+            else {
+                PricePieceTaxLocal = PricePieceLocalAfterDiscount * TaxRate;
+                TotalTaxLocal = TotalLocalAfterDiscount * TaxRate;
+            }
+
+
+            PricePieceTotalLocal = PricePieceTaxLocal + PricePieceLocalAfterDiscount;
+            TotalLocal = TotalTaxLocal + TotalLocalAfterDiscount;
+            if ((Quantity + Bonus) > 0) {
+                CostPieceLocal = TotalLocalAfterDiscount / (Quantity + Bonus)
+            }
+            else {
+                CostPieceLocal = 0;
+            }
+            TotalCostLocal = CostPieceLocal * (Quantity + Bonus);
+
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "LineDiscountPercentage", LineDiscountPercentage);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceLineDiscountLocal", PricePieceLineDiscountLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceLocalAfterLineDiscount", PricePieceLocalAfterLineDiscount);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceTaxAfterLineDiscountLocal", PricePieceTaxAfterLineDiscountLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceAfterLineDiscountBeforDiscountAllLocal", PricePieceAfterLineDiscountBeforDiscountAllLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceLocalAfterDiscount", PricePieceLocalAfterDiscount);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceTaxLocal", PricePieceTaxLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceTotalLocal", PricePieceTotalLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "CostPieceLocal", CostPieceLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "PricePieceDiscountLocal", PricePieceDiscountLocal);
+
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalLineDiscountLocal", TotalLineDiscountLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalLocalBeforDiscount", TotalLocalBeforDiscount);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalLocalAfterLineDiscount", TotalLocalAfterLineDiscount);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalTaxAfterLineDiscountLocal", TotalTaxAfterLineDiscountLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalAfterLineDiscountBeforDiscountAllLocal", TotalAfterLineDiscountBeforDiscountAllLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalLocalAfterDiscount", TotalLocalAfterDiscount);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalTaxLocal", TotalTaxLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalLocal", TotalLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalCostLocal", TotalCostLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "TotalDiscountLocal", TotalDiscountLocal);
+            ItemsGrid.batchEditApi.SetCellValue(visibleRowIndices[i], "DiscountPercentage", DiscountPercentage);
+
+            NetTotalLocalBeforDiscount = NetTotalLocalBeforDiscount + TotalLocalBeforDiscount;
+            NetTotalLineDiscountLocal = NetTotalLineDiscountLocal + TotalLineDiscountLocal;
+            NetTotalLocalAfterLineDiscount = NetTotalLocalAfterLineDiscount + TotalLocalAfterLineDiscount;
+            NetTotalTaxAfterLineDiscountLocal = NetTotalTaxAfterLineDiscountLocal + TotalTaxAfterLineDiscountLocal;
+            NetTotalAfterLineDiscountBeforDiscountAllLocal = NetTotalAfterLineDiscountBeforDiscountAllLocal + TotalAfterLineDiscountBeforDiscountAllLocal;
+            NetTotalDiscountLocal = NetTotalDiscountLocal + TotalDiscountLocal;
+            NetTotalLocalAfterDiscount = NetTotalLocalAfterDiscount + TotalLocalAfterDiscount;
+            NetTotalTaxLocal = NetTotalTaxLocal + TotalTaxLocal;
+            NetTotalLocal = NetTotalLocal + TotalLocal;
+        }
+        document.getElementById("NetTotalLocalBeforDiscount").value = (NetTotalLocalBeforDiscount).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalLineDiscountLocal").value = (NetTotalLineDiscountLocal).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalLocalAfterLineDiscount").value = (NetTotalLocalAfterLineDiscount).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalTaxAfterLineDiscountLocal").value = (NetTotalTaxAfterLineDiscountLocal).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalAfterLineDiscountBeforDiscountAllLocal").value = (NetTotalAfterLineDiscountBeforDiscountAllLocal).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalLocalAfterDiscount").value = (NetTotalLocalAfterDiscount).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalTaxLocal").value = (NetTotalTaxLocal).toFixed(TheDecimalPointForTheLocalCurrency);
+        document.getElementById("NetTotalLocal").value = (NetTotalLocal).toFixed(TheDecimalPointForTheLocalCurrency);
+
+        document.getElementById("sNetTotalLocal").value = formatMoney(NetTotalLocal, TheDecimalPointForTheLocalCurrency);
+        var NetTotalDiscountLocal = document.getElementById("NetTotalDiscountLocal").value;
+        var NetTotalLocalAfterLineDiscount = document.getElementById("NetTotalLocalAfterLineDiscount").value;
+        var DiscountPercentage = 0;
+        if (NetTotalLocalAfterLineDiscount > 0) {
+            DiscountPercentage = (NetTotalDiscountLocal / NetTotalLocalAfterLineDiscount) * 100;
+        }
+        document.getElementById("DiscountPercentage").value = DiscountPercentage;
+    }
+    function LoopGrid(s, e) {
+        RecalccSum();
+        var iError = 0;
+        var TaxType = document.getElementById("TaxType").value;
+        var dVoucherDate = document.getElementById("VoucherDate").value;
+        var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices();
+        for (var i = 0; i < visibleRowIndices.length; i++) {
+            if (ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemCode") == "" || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemCode") == null) {
+                iError = 1;
+                break;
+            }
+            else if (ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemName") == "" || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemName") == null) {
+                iError = 1;
+                break;
+            }
+            else if (ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity") == "" || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity") == null
+                || ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity") == 0) {
+                iError = 2;
+                break;
+            }
+        }
+        if (!validatedate(dVoucherDate) && dVoucherDate != null && dVoucherDate != '') {
+            bootbox.alert({
+                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                className: 'rubberBand animated',
+                buttons: {
+                    ok: {
+                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                        className: 'btn-primary'
+                    }
+                }
+            });
+        }
+        else if (dVoucherDate != null && dVoucherDate != '') {
+            var dd = parseInt(dVoucherDate.substring(0, 2));
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            var mm = parseInt(dVoucherDate.substring(3, 5));
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var yyyy = parseInt(dVoucherDate.substring(6, 10));
+            dVoucherDate = mm + '/' + dd + '/' + yyyy;
+            $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dVoucherDate }, function (Data) {
+                if (Data >= 1) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    if (iError == 1) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillItemCode</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else if (iError == 2) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillQuantity</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else if ($("#NetTotalLocal").val() == '' || $("#NetTotalLocal").val() == 0) {
+                        bootbox.alert({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleasefillalRequiredfields</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                ok: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                    className: 'btn-primary'
+                                }
+                            }
+                        });
+                    }
+                    else {
+                        bootbox.confirm({
+                            message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.AreYouSure</h6>',
+                            className: 'rubberBand animated',
+                            buttons: {
+                                confirm: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                    className: 'btn-success'
+                                },
+                                cancel: {
+                                    label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                    className: 'btn-danger'
+                                }
+                            },
+                            callback: function (result) {
+                                if (result) {
+                                    var dialog = bootbox.dialog({
+                                        title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                                        message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.Saving...</p>',
+                                        closeButton: false
+                                    });
+                                    var visibleRowIndices = ItemsGrid.batchEditApi.GetRowVisibleIndices();
+                                    var Itemslist = [];
+                                    for (var i = 0; i < visibleRowIndices.length; i++) {
+                                        var Items = {
+                                            ItemCode: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "ItemCode"),
+                                            Quantity: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Quantity"),
+                                            Bonus: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "Bonus"),
+                                            PricePieceTaxLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceTaxLocal"),
+                                            PricePieceLocalBeforDiscount: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLocalBeforDiscount"),
+                                            TotalLineDiscountLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLineDiscountLocal"),
+                                            LineDiscountPercentage: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "LineDiscountPercentage"),
+                                            PricePieceLocalAfterLineDiscount: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLocalAfterLineDiscount"),
+                                            TotalLocalAfterLineDiscount: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocalAfterLineDiscount"),
+                                            TaxRate: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TaxRate"),
+                                            TotalTaxAfterLineDiscountLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalTaxAfterLineDiscountLocal"),
+                                            PricePieceAfterLineDiscountBeforDiscountAllLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceAfterLineDiscountBeforDiscountAllLocal"),
+                                            TotalDiscountLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalDiscountLocal"),
+                                            TotalLocalAfterDiscount: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocalAfterDiscount"),
+                                            CostPieceLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "CostPieceLocal"),
+                                            TotalTaxLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalTaxLocal"),
+                                            PricePieceTotalLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceTotalLocal"),
+                                            TotalLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocal"),
+                                            TotalLocalBeforDiscount: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalLocalBeforDiscount"),
+                                            TotalAfterLineDiscountBeforDiscountAllLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalAfterLineDiscountBeforDiscountAllLocal"),
+                                            DiscountPercentage: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "DiscountPercentage"),
+                                            TotalCostLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "TotalCostLocal"),
+                                            PricePieceLineDiscountLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLineDiscountLocal"),
+                                            PricePieceTaxAfterLineDiscountLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceTaxAfterLineDiscountLocal"),
+                                            PricePieceDiscountLocal: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceDiscountLocal"),
+                                            PricePieceLocalAfterDiscount: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "PricePieceLocalAfterDiscount"),
+                                            SimilarItemCode: ItemsGrid.batchEditApi.GetCellValue(visibleRowIndices[i], "SimilarItemCode"),
+                                            RowNumber: i
+                                        };
+                                        Itemslist.push(Items);
+
+                                    }
+                                    var dataToSave = {
+                                        St_Transaction: Itemslist,
+                                        StockCode: $("#StockCode").val(),
+                                        TaxType: $("#TaxType").val(),
+                                        VoucherCase: $("#VoucherCase").val(),
+                                        VoucherDate: $("#VoucherDate").val(),
+                                        Remark: $("#Remark").val(),
+                                        Hint: $("#Hint").val(),
+                                        NetTotalDiscountLocal: $("#NetTotalDiscountLocal").val(),
+                                        DiscountPercentage: $("#DiscountPercentage").val(),
+                                        NetTotalLocalBeforDiscount: $("#NetTotalLocalBeforDiscount").val(),
+                                        NetTotalLineDiscountLocal: $("#NetTotalLineDiscountLocal").val(),
+                                        NetTotalLocalAfterLineDiscount: $("#NetTotalLocalAfterLineDiscount").val(),
+                                        NetTotalTaxAfterLineDiscountLocal: $("#NetTotalTaxAfterLineDiscountLocal").val(),
+                                        NetTotalAfterLineDiscountBeforDiscountAllLocal: $("#NetTotalAfterLineDiscountBeforDiscountAllLocal").val(),
+                                        NetTotalLocalAfterDiscount: $("#NetTotalLocalAfterDiscount").val(),
+                                        NetTotalTaxLocal: $("#NetTotalTaxLocal").val(),
+                                        NetTotalLocal: $("#NetTotalLocal").val(),
+                                        CompanyTransactionKindNo: $("#CompanyTransactionKindNo").val(),
+                                        TransactionKindNo: $("#TransactionKindNo").val(),
+                                        CurrencyID: $("#CurrencyID").val(),
+                                        ConversionFactor: $("#ConversionFactor").val(),
+                                        CompanyYear: $("#CompanyYear").val()
+                                    }
+                                    $.ajax({
+                                        type: "POST",
+                                        url: "/St_InVoucher/Save",
+                                        data: JSON.stringify(dataToSave),
+                                        contentType: 'application/json',
+                                        success: function (data) {
+                                            dialog.modal('hide');
+                                            if (data.Code == 0) {
+                                                toastr.error(data.Msg);
+                                            }
+                                            else if (data.Code == 1) {
+                                                $('#modal-container').modal('hide');
+                                                toastr.success(data.Msg);
+                                                document.getElementById("Clear").click();
+                                                bootbox.confirm({
+                                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.DoYouWantToUploadAttachments</h6>',
+                                                    className: 'rubberBand animated',
+                                                    buttons: {
+                                                        confirm: {
+                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                            className: 'btn-success'
+                                                        },
+                                                        cancel: {
+                                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                            className: 'btn-danger'
+                                                        }
+                                                    },
+                                                    callback: function (result) {
+                                                        if (result) {
+                                                            window.open('/St_InVoucher/ShowAttach/' + data.Year + '/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo, '_blank');
+                                                            bootbox.confirm({
+                                                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                className: 'rubberBand animated',
+                                                                buttons: {
+                                                                    confirm: {
+                                                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                        className: 'btn-success'
+                                                                    },
+                                                                    cancel: {
+                                                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                        className: 'btn-danger'
+                                                                    }
+                                                                },
+                                                                callback: function (result) {
+                                                                    if (result) {
+                                                                        window.open('/St_PDFReport/St_InVoucherDetailPDF/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year + '/' + data.StockCode, '_blank');
+
+                                                                    }
+                                                                }
+                                                            });
+
+                                                        }
+                                                        else {
+
+                                                            bootbox.confirm({
+                                                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.DoYouWantToPrint</h6>',
+                                                                className: 'rubberBand animated',
+                                                                buttons: {
+                                                                    confirm: {
+                                                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Yes</span>',
+                                                                        className: 'btn-success'
+                                                                    },
+                                                                    cancel: {
+                                                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.No</span>',
+                                                                        className: 'btn-danger'
+                                                                    }
+                                                                },
+                                                                callback: function (result) {
+                                                                    if (result) {
+                                                                        window.open('/St_PDFReport/St_InVoucherDetailPDF/' + data.VoucherNumber + '/' + data.CompanyTransactionKindNo + '/' + data.TransactionKindNo + '/' + data.Year + '/' + data.StockCode, '_blank');
+
+                                                                    }
+                                                                }
+                                                            });
+
+                                                        }
+
+                                                    }
+                                                });
+
+                                            }
+                                        },
+                                        error: function (data) {
+                                            dialog.modal('hide');
+                                            toastr.error(data);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                };
+            });
+        }
+    }
+    function OnInit(s, e) {
+        ASPxClientUtils.AttachEventToElement(
+            s.GetMainElement(),
+            "keydown",
+            function (evt) {
+                if (evt.ctrlKey && FocusedCellColumnIndex == 1) {
+                    var dialog = bootbox.dialog({
+                        title: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.PleaseWait...</h6>',
+                        message: '<p style="font-family: Verdana, Geneva, Tahoma, sans-serif"><i class="fa fa-spin fa-spinner"></i> @Resources.Resource.PreparingData...</p>',
+                        closeButton: false
+                    });
+                    var url = '/MultiUse/SearchSt_ItemCard/InVoucherItemCode';
+                    $.get(url, function (data) {
+                        $('#modal-container').html(data);
+                        $('#modal-container').modal('show');
+                        dialog.modal('hide');
+                    })
+                }
+                switch (evt.keyCode) {
+                    case 13:
+                        if (FocusedCellColumnIndex == 7) {
+                            s.AddNewRow();
+                        }
+                        break;
+                }
+            });
+    };
+    function Grid_BatchEditEndEditing(s, e) {
+        var productNameColumn = s.GetColumnByField("ItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        if (FocusedCellColumnIndex == 1) {
+            var ItemCodeIndex = s.GetColumnByField("ItemCode").index;
+            var ItemCode = e.rowValues[ItemCodeIndex].value;
+            if (!ItemCode) {
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Bonus", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLineDiscountLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterLineDiscount", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalAfterLineDiscount", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxAfterLineDiscountLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceAfterLineDiscountBeforDiscountAllLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalDiscountLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "CostPieceLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalBeforDiscount", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "LineDiscountPercentage", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalAfterLineDiscountBeforDiscountAllLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "DiscountPercentage", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalCostLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLineDiscountLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxAfterLineDiscountLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceDiscountLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterDiscount", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTotalLocal", "0");
+                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+            }
+            else {
+                if (ItemCode != null && ItemCode != '') {
+                    $.getJSON('@Url.Action("CheckItemCode", "St_ItemCard")', { id: ItemCode }, function (Data) {
+                        if (Data == "") {
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Bonus", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLineDiscountLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterLineDiscount", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalAfterLineDiscount", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxAfterLineDiscountLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceAfterLineDiscountBeforDiscountAllLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalDiscountLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "CostPieceLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalBeforDiscount", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "LineDiscountPercentage", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalAfterLineDiscountBeforDiscountAllLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "DiscountPercentage", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalCostLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLineDiscountLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxAfterLineDiscountLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceDiscountLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterDiscount", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTotalLocal", "0");
+                            ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardDoesNotExist</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                            FocusedCellColumnIndex = 1;
+                        }
+                        else {
+                            if (Data.StopItem) {
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", "");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", "");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", "");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Bonus", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLineDiscountLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterLineDiscount", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalAfterLineDiscount", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxAfterLineDiscountLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceAfterLineDiscountBeforDiscountAllLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalDiscountLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "CostPieceLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalBeforDiscount", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "LineDiscountPercentage", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalAfterLineDiscountBeforDiscountAllLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "DiscountPercentage", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalCostLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLineDiscountLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxAfterLineDiscountLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceDiscountLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterDiscount", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTotalLocal", "0");
+                                ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", "");
+                                bootbox.alert({
+                                    message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.TheItemCardIsSuspended</h6>',
+                                    className: 'rubberBand animated',
+                                    buttons: {
+                                        ok: {
+                                            label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                            className: 'btn-primary'
+                                        }
+                                    }
+                                });
+                                FocusedCellColumnIndex = 1;
+                            }
+                            else {
+                                $.getJSON('@Url.Action("CheckItemOtherUnit", "St_ItemCard")', { id: ItemCode }, function (Data2) {
+                                    if (Data2 != "") {
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", Data.ItemCode);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", Data.ItemName);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", Data.ItemUnitName);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", Data.TaxRate);
+                                        var url = '/St_InVoucher/St_ItemOtherUnit/' + Data.ItemCode;
+                                        $.get(url, function (data) {
+                                            $('#modal-container').html(data);
+                                            $('#modal-container').modal('show');
+                                            dialog.modal('hide');
+                                        })
+
+                                    }
+                                    else {
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemCode", Data.ItemCode);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemName", Data.ItemName);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "ItemUnitName", Data.ItemUnitName);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TaxRate", Data.TaxRate);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Bonus", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", Data.PurchasePrice);
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLineDiscountLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterLineDiscount", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalAfterLineDiscount", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxAfterLineDiscountLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceAfterLineDiscountBeforDiscountAllLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalDiscountLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "CostPieceLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalTaxLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalLocalBeforDiscount", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "LineDiscountPercentage", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalAfterLineDiscountBeforDiscountAllLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "DiscountPercentage", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "TotalCostLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLineDiscountLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTaxAfterLineDiscountLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceDiscountLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalAfterDiscount", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceTotalLocal", "0");
+                                        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", ItemCode);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        }
+        FocusedCellColumnIndex = 1;
+        FocusedCellRowIndex = 1;
+    }
+    function Grid_BatchEditStartEditing(s, e) {
+        FocusedCellColumnIndex = e.focusedColumn.index;
+        FocusedCellRowIndex = e.visibleIndex;
+        var productNameColumn = s.GetColumnByField("ItemCode");
+        if (!e.rowValues.hasOwnProperty(productNameColumn.index))
+            return;
+        lastVisibleIndex = e.visibleIndex;
+        currentEditedValue = s.GetRowKey(e.visibleIndex);
+        currentKey = s.GetRowKey(e.visibleIndex);
+        RecalccSum();
+    }
+    function OnBeginCallback(s, e) {
+        e.customArgs["Reference"] = $("#Reference").val();
+    }
+    function OnEndCallback(s, e) {
+        if (s.cpSuccessFlag) {
+            alert("All changes were saved");
+            window.location = "@Url.Action("Success","Test1")";
+        }
+    }
+    function OnClickPostData(s, e) {
+        if (ItemsGrid.batchEditApi.HasChanges())
+            ItemsGrid.UpdateEdit();
+        else
+            ItemsGrid.PerformCallback();
+    }
+    function Grid_DeleteRowEvent(s, e) {
+        setTimeout(function () {
+            RecalccSum();
+        }, 1000);
+    }
+    function GetSelectedItemUnit(data) {
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "Quantity", data.OtherUnitQuantityTotal);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "PricePieceLocalBeforDiscount", data.OtherUnitPrice);
+        ItemsGrid.batchEditApi.SetCellValue(lastVisibleIndex, "SimilarItemCode", data.OtherUnitBarcode);
+        RecalccSum();
+    }
+</script>
+
+
+@using (Html.BeginForm("Add", "St_InVoucher", FormMethod.Post, new { id = "myForm" }))
+{
+    <div style="padding-top: 20px;">
+        <div class="panel card-view">
+            <div class="panel-heading" style="background-color: #34495E">
+                <div class="pull-left">
+                    <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Save - @Resources.Resource.InVoucher</h6>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        @Html.Label(Resources.Resource.Warehouses)<span style="color:red">*</span>
+                        <div class="form-group">
+                            @if (Resources.Resource.CurLang == "Arb")
+                            {
+                                @Html.DropDownListFor(m => m.StockCode, new SelectList(Model.St_Warehouse, "StockCode", "ArabicName"), new { @id = "StockCode", @class = "form-control input-sml" })
+
+                            }
+                            else
+                            {
+                                @Html.DropDownListFor(m => m.StockCode, new SelectList(Model.St_Warehouse, "StockCode", "EnglishName"), new { @id = "StockCode", @class = "form-control input-sml" })
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.VoucherNumber)
+                            @Html.TextBoxFor(m => m.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.VoucherDate)
+                            @Html.TextBoxFor(model => model.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.VoucherDate.ToString("dd/MM/yyyy"), data_val = "false" })
+                            @Html.ValidationMessageFor(m => m.VoucherDate)
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12" style="padding-top:20px;">
+                    <div class="col-lg-12">
+                        @Html.Action("GridViewItems", new { id = "", id2 = "", id3 = "", id4 = "", id5 = "" })
+                    </div>
+                </div>
+                <div class="col-lg-12" style="margin-top : 5px">
+                    <div class="col-lg-2">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.NetTotal)
+                            @Html.TextBoxFor(m => m.sNetTotalLocal, new { @id = "sNetTotalLocal", @class = "form-control input-sml", @readonly = "readonly" })
+                            @Html.ValidationMessageFor(m => m.NetTotalLocal)
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.Note)
+                            @Html.TextBoxFor(m => m.Remark, new { @id = "Remark", @class = "form-control input-sml" })
+                            @Html.ValidationMessageFor(m => m.Remark)
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        @Html.Label(Resources.Resource.Hints)
+                        @Html.TextBoxFor(m => m.Hint, new { @id = "Hint", @class = "form-control input-sml" })
+                        @Html.ValidationMessageFor(m => m.Hint)
+                    </div>
+                </div>
+            </div>
+            <div class="panel-footer">
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "buttonSave";
+               settings.Text = Resources.Resource.Save;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "LoopGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+           {
+               settings.Name = "btnClear";
+               settings.Text = Resources.Resource.CreateNew;
+               settings.UseSubmitBehavior = false;
+               settings.ClientVisible = false;
+               settings.ClientSideEvents.Click = "ClearGrid";
+           }).GetHtml()
+                @Html.DevExpress().Button(settings =>
+               {
+                   settings.Name = "btnRecalculat";
+                   settings.UseSubmitBehavior = false;
+                   settings.ClientVisible = false;
+                   settings.ClientSideEvents.Click = "RecalccSum";
+               }).GetHtml()
+                <button type="button" class="btn btn-primary btn-anim" id="Save"><i class="fa fa-save"></i><span class="btn-text">@Resources.Resource.Save</span> </button>
+                <button type="button" class="btn btn-warning btn-anim" id="Clear"><i class="fa fa-refresh"></i><span class="btn-text">@Resources.Resource.Clear</span> </button>
+                <button type="button" class="btn btn-default btn-anim" id="CloseForm"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+            </div>
+        </div>
+    </div>
+}
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@Html.TextBoxFor(m => m.NetTotalDiscountLocal, new { @id = "NetTotalDiscountLocal", @class = "form-control input-sml", @type = "number", @min = 0, @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.DiscountPercentage, new { @id = "DiscountPercentage", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })@*2*@
+@Html.TextBoxFor(m => m.NetTotalLocalBeforDiscount, new { @id = "NetTotalLocalBeforDiscount", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalLineDiscountLocal, new { @id = "NetTotalLineDiscountLocal", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalLocalAfterLineDiscount, new { @id = "NetTotalLocalAfterLineDiscount", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalTaxAfterLineDiscountLocal, new { @id = "NetTotalTaxAfterLineDiscountLocal", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalAfterLineDiscountBeforDiscountAllLocal, new { @id = "NetTotalAfterLineDiscountBeforDiscountAllLocal", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalLocalAfterDiscount, new { @id = "NetTotalLocalAfterDiscount", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalTaxLocal, new { @id = "NetTotalTaxLocal", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.NetTotalLocal, new { @id = "NetTotalLocal", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;", @type = "number", @min = 0 })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNo", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TransactionKindNo, new { @id = "TransactionKindNo", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CurrencyID, new { @id = "CurrencyID", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ConversionFactor, new { @id = "ConversionFactor", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.CompanyYear, new { @id = "CompanyYear", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TaxType, new { @id = "TaxType", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.VoucherCase, new { @id = "VoucherCase", @class = "form-control input-sml", @readonly = "readonly", @style = "visibility : hidden;" })
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+    $(document).ready(function () {
+        var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+        function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                const negativeSign = amount < 0 ? "-" : "";
+
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+
+                return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
+        };
+        function validatedate(dateString) {
+            var dateformat = /(((0|1)[0-9]|2[0-9]|3[0-1])\/(0[1-9]|1[0-2])\/((19|20)\d\d))$/;
+            if (dateString.match(dateformat)) {
+                var operator = dateString.split('/');
+                var datepart = [];
+                if (operator.length > 1) {
+                    datepart = dateString.split('/');
+                }
+                var month = parseInt(datepart[1]);
+                var day = parseInt(datepart[0]);
+                var year = parseInt(datepart[2]);
+                var ListofDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+                if (month == 1 || month > 2) {
+                    if (day > ListofDays[month - 1]) {
+                        return false;
+                    }
+                } else if (month == 2) {
+                    var leapYear = false;
+                    if ((year % 4 == 0) && ((!(year % 100 == 0)) || (year % 400 == 0))) {
+                        leapYear = true;
+                    }
+                    if ((leapYear == false) && (day >= 29)) {
+                        return false;
+                    } else
+                        if ((leapYear == true) && (day > 29)) {
+                            return false;
+                        }
+                }
+            }
+            else {
+                return false;
+            }
+            return true;
+        }
+        $(document).on('click', '#CloseForm', function () {
+            window.location = "/St_InVoucher/Index";
+        });
+        $(document).on('click', '#Save', function () {
+            document.getElementById("buttonSave").click();
+        });
+        $(document).on('click', '#Clear', function () {
+            document.getElementById("btnClear").click();
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth() + 1;
+            var yyyy = today.getFullYear();
+            if (dd < 10) {
+                dd = '0' + dd;
+            }
+            if (mm < 10) {
+                mm = '0' + mm;
+            }
+            var today = dd + '/' + mm + '/' + yyyy;
+            document.getElementById("VoucherDate").value = today;
+            document.getElementById("TaxType").selectedIndex = "0";
+            var StockCode = document.getElementById("StockCode").value;
+            var TransactionKindNo = document.getElementById("TransactionKindNo").value;
+            if (StockCode != null && StockCode != '') {
+                $.getJSON('@Url.Action("GetCompanyTransactionKindNo", "St_InVoucher")', { id: TransactionKindNo, id2: StockCode }, function (Data) {
+                    if (Data != null) {
+                        document.getElementById("CompanyTransactionKindNo").value = Data;
+                        var CompanyYear = document.getElementById("CompanyYear").value;
+                        var CompanyTransactionKindNo = document.getElementById("CompanyTransactionKindNo").value;
+                        if (CompanyTransactionKindNo != null && CompanyTransactionKindNo != '') {
+                            $.getJSON('@Url.Action("GetMaxVoucher", "St_InVoucher")', { id: CompanyTransactionKindNo, id2: CompanyYear, id3: StockCode }, function (Data) {
+
+                                if (Data != null) {
+                                    document.getElementById("VoucherNumber").value = Data;
+
+                                } else {
+
+                                };
+                            });
+                        }
+                        else {
+                        }
+                    } else {
+
+                    };
+                });              
+
+            }
+            document.getElementById("btnRecalculat").click();
+            document.getElementById("Remark").value = '';
+            document.getElementById("Hint").value = '';
+            document.getElementById("NetTotalDiscountLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("DiscountPercentage").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("sNetTotalLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalLocalBeforDiscount").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalLineDiscountLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalLocalAfterLineDiscount").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalTaxAfterLineDiscountLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalAfterLineDiscountBeforDiscountAllLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalLocalAfterDiscount").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalTaxLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+            document.getElementById("NetTotalLocal").value = (0).toFixed(TheDecimalPointForTheLocalCurrency);
+        });
+        $("#VoucherDate").focus().select();
+        $("#VoucherDate").mask("99/99/9999");
+        var StockCode = document.getElementById("StockCode").value;
+        var TransactionKindNo = document.getElementById("TransactionKindNo").value;
+        if (StockCode != null && StockCode != '') {
+            $.getJSON('@Url.Action("GetCompanyTransactionKindNo", "St_InVoucher")', { id: TransactionKindNo, id2: StockCode }, function (Data) {
+                if (Data != null) {
+                    document.getElementById("CompanyTransactionKindNo").value = Data;
+                    var CompanyYear = document.getElementById("CompanyYear").value;
+                    var CompanyTransactionKindNo = document.getElementById("CompanyTransactionKindNo").value;
+                    if (CompanyTransactionKindNo != null && CompanyTransactionKindNo != '') {
+                        $.getJSON('@Url.Action("GetMaxVoucher", "St_InVoucher")', { id: CompanyTransactionKindNo, id2: CompanyYear, id3: StockCode }, function (Data) {
+
+                            if (Data != null) {
+                                document.getElementById("VoucherNumber").value = Data;
+
+                            } else {
+
+                            };
+                        });
+                    }
+                    else {
+                    }
+                } else {
+
+                };
+            });
+        }
+        $('#StockCode').change(function () {
+            var StockCode = document.getElementById("StockCode").value;
+            var TransactionKindNo = document.getElementById("TransactionKindNo").value;
+            if (StockCode != null && StockCode != '') {
+                $.getJSON('@Url.Action("GetCompanyTransactionKindNo", "St_InVoucher")', { id: TransactionKindNo, id2: StockCode }, function (Data) {
+                    if (Data != null) {
+                        document.getElementById("CompanyTransactionKindNo").value = Data;
+                        var CompanyYear = document.getElementById("CompanyYear").value;
+                        var CompanyTransactionKindNo = document.getElementById("CompanyTransactionKindNo").value;
+                        if (CompanyTransactionKindNo != null && CompanyTransactionKindNo != '') {
+                            $.getJSON('@Url.Action("GetMaxVoucher", "St_InVoucher")', { id: CompanyTransactionKindNo, id2: CompanyYear, id3: StockCode }, function (Data) {
+
+                                if (Data != null) {
+                                    document.getElementById("VoucherNumber").value = Data;
+
+                                } else {
+
+                                };
+                            });
+                        }
+                        else {
+                        }
+                    }
+                    else {
+
+                    };
+                });
+            }
+        });
+        $("#VoucherDate").blur(function () {
+            var dDate = document.getElementById("VoucherDate").value;
+            if (dDate != null && dDate != '') {
+                if (!validatedate(dDate)) {
+                    bootbox.alert({
+                        message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.InvalidDate</h6>',
+                        className: 'rubberBand animated',
+                        buttons: {
+                            ok: {
+                                label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                className: 'btn-primary'
+                            }
+                        }
+                    });
+                }
+                else {
+                    var dd = parseInt(dDate.substring(0, 2));
+                    if (dd < 10) {
+                        dd = '0' + dd;
+                    }
+                    var mm = parseInt(dDate.substring(3, 5));
+                    if (mm < 10) {
+                        mm = '0' + mm;
+                    }
+                    var yyyy = parseInt(dDate.substring(6, 10));
+                    dDate = mm + '/' + dd + '/' + yyyy;
+                    $.getJSON('@Url.Action("CheckDateIsFreezeDate", "FreezeTransaction")', { id: dDate }, function (Data) {
+                        if (Data >= 1) {
+                            bootbox.alert({
+                                message: '<h6 style="font-family: Verdana, Geneva, Tahoma, sans-serif"> @Resources.Resource.ThisDateIsFrozen</h6>',
+                                className: 'rubberBand animated',
+                                buttons: {
+                                    ok: {
+                                        label: '<span style="font-family: Verdana, Geneva, Tahoma, sans-serif">@Resources.Resource.Ok</span>',
+                                        className: 'btn-primary'
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+            else {
+            }
+        });
+        $('#tdataTable').on('click', '.modal-close-btn', function () {
+            $('#modal-container').modal('hide');
+        });
+        $(document).on('click', '.js-Pop', function (e) {
+            $('#modal-container').removeData('bs.modal');
+            e.preventDefault();
+            $(this).attr('data-target', '#modal-container');
+            $(this).attr('data-toggle', 'modal');
+
+        });
+        $('#modal-container').on('hidden.bs.modal', function () {
+            $(this).removeData('bs.modal');
+        });
+        $('#CancelModal').on('click', function () {
+            return false;
+        });
+
+        $("#VoucherDate").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Remark").focus().select();
+        });
+        $("#Remark").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#Hint").focus().select();
+        });
+        $("#Hint").keyup(function (event) {
+            if (event.keyCode == 13)
+                $("#VoucherDate").focus().select();
+        });
+    });
+    </script>
+}
+
+
+
+

@@ -1,0 +1,260 @@
+﻿@model Acc.ViewModels.TransactionFixedVM
+@{
+    ViewBag.Title = @Resources.Resource.Detail;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .panel-body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .panel-title {
+        font-family: Verdana, Geneva, Tahoma, sans-serif
+    }
+
+    .dt-button {
+        display: none !important;
+    }
+</style>
+<div style="padding-top:20px;">
+    <div class="panel card-view">
+        <div class="panel-heading" style="background-color: #34495E">
+            <div class="pull-left">
+                <h6 class="panel-title txt-light" style="font-weight:bold">@Resources.Resource.Detail - @Resources.Resource.DebitNote</h6>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    @Html.LabelFor(m => m.CompanyTransactionKindID)
+                    <div class="form-group">
+                        @Html.TextBoxFor(m => m.CompanyTransactionKindName, new { @id = "CompanyTransactionKindName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyID)
+                        @Html.TextBoxFor(m => m.CurrencyName, new { @id = "CurrencyName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.CurrencyNewValue)
+                        @Html.ValidationMessageFor(m => m.CurrencyNewValue)
+                        @Html.TextBoxFor(m => m.CurrencyNewValue, new { @id = "CurrencyNewValue", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherNumber)
+                        @Html.TextBoxFor(m => m.Header.VoucherNumber, new { @id = "VoucherNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Header.VoucherDate)
+                        @Html.TextBoxFor(model => model.Header.VoucherDate, new { @id = "VoucherDate", @class = "form-control input-sml", @Value = Model.Header.VoucherDate.ToString("dd/MM/yyyy"), @readonly = "readonly" })
+                        @Html.ValidationMessageFor(m => m.Header.VoucherDate)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.FromAccountNumber)
+                        @Html.TextBoxFor(m => m.TransactionDebit.AccountNumber, new { @id = "FromAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.AccountDebitName, new { @id = "AccountDebitName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.ToAccountNumber)
+                        @Html.TextBoxFor(m => m.TransactionCredit.AccountNumber, new { @id = "ToAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.AccountCreditName, new { @id = "AccountCreditName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.SaleManNo)
+                        @Html.TextBoxFor(m => m.SaleManName, new { @id = "SaleManName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.TaxAccountNumber)
+                        @Html.TextBoxFor(m => m.TransactionTax.AccountNumber, new { @id = "TaxAccountNumber", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        @Html.Label(Resources.Resource.AccountName)
+                        @Html.TextBoxFor(m => m.TaxAccountName, new { @id = "TaxAccountName", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="col-lg-9">
+                    @Html.LabelFor(m => m.Header.Note)
+                    @Html.TextBoxFor(m => m.Header.Note, new { @id = "Note", @class = "form-control input-sml", @readonly = "readonly" })
+                    @Html.ValidationMessageFor(m => m.Header.Note)
+                </div>
+            </div>
+            @if (Model.WorkWithCostCenter)
+            {
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.FromCostCenter)
+                            @Html.TextBoxFor(m => m.TransactionDebit.CostCenter, new { @id = "FromCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.CostCenterDebitName, new { @id = "CostCenterDebitName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.ToCostCenter)
+                            @Html.TextBoxFor(m => m.TransactionCredit.CostCenter, new { @id = "ToCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.CostCenterCreditName, new { @id = "CostCenterCreditName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.TaxCostCenter)
+                            @Html.TextBoxFor(m => m.TransactionTax.CostCenter, new { @id = "TaxCostCenter", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="form-group">
+                            @Html.Label(Resources.Resource.CostCenterName)
+                            @Html.TextBoxFor(m => m.TaxCostCenterName, new { @id = "TaxCostCenterName", @class = "form-control input-sml", @readonly = "readonly" })
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="col-lg-12">
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Amount)
+                        @Html.TextBoxFor(m => m.sAmount, new { @id = "sAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Tax)
+                        @Html.TextBoxFor(m => m.sTax, new { @id = "sTax", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TotalAmount)
+                        @Html.TextBoxFor(m => m.sTotalAmount, new { @id = "sTotalAmount", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.ForeignAmount)
+                        @Html.TextBoxFor(m => m.sForeignAmount, new { @id = "sForeignAmount", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TaxForeign)
+                        @Html.TextBoxFor(m => m.sTaxForeign, new { @id = "sTaxForeign", @class = "form-control input-sml", @readonly = "readonly" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TotalForeign)
+                        @Html.TextBoxFor(m => m.sTotalForeign, new { @id = "sTotalForeign", @class = "form-control input-sml", @readonly = "@readonly" })
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            @if (User.IsInRole("PrintDebitNote") || User.IsInRole("CoOwner"))
+            {
+                <button type="button" class="btn btn-warning btn-anim" id="PrintPDF"><i class=" fa fa-print"></i><span class="btn-text">@Resources.Resource.Print</span></button>
+            }
+            <button type="button" class="btn btn-default btn-anim" id="Close"><i class="fa fa-times"></i><span class="btn-text">@Resources.Resource.Close</span></button>
+        </div>
+    </div>
+</div>
+@Html.TextBoxFor(m => m.Amount, new { @id = "Amount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.Tax, new { @id = "Tax", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "@readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TotalAmount, new { @id = "TotalAmount", @class = "form-control input-sml", @readonly = "@readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.ForeignAmount, new { @id = "ForeignAmount", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TaxForeign, new { @id = "TaxForeign", @class = "form-control input-sml", @type = "Number", @min = "0", @readonly = "readonly", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TotalForeign, new { @id = "TotalForeign", @class = "form-control input-sml", @readonly = "@readonly", @style = "visibility : hidden;" })
+@Html.CheckBoxFor(m => m.WorkWithCostCenter, new { @id = "WorkWithCostCenter", @style = "visibility : hidden;" })
+@Html.HiddenFor(m => m.Header.CompanyTransactionKindNo, new { @id = "CompanyTransactionKindNo" })
+@Html.HiddenFor(m => m.CurrencyID, new { @id = "CurrencyID" })
+@Html.HiddenFor(m => m.Header.CompanyYear, new { @id = "CompanyYear" })
+@Html.HiddenFor(m => m.Header.TransactionKindNo, new { @id = "TransactionKindNo" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheLocalCurrency, new { @id = "TheDecimalPointForTheLocalCurrency", @style = "visibility : hidden;" })
+@Html.TextBoxFor(m => m.TheDecimalPointForTheForeignCurrency, new { @id = "TheDecimalPointForTheForeignCurrency", @style = "visibility : hidden;" })
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            var TheDecimalPointForTheLocalCurrency = document.getElementById("TheDecimalPointForTheLocalCurrency").value;
+            var TheDecimalPointForTheForeignCurrency = document.getElementById("TheDecimalPointForTheForeignCurrency").value;
+            $(document).on('click', '#Close', function () {
+                window.location = "/DebitNote/Index";
+            });
+            $(document).on('click', '#PrintPDF', function () {
+                window.open('/PDFReport/DetailDebitNotePDF/@Model.Header.VoucherNumber/@Model.Header.CompanyTransactionKindNo/@Model.Header.TransactionKindNo/@Model.Header.CompanyYear', '_blank');
+            });
+            function formatMoney(amount, decimalCount, decimal = ".", thousands = ",") {
+                try {
+                    decimalCount = Math.abs(decimalCount);
+                    decimalCount = isNaN(decimalCount) ? decimalCount : decimalCount;
+
+                    const negativeSign = amount < 0 ? "-" : "";
+
+                    let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                    let j = (i.length > 3) ? i.length % 3 : 0;
+
+                    return negativeSign + (j ? i.substr(0, j) + thousands : '') + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) + (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+                } catch (e) {
+                    console.log(e)
+                }
+            };
+            document.getElementById("sAmount").value = formatMoney(document.getElementById("Amount").value, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("sForeignAmount").value = formatMoney(document.getElementById("ForeignAmount").value, TheDecimalPointForTheForeignCurrency);
+            document.getElementById("sTax").value = formatMoney(document.getElementById("Tax").value, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("sTaxForeign").value = formatMoney(document.getElementById("TaxForeign").value, TheDecimalPointForTheForeignCurrency);
+            document.getElementById("sTotalAmount").value = formatMoney(document.getElementById("TotalAmount").value, TheDecimalPointForTheLocalCurrency);
+            document.getElementById("sTotalForeign").value = formatMoney(document.getElementById("TotalForeign").value, TheDecimalPointForTheForeignCurrency);
+        });
+    </script>
+}
+

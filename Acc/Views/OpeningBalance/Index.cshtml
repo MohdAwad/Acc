@@ -1,0 +1,333 @@
+﻿@model Acc.ViewModels.OpeningBalanceVM
+@{
+    ViewBag.Title = "MyVacationReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    function GetSelectedRevenueReceivedFromAccountNumber(data) {
+
+          if (data.RevenueReceivedAccountNumber != null && data.RevenueReceivedAccountNumber != '') {
+              document.getElementById("FromAccAccount").value = data.RevenueReceivedAccountNumber;
+            if (@Resources.Resource.CurLang= "Arb") {
+                document.getElementById("FromAccName").value = data.ArabicName;
+            }
+            else {
+                document.getElementById("FromAccName").value = data.EnglishName;
+            }
+        }
+        else {
+            document.getElementById("FromAccAccount").value = '';
+            document.getElementById("FromAccName").value = '';
+        }
+
+    }
+    function GetSelectedRevenueReceivedToAccountNumber(data) {
+
+        if (data.AccountNumber != null && data.AccountNumber != '') {
+              document.getElementById("ToAccAccount").value = data.AccountNumber;
+            if (@Resources.Resource.CurLang= "Arb") {
+                document.getElementById("ToAccName").value = data.ArabicName;
+            }
+            else {
+                document.getElementById("ToAccName").value = data.EnglishName;
+            }
+        }
+        else {
+            document.getElementById("ToAccAccount").value = '';
+            document.getElementById("ToAccName").value = '';
+          }
+
+    }
+        //------Auto Complete------------//
+    var AcountAcc=[];
+     $.getJSON('@Url.Action("GetAcountAcc", "MultiUse")', { id: 0 }, function (Data) {
+             projects = [];
+           for (var i = 0, len = Data.length; i < len; i++) {
+
+               var r = { label: Data[i].ArabicName, value: Data[i].AccountNumber };
+		     AcountAcc.push(r);
+		}
+
+
+	   });
+     $( function() {
+
+            $( "#FromAccAccount" ).autocomplete({
+                source: AcountAcc,
+                select: function (event, ui) {
+                         document.getElementById("FromAccAccount").value = ui.item.value;
+                         document.getElementById("FromAccName").value = ui.item.label;
+                     }
+
+
+              });
+     });
+
+
+    var ToObjAcountAcc=[];
+     $.getJSON('@Url.Action("GetDefinitionPaidExpense", "MultiUse")', { id: 0 }, function (Data) {
+             projects = [];
+           for (var i = 0, len = Data.length; i < len; i++) {
+
+               var r = { label: Data[i].ArabicName, value: Data[i].PaidExpenseAccountNumber };
+		      ToObjAcountAcc.push(r);
+		}
+
+
+	   });
+     $( function() {
+
+            $( "#ToAccAccount" ).autocomplete({
+                source: ToObjAcountAcc,
+                select: function (event, ui) {
+                         document.getElementById("ToAccAccount").value = ui.item.value;
+                         document.getElementById("ToAccName").value = ui.item.label;
+                     }
+
+
+              });
+   });
+
+//------------------------------End Auto Complete--------------------//
+</script>
+
+<div style="padding-top:20px;">
+
+    @*<div class="form-group">
+        <a class=" btn btn-primary btn-outline" id="AddNew" href="/RevenueReceivedDetail/Create"><i class="glyphicon glyphicon-plus"></i> @Resources.Resource.AddNew</a>
+    </div>*@
+
+
+    <div class="panel panel-primary">
+        <div class="panel-heading ">@Resources.Resource.OpeningBalanceTrans</div>
+        <div class="col-md-12" style="margin-top:10px;">
+            <div class="form-group">
+                 
+                 
+
+                 
+                 
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.TransDate)
+                        @Html.TextBoxFor(model => model.TransDate, new { @id = "FromDate", @class = "form-control input-sml", @Value = Model.TransDate.ToString("dd/MM/yyyy") })
+                        @Html.ValidationMessageFor(m => m.TransDate)
+                    </div>
+                </div>
+                 
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary add-new  btn-sm fa  fa-search" style="margin-top:25px" id="reload">  @Resources.Resource.Search </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+        <div id="MemberShipTypeBody" class="panel-body">
+
+
+            <table id="tdataTable" class="table table-striped table-bordered" style="width:100%">
+                <thead>
+                    <tr>
+
+                        <th>@Resources.Resource.VoucherNumber</th>
+                        <th>@Resources.Resource.Date</th>
+                        <th>@Resources.Resource.FromAccount</th>
+                        <th>@Resources.Resource.Name</th>
+                        <th>@Resources.Resource.ToAccount</th>
+                        <th>@Resources.Resource.Name</th>
+                        <th>@Resources.Resource.Amount</th>
+                        <th>@Resources.Resource.PaidPeriod</th>
+                        <th>@Resources.Resource.Detail</th>
+                        <th>@Resources.Resource.Update</th>
+                        <th>@Resources.Resource.Delete</th>
+
+
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="modal-container" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-content">
+    </div>
+</div>
+@section scripts{
+    @Scripts.Render("~/bundles/jqueryval");
+<script>
+
+        $(document).ready(function () {
+                 //-----Delete------//
+
+      //-----------------//
+
+          $('#BtnToAccAccount').on('click', function () {
+                var url = '/MultiUse/SearchAcc/ToAccAccount';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                })
+          });
+        $('#BtnFromAccAccount').on('click', function () {
+                var url = '/MultiUse/SearchRevenueReceivedAccountNumber/FromAccAccount';
+                $.get(url, function (data) {
+                    $('#modal-container').html(data);
+                    $('#modal-container').modal('show');
+                })
+        });
+
+					$.fn.datepicker.defaults.format = "dd/mm/yyyy";
+					$('#FromDate').datepicker({
+						autoclose: true
+					});
+
+					$('#ToDate').datepicker({
+						autoclose: true
+				 });
+
+
+			$(document).on('click', '#reload', function () {
+
+
+				tabelMemRef.ajax.reload();
+
+				//$('#=').DataTable().ajax.reload();
+
+            });
+
+	 	var tabelMemRef = $("#tdataTable").DataTable({
+				"scrollX": true,
+	              ajax: {
+					"type": "POST",
+					url: "/RevenueReceivedDetail/GetHeaders",
+					"data": function (d) {
+						d.FromDate = $("#FromDate").val();
+						d.ToDate = $("#ToDate").val();
+
+						//d.ToUserID = $("#ToUserID").val();
+                      },
+
+					dataSrc: ""
+              },
+
+              columns: [
+                    	{
+						data: "VoucherNumber"
+
+                    },
+                         {
+                        data: "VoucherDate",
+                        render: function (data, type, r) {
+							return moment(data).format('DD/MM/YYYY')
+						}
+
+                    },
+
+				 	{
+						data: "FromAccount"
+
+                    },
+					{
+						data: "FromAccName"
+
+                    },
+                    {
+						data: "ToAccount"
+
+                    },
+
+                    {
+						data: "ToAccName"
+
+                    },
+                                        {
+						data: "TotalRevenueValue"
+
+                    },
+                     {
+						data: "RevenuePeriod"
+
+                    },
+
+                                   {
+						 data: "VoucherNumber",
+						render: function (data, type, r) {
+							return "<a  class='btn btn-outline btn-info fa fa-search-plus js-modify' href='/RevenueReceivedDetail/Detail/"+data+"/"+r.CompanyTransactionKindNo+ " '> @Resources.Resource.Detail</a>";
+
+
+						}
+
+                    }
+                    ,
+                    {
+						 data: "VoucherNumber",
+                        render: function (data, type, r) {
+                            if ("@(User.IsInRole("UpdateRevenueReceivedDetail") || User.IsInRole("CoOwner"))" == "True")
+                        {
+                                return "<a  class='btn btn-outline btn-warning fa fa-pencil' href='/RevenueReceivedDetail/Update/" + data +"/"+r.CompanyTransactionKindNo+ " '> @Resources.Resource.Update</a>";
+
+                        }
+                        else {
+                          return "";
+
+						  }
+
+
+
+						}
+
+					},
+                     {
+						 data: "VoucherNumber",
+                         render: function (data, type, r) {
+                            if ("@(User.IsInRole("DeleteRevenueReceivedDetail") || User.IsInRole("CoOwner"))" == "True")
+                        {
+
+                                return "<a  class='btn btn-outline btn-danger fa fa-times js-modify' href='/RevenueReceivedDetail/Delete/"+data+"/"+r.CompanyTransactionKindNo+ " '> @Resources.Resource.Delete</a>";
+                        }
+                        else {
+                          return "";
+
+						  }
+
+
+
+						}
+
+                    }
+
+
+
+				]
+
+
+                });
+
+
+           
+            
+
+           });
+</script>
+
+}
+
+
+

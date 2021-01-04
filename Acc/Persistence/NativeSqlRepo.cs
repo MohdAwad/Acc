@@ -9469,6 +9469,8 @@ namespace Acc.Persistence
                       " H.VoucherNumber = T.VoucherNumber " +
                       " And " +
                       " T.Credit > 0 " +
+                      " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountName, " +
                      " ( " +
                        " Select T.AccountNumber " +
@@ -9485,6 +9487,8 @@ namespace Acc.Persistence
                        " H.VoucherNumber = T.VoucherNumber " +
                        " And " +
                        " T.Credit > 0 " +
+                       " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountNumber, " +
                      " ( " +
                         " Select Count(*) As CheckCase " +
@@ -9581,6 +9585,8 @@ namespace Acc.Persistence
                       " H.VoucherNumber = T.VoucherNumber " +
                       " And " +
                       " T.Credit > 0 " +
+                      " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountName, " +
                      " ( " +
                        " Select T.AccountNumber " +
@@ -9597,6 +9603,8 @@ namespace Acc.Persistence
                        " H.VoucherNumber = T.VoucherNumber " +
                        " And " +
                        " T.Credit > 0 " +
+                       " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountNumber, " +
                      " ( " +
                         " Select Count(*) As CheckCase " +
@@ -12157,6 +12165,8 @@ namespace Acc.Persistence
                       " H.TransactionKindNo = P.OriginalTransactionKindNo " +
                       " And " +
                       " H.VoucherNumber = P.OriginalVoucherNumber " +
+                      " And " +
+                      " H.CompanyYear = P.CompanyYear " +
                     " ) As AllPapers, " +
                     " ( " +
                       " Select IsNull(Count(*),0) From Papers P " +
@@ -12170,6 +12180,8 @@ namespace Acc.Persistence
                       " H.VoucherNumber = P.OriginalVoucherNumber " +
                       " And " +
                       " P.ChequeCase not in (1) " +
+                      " And " +
+                      " H.CompanyYear = P.CompanyYear " +
                     " ) As AllUsedPapers, " +
                     " C.ArabicName As CurrencyName,A.UserName,C.CurrencyID, " +
                     " ( " +
@@ -12191,6 +12203,8 @@ namespace Acc.Persistence
                       " H.VoucherNumber = T.VoucherNumber " +
                       " And " +
                       " T.Credit > 0 " +
+                      " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountName, " +
                      " ( " +
                        " Select T.AccountNumber " +
@@ -12207,6 +12221,8 @@ namespace Acc.Persistence
                        " H.VoucherNumber = T.VoucherNumber " +
                        " And " +
                        " T.Credit > 0 " +
+                       " And " +
+                       " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountNumber, " +
                      " ( " +
                         " Select Count(*) As CheckCase " +
@@ -12293,6 +12309,8 @@ namespace Acc.Persistence
                       " H.TransactionKindNo = P.OriginalTransactionKindNo " +
                       " And " +
                       " H.VoucherNumber = P.OriginalVoucherNumber " +
+                      " And " +
+                      " H.CompanyYear = P.CompanyYear " +
                     " ) As AllPapers, " +
                     " ( " +
                       " Select Count(*)  From Papers P " +
@@ -12306,6 +12324,8 @@ namespace Acc.Persistence
                       " H.VoucherNumber = P.OriginalVoucherNumber " +
                       " And " +
                       " P.ChequeCase not in (1) " +
+                      " And " +
+                      " H.CompanyYear = P.CompanyYear " +
                     " ) As AllUsedPapers, " +
                     " C.EnglishName As CurrencyName,A.UserName,C.CurrencyID, " +
                     " ( " +
@@ -12327,6 +12347,8 @@ namespace Acc.Persistence
                       " H.VoucherNumber = T.VoucherNumber " +
                       " And " +
                       " T.Credit > 0 " +
+                      " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountName, " +
                      " ( " +
                        " Select T.AccountNumber " +
@@ -12343,6 +12365,8 @@ namespace Acc.Persistence
                        " H.VoucherNumber = T.VoucherNumber " +
                        " And " +
                        " T.Credit > 0 " +
+                       " And " +
+                      " H.CompanyYear = T.CompanyYear " +
                      " ) As PaidAccountNumber, " +
                      " ( " +
                         " Select Count(*) As CheckCase " +
